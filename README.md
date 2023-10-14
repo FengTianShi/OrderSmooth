@@ -55,7 +55,7 @@ http://47.91.87.150/public/portal/index.html
     - 收银：对应1 2情况 3只需查看支付情况
 
 ## 技术选型
-- 前后端分离 前端VUE 后端Java 框架Spring 实现restfulAPI
+- 前后端分离 前端VUE 后端Java 框架SpringBoot 持久层框架？ 实现restfulAPI
 - vscode docker maven git
 
 ## 盈利方式
