@@ -4,6 +4,9 @@
 二维码点餐系统
 
 ## 竞品分析
+https://orderr.biz/?gclid=Cj0KCQjw1aOpBhCOARIsACXYv-fn6H6azT6iwSaPC_rkMmDAk1v_2yUNhe5yjBXrOm6a9EJtwM4EZuAaAmrkEALw_wcB
+https://squareup.com/jp/ja/townsquare/qrcode-ordering-system-basics
+http://47.91.87.150/public/portal/index.html
 
 ## 需求分析
 - 拒绝复杂 所见即所得 易于使用
