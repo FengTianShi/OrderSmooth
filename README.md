@@ -8,16 +8,24 @@ https://orderr.biz/?gclid=Cj0KCQjw1aOpBhCOARIsACXYv-fn6H6azT6iwSaPC_rkMmDAk1v_2y
 https://squareup.com/jp/ja/townsquare/qrcode-ordering-system-basics
 http://47.91.87.150/public/portal/index.html
 
+## 开发策略
+- 快速原型
+
 ## 需求分析
 - 拒绝复杂 所见即所得 易于使用
-- 实时性非常重要（下单完成 菜品更新等都需要及时反映） 推送将被常常应用
-- 超长时间在线
-- 注意对应多种支付流程（打不打印小票？）要思考
-- 客户端对应手机和平板的UI（响应式）
+- 信息的实时性非常重要（下单完成 菜品更新等都需要及时反映）
+- 几乎永久的保留登陆状态
+
+- 系统开源可自行部署
+- 也可由第三方运营但要平摊运营成本（收月/年费） 可免费试用
+- 若没能力部署可收费上门部署
+
+- 客户端对应手机和平板的UI（响应式布局）
 - 兼容点餐和包餐模式
 - 多语言（国际化）
-- 可免费试用
-- 安全的信息传输？
+
+- 良好的可扩展性
+- 注意对应多种支付流程（支付功能将在以后实现）
 
 ## 用例分析
 - 用户端
@@ -35,7 +43,7 @@ http://47.91.87.150/public/portal/index.html
     - 权限控制
     - 上传/更新菜品
     - 打印QR码
-    - 支付月/年费/买断
+    - 支付月/年费
 
 - 厨房端
     - 登陆：通过管理者添加账户
@@ -47,10 +55,10 @@ http://47.91.87.150/public/portal/index.html
     - 收银：对应1 2情况 3只需查看支付情况
 
 ## 技术选型
-- 前后端分离 前端VUE 后端Java Spring restfulAPI
-- docker maven git
+- 前后端分离 前端VUE 后端Java 框架Spring 实现restfulAPI
+- vscode docker maven git
 
 ## 盈利方式
-- 付费制（每月/每年/买断）
+- 付费制（每月/每年）
 
 采用中心化的管理方式 店家甚至不需要服务器架设 初期成本非常小 易于推广
