@@ -44,7 +44,8 @@
     - 收银：对应1 2情况 3只需查看支付情况
 
 ## 技术选型
-- 前后端分离 前端采用框架 后端restfulAPI
+- 前后端分离 前端VUE 后端Java Spring restfulAPI
+- docker maven git
 
 ## 盈利方式
 - 付费制（每月/每年/买断）
