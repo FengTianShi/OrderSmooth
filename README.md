@@ -56,7 +56,7 @@ http://47.91.87.150/public/portal/index.html
 
 ## 技术选型
 - 前后端分离 前端VUE 后端Java 框架SpringBoot 持久层框架？ 实现restfulAPI
-- vscode docker maven git
+- vscode git docker(jdk server db?) maven(jtest log4j db driver)
 
 ## 盈利方式
 - 付费制（每月/每年）
