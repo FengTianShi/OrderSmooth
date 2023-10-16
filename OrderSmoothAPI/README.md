@@ -3,5 +3,5 @@
 # env
 - JDK 1.8
 
-# test
+# serve
 'mvn spring-boot:run'
