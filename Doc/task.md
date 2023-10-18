@@ -18,6 +18,8 @@
 ### 顾客端开发 -> *Feng*
 - 设计
     - 功能概要
+        - 菜单等的国际化是一个差异化的优势
+        - 日志（log）功能要相对完备
     - 画面概要
 - 开发
 - 测试
@@ -32,12 +34,12 @@
 
 - js HTML CSS
 - nodejs npm
-- vue
+- vue 3
 - elementUI
 
-- Java
+- Java 1.8
 - maven
-- SpringBoot
+- SpringBoot 2.7.16
 - Mybatis
 
 - PostgreSQL
