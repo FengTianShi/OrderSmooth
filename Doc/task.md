@@ -30,13 +30,13 @@
 - 开发
 - 测试
 
-## 技术学习
+## 技术栈
 - Git
 
 - js HTML CSS
 - nodejs npm
-- vue 3
-- vuetify
+- vue 3, vuerouter, vuex, vue cli
+- vuetify, materialdesign icons
 
 - Java 1.8
 - maven
