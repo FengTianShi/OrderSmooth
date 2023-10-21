@@ -54,6 +54,7 @@
             </div>
 
             <v-card-actions>
+                <v-btn color="amber">PAY BILL</v-btn>
                 <v-spacer></v-spacer>
                 <v-btn color="grey" @click="close">CLOSE</v-btn>
             </v-card-actions>

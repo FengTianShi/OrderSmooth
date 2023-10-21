@@ -14,7 +14,5 @@ export default {
 </script>
 
 <style>
-#app {
-
-}
+/* #app {} */
 </style>
