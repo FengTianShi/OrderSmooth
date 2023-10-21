@@ -1,4 +1,4 @@
-# ordersmooth-client
+# ordersmooth-customer
 
 ## Project setup
 ```
