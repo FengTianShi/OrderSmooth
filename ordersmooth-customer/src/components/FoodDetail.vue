@@ -47,7 +47,7 @@
 
             <v-card-actions>
                 <v-card-text class="pa-2">
-                    <span class="text-red-darken-1 font-weight-bold pr-1" style="font-size: 16px;">￥2000</span>
+                    <span class="text-red-darken-1 font-weight-bold pr-1" style="font-size: 16px;">￥2,000</span>
                     <span class="text-grey" style="font-size: 10px;">税込み</span>
                 </v-card-text>
                 <v-spacer></v-spacer>

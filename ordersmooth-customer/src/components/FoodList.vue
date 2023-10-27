@@ -16,7 +16,7 @@
     </v-row>
 
     <v-row dense>
-        <span class="text-h6 font-weight-bold px-2 py-3">ケーキ</span>
+        <span class="text-h6 font-weight-bold px-2 py-3">寿司</span>
     </v-row>
 
     <v-row dense>

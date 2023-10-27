@@ -4,6 +4,7 @@
     <AppHeader></AppHeader>
 
     <v-main>
+
       <v-carousel cycle show-arrows="hover" height="240">
         <v-carousel-item cover src="https://sushi-umi.co.jp/wp-content/uploads/2022/12/82179212.jpg">
         </v-carousel-item>
@@ -33,6 +34,30 @@
     <AppFooter></AppFooter>
 
   </v-layout>
+
+  <v-dialog v-model="dialog" persistent width="auto">
+    <v-card>
+      <v-card-title class="text-h5">
+        来店登録お願いいたします
+      </v-card-title>
+
+      <v-card-text>
+        <v-sheet class="mx-auto">
+          <v-select label="既存団体" required></v-select>
+          <v-select label="コース" required></v-select>
+          <v-text-field label="お名前"></v-text-field>
+          <v-text-field label="人数" required></v-text-field>
+        </v-sheet>
+      </v-card-text>
+
+      <v-card-actions>
+        <v-spacer></v-spacer>
+        <v-btn color="green-darken-1" variant="text" @click="dialog = false">
+          登録する
+        </v-btn>
+      </v-card-actions>
+    </v-card>
+  </v-dialog>
 </template>
 
 <script>
@@ -45,7 +70,11 @@ export default {
     AppHeader,
     FoodList,
     AppFooter,
-  }
+  }, data() {
+    return {
+      dialog: true,
+    }
+  },
 }
 </script>
 

@@ -12,8 +12,8 @@
                         生クリーム, ヨグルティ
                     </v-card-text>
 
-                    <v-card-text class="pa-4 pb-2">
-                        <span class="font-weight-bold pr-1">￥2000</span>
+                    <v-card-text class="pa-4">
+                        <span class="text-red-darken-1 font-weight-bold pr-1">￥2,000</span>
                         <span class="text-grey" style="font-size: 10px;">税込み</span>
                     </v-card-text>
                 </div>
@@ -29,7 +29,7 @@
             <div class="d-flex flex-no-wrap justify-space-between">
                 <v-card-text class="font-weight-bold">
                     <span>合計 : </span>
-                    <span>￥2000</span>
+                    <span class="text-red-darken-1">￥2,000</span>
                 </v-card-text>
             </div>
 
