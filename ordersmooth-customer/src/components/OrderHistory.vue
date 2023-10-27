@@ -5,13 +5,14 @@
                 <div>
                     <v-card-text class="pa-4 pb-0 pr-0 font-weight-bold" style="font-size: 16px;">
                         マグロ中とろ
+                        <span class="text-green font-weight-bold pl-1" style="font-size: 14px;">調理中</span>
                     </v-card-text>
 
                     <v-card-text class="pa-4 pb-0 pr-0 pt-1 text-grey" style="font-size: 14px;">
                         生クリーム, ヨグルティ
                     </v-card-text>
 
-                    <v-card-text class="pa-4 pb-0">
+                    <v-card-text class="pa-4 pb-2">
                         <span class="font-weight-bold pr-1">￥2000</span>
                         <span class="text-grey" style="font-size: 10px;">税込み</span>
                     </v-card-text>
@@ -23,14 +24,6 @@
                 </v-avatar>
             </div>
 
-            <v-card-actions>
-                <v-btn class="mx-0" icon="mdi-minus"></v-btn>
-                <label class="mx-3">1</label>
-                <v-btn class="mx-0" icon="mdi-plus"></v-btn>
-                <v-spacer></v-spacer>
-                <v-btn class="mx-0" color="error" icon="mdi-trash-can-outline"></v-btn>
-            </v-card-actions>
-
             <v-divider></v-divider>
 
             <div class="d-flex flex-no-wrap justify-space-between">
@@ -41,9 +34,8 @@
             </div>
 
             <v-card-actions>
-                <v-btn color="error">全部削除</v-btn>
+                <v-btn color="amber">お会計</v-btn>
                 <v-spacer></v-spacer>
-                <v-btn color="amber" prepend-icon="mdi-room-service-outline">注文する</v-btn>
                 <v-btn color="grey" @click="close">閉じる</v-btn>
             </v-card-actions>
 
