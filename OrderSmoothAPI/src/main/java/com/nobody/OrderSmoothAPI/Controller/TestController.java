@@ -49,16 +49,16 @@ public class TestController {
 
     @PostMapping("/hello7")
     public String hello7(User user) {
-        return "Hello World 7 !! " + user.getUserName() + " " + user.getUserPhone();
+        return "Hello World 7 !! " + user.getId() + " " + user.getName();
     }
 
     @PostMapping("/hello8")
     public String hello8(@RequestBody User user) {
-        return "Hello World 8 !! " + user.getUserName() + " " + user.getUserPhone();
+        return "Hello World 8 !! " + user.getId() + " " + user.getName();
     }
 
     @PostMapping("/hello9")
     public String hello9(@RequestBody UserTwo userTwo) {
-        return "Hello World 9 !! " + userTwo.getUser1().getUserName() + " " + userTwo.getUser2().getUserName();
+        return "Hello World 9 !! " + userTwo.getUser1().getName() + " " + userTwo.getUser2().getName();
     }
 }

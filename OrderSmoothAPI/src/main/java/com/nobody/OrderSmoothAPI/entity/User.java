@@ -1,23 +1,28 @@
 package com.nobody.OrderSmoothAPI.entity;
 
 public class User {
-    private String userName;
-    private String userPhone;
+    private int id;
+    private String name;
 
-    public String getUserName() {
-        return userName;
+    public int getId() {
+        return id;
     }
 
-    public String getUserPhone() {
-        return userPhone;
+    public String getName() {
+        return name;
     }
 
-    public void setUserName(String userName) {
-        this.userName = userName;
+    public void setId(int id) {
+        this.id = id;
     }
 
-    public void setUserPhone(String userPhone) {
-        this.userPhone = userPhone;
+    public void setName(String name) {
+        this.name = name;
     }
-    
+
+    @Override
+    public String toString() {
+        return "User [id=" + id + ", name=" + name + "]";
+    }
+
 }
