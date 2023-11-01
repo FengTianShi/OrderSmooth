@@ -10,8 +10,11 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.nobody.OrderSmoothAPI.entity.TestUser;
 import com.nobody.OrderSmoothAPI.entity.User;
-import com.nobody.OrderSmoothAPI.mapper.UserMapper;
+import com.nobody.OrderSmoothAPI.entity.UserLogin;
+import com.nobody.OrderSmoothAPI.mapper.TestUserMapper;
+import com.nobody.OrderSmoothAPI.mapper.UserLoginMapper;
 
 import io.swagger.annotations.ApiOperation;
 
@@ -19,7 +22,10 @@ import io.swagger.annotations.ApiOperation;
 public class UserController {
 
     @Autowired
-    private UserMapper userMapper;
+    private TestUserMapper testMapper;
+
+    @Autowired
+    private UserLoginMapper userLoginMapper;
 
     /**
      * 根据id查询用户信息
@@ -34,15 +40,24 @@ public class UserController {
     }
 
     @GetMapping("/user")
-    public String getAllUser() {
-        List<User> userList = userMapper.findAll();
-        System.out.println(userList);
-        return "user";
+    public List<TestUser> getAllUser() {
+        List<TestUser> userList = testMapper.selectList(null);
+        System.out.println(userList.toString());
+        return userList;
+    }
+
+    @GetMapping("/userLogin")
+    public List<UserLogin> getAllUserLogin() {
+        List<UserLogin> List = userLoginMapper.selectList(null);
+        System.out.println(List.toString());
+        return List;
     }
 
     @PostMapping("/user")
-    public String createUser(User user) {
-        return user.getName();
+    public String createUser(TestUser user) {
+        int updRow = testMapper.insert(user);
+        System.out.println(user.toString());
+        return updRow >= 1 ? "success" : "faild";
     }
 
     @PutMapping("/user")
