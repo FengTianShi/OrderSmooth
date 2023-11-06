@@ -14,6 +14,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 public class CustomerOrdersDTO implements Serializable {
+
     private String customerId;
 
     private String customerName;

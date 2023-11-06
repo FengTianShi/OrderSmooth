@@ -1,22 +1,19 @@
 <template>
-  <v-layout>
-    <AppHeader></AppHeader>
-    <v-main>
-      <v-container fluid class="pa-1">
-      </v-container>
-    </v-main>
-    <AppFooter></AppFooter>
-  </v-layout>
+  <img alt="Vue logo" src="./assets/logo.png">
+  <HelloWorld msg="Welcome to Your Vue.js App" />
 </template>
 
 <script>
-import AppHeader from './components/AppHeader.vue'
-import AppFooter from './components/AppFooter.vue'
+import HelloWorld from './components/HelloWorld.vue'
 
 export default {
+  name: 'App',
   components: {
-    AppHeader,
-    AppFooter,
+    HelloWorld
   }
 }
 </script>
+
+<style>
+/* #app {} */
+</style>
