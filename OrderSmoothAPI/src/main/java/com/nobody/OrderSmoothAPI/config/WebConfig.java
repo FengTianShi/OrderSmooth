@@ -4,12 +4,12 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
-import com.nobody.OrderSmoothAPI.interceptor.TestInterceptor;
+import com.nobody.OrderSmoothAPI.interceptor.helloInterceptor;
 
 @Configuration
 public class WebConfig implements WebMvcConfigurer {
     @Override
     public void addInterceptors(InterceptorRegistry registry) {
-        registry.addInterceptor(new TestInterceptor()).addPathPatterns("/hello/**");
+        registry.addInterceptor(new helloInterceptor()).addPathPatterns("/hello1/**");
     }
 }

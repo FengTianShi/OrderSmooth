@@ -2,11 +2,11 @@ package com.nobody.OrderSmoothAPI.mapper;
 
 import org.apache.ibatis.annotations.Mapper;
 
-import com.baomidou.mybatisplus.core.mapper.BaseMapper;
-import com.nobody.OrderSmoothAPI.entity.User;
+import com.github.yulichang.base.MPJBaseMapper;
+import com.nobody.OrderSmoothAPI.entity.Customer;
 
 @Mapper
-public interface UserMapper extends BaseMapper<User> {
+public interface CustomerMapper extends MPJBaseMapper<Customer> {
 
     // @Insert("insert into public.user values(#{id}, #{name})")
     // public int add(User user);
