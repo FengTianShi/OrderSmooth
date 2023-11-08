@@ -17,11 +17,12 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.nobody.OrderSmoothAPI.dto.CreateCustomerDTO;
 import com.nobody.OrderSmoothAPI.dto.CustomerOrdersDTO;
-import com.nobody.OrderSmoothAPI.dto.common.HttpResponse;
+import com.nobody.OrderSmoothAPI.dto.common.HttpResponseDTO;
 import com.nobody.OrderSmoothAPI.entity.Customer;
 import com.nobody.OrderSmoothAPI.entity.Order;
 import com.nobody.OrderSmoothAPI.mapper.OrderMapper;
 import com.nobody.OrderSmoothAPI.service.CustomerService;
+import com.nobody.OrderSmoothAPI.service.EmailService;
 
 import io.swagger.annotations.ApiOperation;
 
@@ -33,6 +34,9 @@ public class CustomerController {
 
     @Autowired
     private CustomerService customerService;
+
+    @Autowired
+    private EmailService emailService;
 
     Logger logger = LoggerFactory.getLogger(CustomerService.class);
 
@@ -63,9 +67,9 @@ public class CustomerController {
     }
 
     @PostMapping("/customer")
-    public HttpResponse createCustomer(@Valid @RequestBody CreateCustomerDTO createCustomerDTO) {
+    public HttpResponseDTO createCustomer(@Valid @RequestBody CreateCustomerDTO createCustomerDTO) {
         customerService.createCustomer(createCustomerDTO);
-        return HttpResponse.builder().code(200).build();
+        return HttpResponseDTO.builder().code(200).build();
     }
 
     @PutMapping("/customer")
@@ -81,5 +85,14 @@ public class CustomerController {
     @GetMapping("/order")
     public List<Order> getAllOrder() {
         return orderMapper.selectList(null);
+    }
+
+    @GetMapping("/mail")
+    public HttpResponseDTO mailTest() {
+        emailService.sendMail("futenji923@gmail.com", "test mail", "hello world");
+        return HttpResponseDTO.builder()
+                .code(200)
+                .msg("OK")
+                .build();
     }
 }

@@ -6,22 +6,22 @@ import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseBody;
 
-import com.nobody.OrderSmoothAPI.dto.common.HttpResponse;
+import com.nobody.OrderSmoothAPI.dto.common.HttpResponseDTO;
 
 @ControllerAdvice
 public class BaseExceptionHandler {
     @ResponseBody
     @ExceptionHandler(MethodArgumentNotValidException.class)
-    public HttpResponse handle(MethodArgumentNotValidException e) {
+    public HttpResponseDTO handle(MethodArgumentNotValidException e) {
         FieldError fieldError = e.getBindingResult().getFieldError();
 
         if (fieldError != null)
-            return HttpResponse.builder()
+            return HttpResponseDTO.builder()
                     .code(500)
                     .msg(fieldError.getDefaultMessage())
                     .build();
         else
-            return HttpResponse.builder()
+            return HttpResponseDTO.builder()
                     .code(500)
                     .build();
     }
