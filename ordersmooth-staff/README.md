@@ -1,4 +1,4 @@
-# ordersmooth-customer
+# ordersmooth-staff
 
 ## Project setup
 ```

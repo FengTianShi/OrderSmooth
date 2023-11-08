@@ -1,4 +1,4 @@
-# ordersmooth-employee
+# ordersmooth-testvue2
 
 ## Project setup
 ```
