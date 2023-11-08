@@ -18,7 +18,7 @@ public class BaseExceptionHandler {
         if (fieldError != null)
             return HttpResponseDTO.builder()
                     .code(500)
-                    .msg(fieldError.getDefaultMessage())
+                    .message(fieldError.getDefaultMessage())
                     .build();
         else
             return HttpResponseDTO.builder()

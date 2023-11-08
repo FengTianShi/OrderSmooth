@@ -7,5 +7,5 @@ import lombok.Data;
 @Builder
 public class HttpResponseDTO {
     private Integer code;
-    private String msg;
+    private String message;
 }

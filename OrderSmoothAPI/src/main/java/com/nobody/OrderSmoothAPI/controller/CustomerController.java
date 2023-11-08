@@ -92,7 +92,7 @@ public class CustomerController {
         emailService.sendMail("futenji923@gmail.com", "test mail", "hello world");
         return HttpResponseDTO.builder()
                 .code(200)
-                .msg("OK")
+                .message("OK")
                 .build();
     }
 }
