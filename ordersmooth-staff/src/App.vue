@@ -1,28 +1,23 @@
 <template>
-  <div id="app">
-    <img alt="Vue logo" src="./assets/logo.png">
-    <HelloWorld msg="Welcome to Your Vue.js App"/>
+  <div class="fixed-top d-flex align-items-center justify-content-center" style="bottom: 0; overflow-y: auto">
+    <div style="max-width: 360px;" class="mx-3 my-3">
+      <b-img class="my-3" :src="require('./assets/logo.png')" fluid></b-img>
+      <b-card>
+        <StaffLogin />
+      </b-card>
+    </div>
   </div>
 </template>
 
 <script>
-import HelloWorld from './components/HelloWorld.vue'
+import StaffLogin from './components/StaffLogin.vue'
 
 export default {
   name: 'App',
   components: {
-    HelloWorld
-  }
+    StaffLogin,
+  },
 }
 </script>
 
-<style>
-#app {
-  font-family: Avenir, Helvetica, Arial, sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  text-align: center;
-  color: #2c3e50;
-  margin-top: 60px;
-}
-</style>
+<style></style>

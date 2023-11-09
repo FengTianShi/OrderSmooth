@@ -1,28 +1,35 @@
 <template>
-  <div id="app">
-    <img alt="Vue logo" src="./assets/logo.png">
-    <HelloWorld msg="Welcome to Your Vue.js App"/>
+  <div class="fixed-top d-flex align-items-center justify-content-center" style="bottom: 0; overflow-y: auto">
+    <div style="max-width: 360px;" class="mx-3 my-3">
+      <b-img class="my-3" :src="require('./assets/logo.png')" fluid></b-img>
+      <b-card v-if="isShowLogin">
+        <OwnerLogin />
+        <hr>
+        <b-button block variant="warning" @click="isShowLogin = false">登録</b-button>
+      </b-card>
+      <b-card v-if="!isShowLogin">
+        <OwnerSignup @showLogin="isShowLogin = true" />
+      </b-card>
+    </div>
   </div>
 </template>
 
 <script>
-import HelloWorld from './components/HelloWorld.vue'
+import OwnerLogin from './components/OwnerLogin.vue'
+import OwnerSignup from './components/OwnerSignup.vue'
 
 export default {
   name: 'App',
   components: {
-    HelloWorld
+    OwnerLogin,
+    OwnerSignup,
+  },
+  data() {
+    return {
+      isShowLogin: true,
+    }
   }
 }
 </script>
 
-<style>
-#app {
-  font-family: Avenir, Helvetica, Arial, sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  text-align: center;
-  color: #2c3e50;
-  margin-top: 60px;
-}
-</style>
+<style></style>
