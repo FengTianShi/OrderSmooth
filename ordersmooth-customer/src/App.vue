@@ -4,14 +4,10 @@
     <AppHeader></AppHeader>
 
     <v-main>
-
       <v-carousel cycle show-arrows="hover" height="240">
-        <v-carousel-item cover src="https://sushi-umi.co.jp/wp-content/uploads/2022/12/82179212.jpg">
-        </v-carousel-item>
-        <v-carousel-item cover src="https://sushi-umi.co.jp/wp-content/uploads/2022/12/e-01.jpg">
-        </v-carousel-item>
-        <v-carousel-item cover src="https://sushi-umi.co.jp/wp-content/uploads/2022/12/IMG_4616.jpg">
-        </v-carousel-item>
+        <v-carousel-item cover src="https://sushi-umi.co.jp/wp-content/uploads/2022/12/82179212.jpg"></v-carousel-item>
+        <v-carousel-item cover src="https://sushi-umi.co.jp/wp-content/uploads/2022/12/e-01.jpg"></v-carousel-item>
+        <v-carousel-item cover src="https://sushi-umi.co.jp/wp-content/uploads/2022/12/IMG_4616.jpg"></v-carousel-item>
       </v-carousel>
 
       <v-card flat>
@@ -35,9 +31,9 @@
 
   </v-layout>
 
-  <v-dialog v-model="dialog" persistent width="auto">
+  <v-dialog v-model="dialog" persistent>
     <v-card>
-      <v-card-title class="text-h5">
+      <v-card-title class="text-h6">
         来店登録お願いいたします
       </v-card-title>
 
@@ -45,17 +41,19 @@
         <v-sheet class="mx-auto">
           <v-select label="既存団体" required></v-select>
           <v-select label="コース" required></v-select>
-          <v-text-field label="お名前"></v-text-field>
           <v-text-field label="人数" required></v-text-field>
         </v-sheet>
       </v-card-text>
 
-      <v-card-actions>
-        <v-spacer></v-spacer>
-        <v-btn color="green-darken-1" variant="text" @click="dialog = false">
-          登録する
-        </v-btn>
-      </v-card-actions>
+      <template v-slot:actions>
+        <v-row class="px-3 py-1">
+          <v-col class="pa-0">
+            <v-btn block variant="flat" color="amber" class="font-weight-bold" @click="dialog = false">
+              登録
+            </v-btn>
+          </v-col>
+        </v-row>
+      </template>
     </v-card>
   </v-dialog>
 </template>
@@ -74,7 +72,7 @@ export default {
     return {
       dialog: true,
     }
-  },
+  }
 }
 </script>
 

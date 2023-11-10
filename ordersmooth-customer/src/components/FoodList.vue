@@ -1,6 +1,6 @@
 <template>
     <v-row dense>
-        <span class="text-h6 font-weight-bold px-2 py-3">おすすめ</span>
+        <span class="text-h6 font-weight-bold pa-2">おすすめ</span>
     </v-row>
 
     <v-row dense>
@@ -16,7 +16,7 @@
     </v-row>
 
     <v-row dense>
-        <span class="text-h6 font-weight-bold px-2 py-3">寿司</span>
+        <span class="text-h6 font-weight-bold pa-2">お寿司</span>
     </v-row>
 
     <v-row dense>
