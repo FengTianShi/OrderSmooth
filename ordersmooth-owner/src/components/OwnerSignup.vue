@@ -1,74 +1,151 @@
 <template>
-    <div>
-        <form>
-            <div v-if="!isShowOtpInput">
-                <b-form-input class="mb-3" type="email" placeholder="お名前"></b-form-input>
+    <v-card class="mx-auto pa-8" elevation="0" max-width="400">
+        <v-img class="mx-auto my-6" :src="require('../assets/logo.png')"></v-img>
 
-                <b-form-input class="mb-3" type="email" placeholder="メールアドレス"></b-form-input>
+        <div v-if="signupStep == 0">
+            <v-form validate-on="submit lazy" @submit.prevent="createOwnerSignSession">
+                <v-text-field v-model="ownerName" density="compact" placeholder="お名前" prepend-inner-icon="mdi-account"
+                    variant="outlined" class="mb-2" maxlength="100" :rules="[required]" />
 
-                <b-form-input class="mb-3" type="password" placeholder="パスワード"></b-form-input>
-                <b-form-input class="mb-3" type="password" placeholder="パスワードを再入力"></b-form-input>
+                <v-text-field v-model="ownerEmail" density="compact" placeholder="メールアドレス"
+                    prepend-inner-icon="mdi-email-outline" variant="outlined" class="mb-2" maxlength="100"
+                    :rules="[required, email, notDuplicate]" />
 
-                <b-form-checkbox size="sm" class="mb-3">
-                    <b-link v-b-modal.modal-1 href="#">利用規約</b-link>
-                    と
-                    <b-link v-b-modal.modal-2 href="#">プライバシーポリシー</b-link>
-                    を同意する
-                </b-form-checkbox>
+                <v-text-field v-model="ownerPassword" density="compact" placeholder="パスワード"
+                    prepend-inner-icon="mdi-lock-outline" variant="outlined" class="mb-2"
+                    :append-inner-icon="passwordVisible ? 'mdi-eye-off' : 'mdi-eye'"
+                    :type="passwordVisible ? 'text' : 'password'" @click:append-inner="passwordVisible = !passwordVisible"
+                    :rules="[required, minLength]" maxlength="100" hint="パスワードは8桁以上入力ください" />
 
-                <b-button block variant="warning" @click="isShowOtpInput = true">登録</b-button>
-                <hr>
-                <b-button block @click="showLogin">ログインに戻る</b-button>
+                <v-text-field v-model="ownerPasswordVerify" density="compact" placeholder="パスワード确认"
+                    prepend-inner-icon="mdi-lock-outline" variant="outlined"
+                    :append-inner-icon="passwordVerifyVisible ? 'mdi-eye-off' : 'mdi-eye'"
+                    :type="passwordVerifyVisible ? 'text' : 'password'"
+                    @click:append-inner="passwordVerifyVisible = !passwordVerifyVisible" :rules="[required, samePassword]"
+                    class="mb-2" maxlength="100" />
+
+                <v-btn block type="submit" color="amber" size="large" :disabled="loading" :loading="loading">
+                    登録
+                </v-btn>
+            </v-form>
+        </div>
+
+        <div v-if="signupStep == 1">
+            <h3 class="text-h6 mb-4 text-center">Verify Your Account</h3>
+
+            <div class="text-body-2 text-center">
+                {{ ownerEmail }}
+                <br>
+                チェック、入力
             </div>
-            <div v-if="isShowOtpInput">
 
-                <b-form-group id="verify-code">
-                    <label for="verify-code">認証コード</label>
-                    <p style="font-size: 14px;" class="text-secondary">
-                        futenji@gamil.com宛に認証コードを送信されました、下記に認証コードを入力してあなたのメールアドレスを認証してください。</p>
-                    <SimpleOtpInput class="mb-3" />
-                    <b-form-invalid-feedback :state="false" class="mb-3">
-                        認証コードが間違っています。
-                    </b-form-invalid-feedback>
-                    <b-form-invalid-feedback :state="false" class="mb-3">
-                        認証コードの有効期限が切れています。
-                    </b-form-invalid-feedback>
-                    <p style="font-size: 14px;" class="mb-0 text-secondary">コードの有効期限まであと 14:12 です。</p>
-                </b-form-group>
+            <v-otp-input :loading="loading" v-model="verifyCode" class="mb-2" :error="verifyCodeIncorrect"></v-otp-input>
 
-                <b-link style="font-size: 14px;">認証コードを再送</b-link>
-                <hr>
-                <b-button block @click="isShowOtpInput = false">登録内容を変更</b-button>
+            <div class="text-caption mb-2">
+                Didn't receive the code? <a href="#" @click.prevent="verifyCode = ''">Resend</a>
             </div>
-        </form>
 
-        <b-modal id="modal-1" title="利用規約">
-            <p class="my-4">利用規約</p>
-        </b-modal>
+            <v-btn block :disabled="verifyCode.length < 6 || loading" color="amber" size="large" :loading="loading"
+                @click="sendVerifyCode">
+                送信
+            </v-btn>
 
-        <b-modal id="modal-2" title="プライバシーポリシー">
-            <p class="my-4">プライバシーポリシー</p>
-        </b-modal>
-    </div>
+            <v-divider class="my-3"></v-divider>
+
+            <v-btn block color="grey" size="large" @click="signupStep = 0">
+                修正
+            </v-btn>
+        </div>
+
+        <div v-if="signupStep == 2">
+            <h3 class="text-h6 mb-4 text-center">OK</h3>
+        </div>
+
+    </v-card>
 </template>
 
 <script>
-import SimpleOtpInput from "vue-simple-otp-input";
-import "vue-simple-otp-input/dist/vue-simple-otp-input.css";
-
 export default {
-    components: {
-        SimpleOtpInput,
+    data: () => ({
+        ownerName: '',
+        ownerEmail: '',
+        ownerPassword: '',
+        ownerPasswordVerify: '',
+        verifyCode: '',
+        verifyCodeIncorrect: false,
+        passwordVisible: false,
+        passwordVerifyVisible: false,
+        loading: false,
+        signupStep: 0
+    }), methods: {
+        async createOwnerSignSession(event) {
+            this.loading = true;
+            const results = await event
+            if (results.valid) {
+                await this.$http.post('/owner/signup-session', {
+                    ownerName: this.ownerName,
+                    ownerEmail: this.ownerEmail,
+                    ownerPassword: this.ownerPassword
+                }).then((response) => {
+                    if (response.data.code == 201) {
+                        // var ownerSignUpSession = {
+                        //     "ownerName": this.ownerName,
+                        //     "ownerEmail": this.ownerEmail,
+                        //     "ownerPassword": this.ownerPassword
+                        // };
+                        // window.localStorage.setItem("owner-signup-session", JSON.stringify(ownerSignUpSession));
+                        this.signupStep = 1;
+                    }
+                });
+            }
+            this.loading = false;
+        },
+        required(value) {
+            return !!value || 'ご入力ください'
+        },
+        email(value) {
+            const pattern = /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
+            return pattern.test(value) || 'メールアドレスを正しく入力してください'
+        },
+        async notDuplicate(value) {
+            var isDuplicate = true;
+            var ownerEmail = value;
+            await this.$http
+                .get(`/owner-exists/${ownerEmail}`)
+                .then((response) => {
+                    if (!response.data) {
+                        isDuplicate = false;
+                    }
+                });
+            return !isDuplicate || 'メールアドレスは既に登録されています'
+        }, minLength(value) {
+            return value?.length >= 8 || 'パスワードは8桁以上入力ください'
+        }, samePassword(value) {
+            return value == this.ownerPassword || 'パスワードは一致しません'
+        }, async sendVerifyCode() {
+
+            this.loading = true;
+            await this.$http.post('/owner', {
+                verifyCode: this.verifyCode,
+            }).then((response) => {
+                console.log(response.data.code)
+                if (response.data.code == 201) {
+                    this.signupStep = 2;
+                } else {
+                    this.verifyCodeIncorrect = true;
+                }
+            });
+            this.loading = false;
+        },
     },
-    methods: {
-        showLogin() {
-            this.$emit('showLogin')
-        }
-    },
-    data() {
-        return {
-            isShowOtpInput: false,
-        }
-    }
+    // created: function () {
+    //     var ownerSignUpSession = JSON.parse(window.localStorage.getItem("owner-signup-session"));
+    //     if (ownerSignUpSession) {
+    //         this.ownerName = ownerSignUpSession.ownerId;
+    //         this.ownerEmail = ownerSignUpSession.ownerEmail;
+    //         this.ownerPassword = ownerSignUpSession.ownerPassword;
+    //     }
+    //     window.localStorage.removeItem("owner-signup-session");
+    // }
 }
 </script>

@@ -1,34 +1,33 @@
 package com.nobody.OrderSmoothAPI.service;
 
 import javax.annotation.Resource;
+import javax.mail.MessagingException;
+import javax.mail.internet.MimeMessage;
 
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
+import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Component;
 
 @Component
 public class EmailService {
+
     @Resource
     private JavaMailSender javaMailSender;
 
     @Value("${spring.mail.username}")
     private String from;
 
-    /**
-     * 发送纯文本邮件.
-     *
-     * @param to      目标email 地址
-     * @param subject 邮件主题
-     * @param text    纯文本内容
-     */
-    public void sendMail(String to, String subject, String text) {
-        SimpleMailMessage message = new SimpleMailMessage();
+    public void sendHtmlEmail(String to, String subject, String htmlContent) throws MessagingException {
 
-        message.setFrom(from);
-        message.setTo(to);
-        message.setSubject(subject);
-        message.setText(text);
+        MimeMessage message = javaMailSender.createMimeMessage();
+        MimeMessageHelper helper = new MimeMessageHelper(message, true);
+
+        helper.setFrom(from);
+        helper.setTo(to);
+        helper.setSubject(subject);
+        helper.setText(htmlContent, true);
+
         javaMailSender.send(message);
     }
 }

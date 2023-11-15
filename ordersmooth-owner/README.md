@@ -1,4 +1,4 @@
-# ordersmooth-testvue2
+# ordersmooth-owner
 
 ## Project setup
 ```

@@ -7,7 +7,8 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 @Configuration
 public class HttpConverterConfig implements WebMvcConfigurer {
-    @Value("${spring.image.path}")
+
+    @Value("${ordersmooth.image.path}")
     private String imagePath;
 
     @Override

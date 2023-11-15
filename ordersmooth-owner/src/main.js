@@ -1,19 +1,31 @@
-import Vue from "vue";
+import { createApp } from "vue";
 import App from "./App.vue";
 
-import { BootstrapVue, IconsPlugin } from "bootstrap-vue";
+// axios
+import axios from "axios";
+axios.defaults.baseURL = "http://192.168.0.17:8081";
 
-// Import Bootstrap an BootstrapVue CSS files (order is important)
-import "bootstrap/dist/css/bootstrap.css";
-import "bootstrap-vue/dist/bootstrap-vue.css";
+// vue-router
+import router from "./router";
 
-// Make BootstrapVue available throughout your project
-Vue.use(BootstrapVue);
-// Optionally install the BootstrapVue icon components plugin
-Vue.use(IconsPlugin);
+// vuex
+import store from "./store";
 
-Vue.config.productionTip = false;
+// vuetify
+import "vuetify/styles";
+import { createVuetify } from "vuetify";
+import * as components from "vuetify/components";
+import * as directives from "vuetify/directives";
 
-new Vue({
-  render: (h) => h(App),
-}).$mount("#app");
+const vuetify = createVuetify({
+  components,
+  directives,
+  theme: {},
+});
+
+// icon
+import "@mdi/font/css/materialdesignicons.css";
+
+const app = createApp(App);
+app.config.globalProperties.$http = axios;
+app.use(router).use(store).use(vuetify).mount("#app");
