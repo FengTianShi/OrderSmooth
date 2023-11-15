@@ -87,7 +87,7 @@ public class OwnerSignupController {
     }
 
     @PostMapping("/signup/confirm")
-    public ResponseEntity<String> confirmOwnerSignup(
+    public ResponseEntity<String> ownerSignupConfirm(
             @Valid @RequestBody ConfirmOPTParamDTO confirmOPTParamDTO) {
 
         try {

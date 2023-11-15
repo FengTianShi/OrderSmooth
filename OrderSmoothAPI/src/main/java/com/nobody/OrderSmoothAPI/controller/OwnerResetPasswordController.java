@@ -86,7 +86,7 @@ public class OwnerResetPasswordController {
     }
 
     @PostMapping("/reset-password/confirm")
-    public ResponseEntity<String> confirmOwnerResetPassword(
+    public ResponseEntity<String> ownerResetPasswordConfirm(
             @Valid @RequestBody ConfirmOPTParamDTO confirmOPTParamDTO) {
 
         try {
