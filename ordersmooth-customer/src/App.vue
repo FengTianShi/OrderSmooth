@@ -1,13 +1,18 @@
 <template>
   <v-layout>
-
     <AppHeader></AppHeader>
 
     <v-main>
       <v-carousel cycle show-arrows="hover" height="240">
-        <v-carousel-item cover src="https://sushi-umi.co.jp/wp-content/uploads/2022/12/82179212.jpg"></v-carousel-item>
-        <v-carousel-item cover src="https://sushi-umi.co.jp/wp-content/uploads/2022/12/e-01.jpg"></v-carousel-item>
-        <v-carousel-item cover src="https://sushi-umi.co.jp/wp-content/uploads/2022/12/IMG_4616.jpg"></v-carousel-item>
+        <v-carousel-item
+          cover
+          src="https://sushi-umi.co.jp/wp-content/uploads/2022/12/82179212.jpg"></v-carousel-item>
+        <v-carousel-item
+          cover
+          src="https://sushi-umi.co.jp/wp-content/uploads/2022/12/e-01.jpg"></v-carousel-item>
+        <v-carousel-item
+          cover
+          src="https://sushi-umi.co.jp/wp-content/uploads/2022/12/IMG_4616.jpg"></v-carousel-item>
       </v-carousel>
 
       <v-card flat>
@@ -28,14 +33,11 @@
     </v-main>
 
     <AppFooter></AppFooter>
-
   </v-layout>
 
   <v-dialog v-model="dialog" persistent>
     <v-card>
-      <v-card-title class="text-h6">
-        来店登録お願いいたします
-      </v-card-title>
+      <v-card-title class="text-h6">来店登録お願いいたします</v-card-title>
 
       <v-card-text>
         <v-sheet class="mx-auto">
@@ -48,7 +50,12 @@
       <template v-slot:actions>
         <v-row class="px-3 py-1">
           <v-col class="pa-0">
-            <v-btn block variant="flat" color="amber" class="font-weight-bold" @click="dialog = false">
+            <v-btn
+              block
+              variant="flat"
+              color="amber"
+              class="font-weight-bold"
+              @click="dialog = false">
               登録
             </v-btn>
           </v-col>
@@ -59,25 +66,26 @@
 </template>
 
 <script>
-import AppHeader from './components/AppHeader.vue'
-import FoodList from './components/FoodList.vue'
-import AppFooter from './components/AppFooter.vue'
+import AppHeader from "./components/AppHeader.vue";
+import FoodList from "./components/FoodList.vue";
+import AppFooter from "./components/AppFooter.vue";
 
 export default {
   components: {
     AppHeader,
     FoodList,
     AppFooter,
-  }, data() {
+  },
+  data() {
     return {
       dialog: true,
-    }
-  }
-}
+    };
+  },
+};
 </script>
 
 <style>
 #app {
-  font-family: 'Noto Sans JP', sans-serif;
+  font-family: "Noto Sans JP", sans-serif;
 }
 </style>

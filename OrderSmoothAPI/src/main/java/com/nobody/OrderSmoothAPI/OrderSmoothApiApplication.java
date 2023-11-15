@@ -8,8 +8,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 @MapperScan("com.nobody.OrderSmoothAPI.mapper")
 public class OrderSmoothApiApplication {
 
-	public static void main(String[] args) {
-		SpringApplication.run(OrderSmoothApiApplication.class, args);
-	}
-
+  public static void main(String[] args) {
+    SpringApplication.run(OrderSmoothApiApplication.class, args);
+  }
 }

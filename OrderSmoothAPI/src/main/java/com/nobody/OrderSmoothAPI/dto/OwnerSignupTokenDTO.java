@@ -1,7 +1,6 @@
 package com.nobody.OrderSmoothAPI.dto;
 
 import java.io.Serializable;
-
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -13,12 +12,11 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class OwnerSignupTokenDTO implements Serializable {
 
-    private String ownerName;
+  private String ownerName;
 
-    private String ownerEmail;
+  private String ownerEmail;
 
-    private String ownerPassword;
+  private String ownerPassword;
 
-    private String otp;
-
+  private String otp;
 }

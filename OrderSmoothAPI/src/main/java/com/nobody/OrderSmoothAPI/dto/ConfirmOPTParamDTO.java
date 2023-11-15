@@ -1,9 +1,7 @@
 package com.nobody.OrderSmoothAPI.dto;
 
 import java.io.Serializable;
-
 import javax.validation.constraints.NotBlank;
-
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -15,10 +13,9 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class ConfirmOPTParamDTO implements Serializable {
 
-    @NotBlank
-    private String token;
+  @NotBlank
+  private String token;
 
-    @NotBlank
-    private String otp;
-
+  @NotBlank
+  private String otp;
 }

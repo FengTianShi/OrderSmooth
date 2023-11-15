@@ -8,12 +8,13 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 @Configuration
 public class HttpConverterConfig implements WebMvcConfigurer {
 
-    @Value("${ordersmooth.image.path}")
-    private String imagePath;
+  @Value("${ordersmooth.image.path}")
+  private String imagePath;
 
-    @Override
-    public void addResourceHandlers(ResourceHandlerRegistry registry) {
-        registry.addResourceHandler("/image/**").addResourceLocations("file:" + imagePath);
-    }
-
+  @Override
+  public void addResourceHandlers(ResourceHandlerRegistry registry) {
+    registry
+      .addResourceHandler("/image/**")
+      .addResourceLocations("file:" + imagePath);
+  }
 }

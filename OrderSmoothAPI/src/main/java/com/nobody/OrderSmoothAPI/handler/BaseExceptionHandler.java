@@ -10,19 +10,15 @@ import org.springframework.web.bind.annotation.ResponseBody;
 @ControllerAdvice
 public class BaseExceptionHandler {
 
-    @ResponseBody
-    @ExceptionHandler(MethodArgumentNotValidException.class)
-    public ResponseEntity<String> handle(MethodArgumentNotValidException e) {
+  @ResponseBody
+  @ExceptionHandler(MethodArgumentNotValidException.class)
+  public ResponseEntity<String> handle(MethodArgumentNotValidException e) {
+    FieldError fieldError = e.getBindingResult().getFieldError();
 
-        FieldError fieldError = e.getBindingResult().getFieldError();
-
-        if (fieldError != null)
-            return ResponseEntity
-                    .badRequest()
-                    .body(fieldError.getDefaultMessage());
-        else
-            return ResponseEntity
-                    .badRequest()
-                    .body(null);
+    if (fieldError != null) {
+      return ResponseEntity.badRequest().body(fieldError.getDefaultMessage());
+    } else {
+      return ResponseEntity.badRequest().body(null);
     }
+  }
 }

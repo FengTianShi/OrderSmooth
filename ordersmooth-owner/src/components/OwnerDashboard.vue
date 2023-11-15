@@ -1,11 +1,7 @@
-<template>
-    Dashboard
-</template>
+<template>Dashboard</template>
 
 <script>
 export default {
-    data: () => ({
-
-    }),
-}
+  data: () => ({}),
+};
 </script>
