@@ -2,6 +2,8 @@ package com.nobody.OrderSmoothAPI.common;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.json.JsonMapper;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
@@ -22,10 +24,12 @@ public class JwtUtils {
     claims.put("subject", subject);
 
     try {
-      claims.put(
-        "content",
-        new ObjectMapper().writeValueAsString(ContentClass)
-      );
+      ObjectMapper mapper = JsonMapper
+        .builder()
+        .addModule(new JavaTimeModule())
+        .build();
+
+      claims.put("content", mapper.writeValueAsString(ContentClass));
     } catch (JsonProcessingException e) {
       e.printStackTrace();
     }
@@ -67,16 +71,20 @@ public class JwtUtils {
 
   public static <T> T getContent(String token, Class<T> clazz) {
     try {
-      return new ObjectMapper()
-        .readValue(
-          (String) Jwts
-            .parser()
-            .setSigningKey(secret)
-            .parseClaimsJws(token)
-            .getBody()
-            .get("content"),
-          clazz
-        );
+      ObjectMapper mapper = JsonMapper
+        .builder()
+        .addModule(new JavaTimeModule())
+        .build();
+
+      return mapper.readValue(
+        (String) Jwts
+          .parser()
+          .setSigningKey(secret)
+          .parseClaimsJws(token)
+          .getBody()
+          .get("content"),
+        clazz
+      );
     } catch (JsonProcessingException e) {
       e.printStackTrace();
       return null;
