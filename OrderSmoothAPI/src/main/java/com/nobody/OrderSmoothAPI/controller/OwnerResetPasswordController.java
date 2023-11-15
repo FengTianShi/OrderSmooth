@@ -44,17 +44,6 @@ public class OwnerResetPasswordController {
     @Valid @RequestBody OwnerResetPasswordParamDTO ownerResetPasswordParamDTO,
     HttpServletRequest request
   ) {
-    if (
-      ownerService.getOwnerByEmail(
-        ownerResetPasswordParamDTO.getOwnerEmail()
-      ) ==
-      null
-    ) {
-      return ResponseEntity
-        .status(HttpStatus.NOT_FOUND)
-        .body("OWNER NOT EXISTS");
-    }
-
     String otp = StringUtils.generateOTP(6);
 
     try {

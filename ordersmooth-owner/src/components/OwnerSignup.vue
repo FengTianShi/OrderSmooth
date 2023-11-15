@@ -2,7 +2,7 @@
   <v-card class="mx-auto pa-8" elevation="0" max-width="400">
     <v-img class="mx-auto my-6" :src="require('../assets/logo.png')"></v-img>
 
-    <div v-if="signupStep == 0">
+    <div v-if="step == 0">
       <v-form validate-on="submit lazy" @submit.prevent="signup">
         <v-text-field
           v-model="ownerName"
@@ -67,7 +67,7 @@
       </v-form>
     </div>
 
-    <div v-if="signupStep == 1">
+    <div v-if="step == 1">
       <h3 class="text-h7 mb-4 text-center">メールアドレスを認証してください</h3>
 
       <div class="text-body-2 text-center">
@@ -90,13 +90,13 @@
       <div class="text-caption mb-2">
         認証コードを受信していませんか?
         <a
-          v-if="!loading"
+          v-if="!resend"
           class="text-decoration-none"
           href="#"
           @click="getToken">
           <strong>認証コードを再送</strong>
         </a>
-        <span v-if="loading" class="text-decoration-none">
+        <span v-if="resend" class="text-decoration-none">
           <strong>送信中</strong>
         </span>
       </div>
@@ -113,7 +113,14 @@
 
       <v-divider class="my-3"></v-divider>
 
-      <v-btn block color="grey" size="large" @click="signupStep = 0">
+      <v-btn
+        block
+        color="grey"
+        size="large"
+        @click="
+          step = 0;
+          otpIncorrect = false;
+        ">
         メールアドレスを変更
       </v-btn>
     </div>
@@ -132,11 +139,13 @@ export default {
     passwordConfirmVisible: false,
     otpIncorrect: false,
     loading: false,
-    signupStep: 0,
+    resend: false,
+    step: 0,
   }),
   methods: {
     async getToken() {
       this.loading = true;
+      this.resend = true;
       this.otp = "";
       await this.$http
         .post("/owner/signup", {
@@ -150,13 +159,15 @@ export default {
               "owner-signup-token",
               JSON.stringify(response.data)
             );
-            this.signupStep = 1;
+            this.step = 1;
           }
         })
         .catch((error) => {
           console.log(error.response);
         });
+      this.resend = false;
       this.loading = false;
+      this.otpIncorrect = false;
     },
     async signup(event) {
       const results = await event;
