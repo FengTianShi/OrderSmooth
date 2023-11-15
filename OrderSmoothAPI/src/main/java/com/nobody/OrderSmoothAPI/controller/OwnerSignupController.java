@@ -1,132 +1,133 @@
-// package com.nobody.OrderSmoothAPI.controller;
+package com.nobody.OrderSmoothAPI.controller;
 
-// import java.nio.charset.StandardCharsets;
+import java.nio.charset.StandardCharsets;
 
-// import javax.servlet.http.HttpServletRequest;
-// import javax.servlet.http.HttpSession;
-// import javax.validation.Valid;
+import javax.servlet.http.HttpServletRequest;
+import javax.validation.Valid;
 
-// import org.slf4j.Logger;
-// import org.slf4j.LoggerFactory;
-// import org.springframework.beans.factory.annotation.Autowired;
-// import org.springframework.beans.factory.annotation.Value;
-// import org.springframework.core.io.ClassPathResource;
-// import org.springframework.util.FileCopyUtils;
-// import org.springframework.web.bind.annotation.GetMapping;
-// import org.springframework.web.bind.annotation.PathVariable;
-// import org.springframework.web.bind.annotation.PostMapping;
-// import org.springframework.web.bind.annotation.RequestBody;
-// import org.springframework.web.bind.annotation.RestController;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.io.ClassPathResource;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.util.FileCopyUtils;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
-// import com.nobody.OrderSmoothAPI.common.StringUtils;
-// import com.nobody.OrderSmoothAPI.dto.param.OwnerVrifySignupParamDTO;
-// import com.nobody.OrderSmoothAPI.dto.OwnerSignupParamDTO;
-// import com.nobody.OrderSmoothAPI.dto.common.ResultDTO;
-// import com.nobody.OrderSmoothAPI.service.EmailService;
-// import com.nobody.OrderSmoothAPI.service.OwnerService;
+import com.nobody.OrderSmoothAPI.common.JwtUtils;
+import com.nobody.OrderSmoothAPI.common.StringUtils;
+import com.nobody.OrderSmoothAPI.dto.ConfirmOPTParamDTO;
+import com.nobody.OrderSmoothAPI.dto.OwnerSignupParamDTO;
+import com.nobody.OrderSmoothAPI.dto.OwnerSignupTokenDTO;
+import com.nobody.OrderSmoothAPI.service.EmailService;
+import com.nobody.OrderSmoothAPI.service.OwnerService;
 
-// @RestController
-// public class OwnerSignupController {
+import io.jsonwebtoken.ExpiredJwtException;
 
-//     Logger logger = LoggerFactory.getLogger(OwnerSignupController.class);
+@RestController
+@RequestMapping("/owner")
+public class OwnerSignupController {
 
-//     @Autowired
-//     private OwnerService ownerService;
+    Logger logger = LoggerFactory.getLogger(OwnerSignupController.class);
 
-//     @Autowired
-//     private EmailService emailService;
+    @Value("${owner.signup-session.expiration}")
+    private Long ownerSignupSessionExpiration;
 
-//     @Value("${owner.signup-session.holding-seconds}")
-//     private Integer ownerSignupSessionHoldingSeconds;
+    @Autowired
+    private OwnerService ownerService;
 
-//     @PostMapping("/owner/signup-session")
-//     public ResultDTO createOwnerSignupSession(
-//             @Valid @RequestBody OwnerSignupParamDTO createOwnerSignupDTO,
-//             HttpServletRequest request) {
+    @Autowired
+    private EmailService emailService;
 
-//         if (ownerService.getOwnerByEmail(createOwnerSignupDTO.getOwnerEmail()) != null) {
-//             return ResultDTO.builder()
-//                     .code(500)
-//                     .message("The email is duplicated")
-//                     .build();
-//         }
+    @PostMapping("/signup")
+    public ResponseEntity<String> ownerSignup(
+            @Valid @RequestBody OwnerSignupParamDTO ownerSignupParamDTO,
+            HttpServletRequest request) {
 
-//         String verifyCode = StringUtils.generateRandomCode(6);
-//         createOwnerSignupDTO.setVerifyCode(verifyCode);
+        if (isOwnerEmailExists(ownerSignupParamDTO.getOwnerEmail()))
+            return ResponseEntity
+                    .badRequest()
+                    .body("EMAIL DUPLICATED");
 
-//         try {
-//             String to = createOwnerSignupDTO.getOwnerEmail();
-//             String subject = "Please Verify Your Email";
+        String otp = StringUtils.generateOPT(6);
 
-//             ClassPathResource emailTemplate = new ClassPathResource("/email-template-verifycode.html");
-//             byte[] contentBytes = FileCopyUtils.copyToByteArray(emailTemplate.getInputStream());
-//             String emailHtmlContent = new String(contentBytes, StandardCharsets.UTF_8);
+        try {
+            String to = ownerSignupParamDTO.getOwnerEmail();
+            String subject = "PLEASE VERIFY YOUR EMAIL";
 
-//             emailHtmlContent = emailHtmlContent.replace("${verifyCode}", verifyCode);
-//             emailService.sendHtmlEmail(to, subject, emailHtmlContent);
+            ClassPathResource emailTemplate = new ClassPathResource("/email-template-opt.html");
+            byte[] contentBytes = FileCopyUtils.copyToByteArray(emailTemplate.getInputStream());
+            String emailHtmlContent = new String(contentBytes, StandardCharsets.UTF_8);
 
-//         } catch (Exception e) {
-//             return ResultDTO.builder()
-//                     .code(500)
-//                     .message("Error occurred when sending email")
-//                     .build();
-//         }
+            emailHtmlContent = emailHtmlContent.replace("${otp}", otp);
+            emailService.sendHtmlEmail(to, subject, emailHtmlContent);
 
-//         HttpSession sessoin = request.getSession();
-//         sessoin.setAttribute("owner-signup-session", createOwnerSignupDTO);
-//         sessoin.setMaxInactiveInterval(ownerSignupSessionHoldingSeconds);
+        } catch (Exception e) {
+            return ResponseEntity
+                    .status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body("ERROR OCCURRED WHEN SENDING EMAIL");
+        }
 
-//         return ResultDTO.builder()
-//                 .code(201)
-//                 .message("Owner signup session created")
-//                 .build();
-//     }
+        return ResponseEntity.ok(
+                JwtUtils.generateToken(
+                        "owner-signup-session-token",
+                        OwnerSignupTokenDTO.builder()
+                                .ownerName(ownerSignupParamDTO.getOwnerName())
+                                .ownerEmail(ownerSignupParamDTO.getOwnerEmail())
+                                .ownerPassword(ownerSignupParamDTO.getOwnerPassword())
+                                .otp(otp)
+                                .build(),
+                        ownerSignupSessionExpiration));
+    }
 
-//     @PostMapping("/owner")
-//     public ResultDTO createOwner(
-//             @Valid @RequestBody OwnerVrifySignupParamDTO createOwnerDTO,
-//             HttpServletRequest request) {
+    @PostMapping("/signup/confirm")
+    public ResponseEntity<String> confirmOwnerSignup(
+            @Valid @RequestBody ConfirmOPTParamDTO confirmOPTParamDTO) {
 
-//         HttpSession sessoin = request.getSession();
-//         OwnerSignupParamDTO createOwnerSignupDTO = (OwnerSignupParamDTO) sessoin.getAttribute("owner-signup-session");
+        try {
+            OwnerSignupTokenDTO ownerSignupTokenDTO = JwtUtils.getContent(
+                    confirmOPTParamDTO.getToken(),
+                    OwnerSignupTokenDTO.class);
 
-//         if (createOwnerSignupDTO == null) {
-//             return ResultDTO.builder()
-//                     .code(404)
-//                     .message("Owner signup session not found")
-//                     .build();
-//         }
+            if (!ownerSignupTokenDTO.getOtp().equals(confirmOPTParamDTO.getOtp()))
+                return ResponseEntity
+                        .status(HttpStatus.INTERNAL_SERVER_ERROR)
+                        .body("OPT NOT CORRECT");
 
-//         if (!createOwnerSignupDTO.getVerifyCode().equals(createOwnerDTO.getVerifyCode())) {
-//             return ResultDTO.builder()
-//                     .code(500)
-//                     .message("Verify code not correct")
-//                     .build();
-//         }
+            if (ownerService.insertOwner(
+                    OwnerSignupParamDTO
+                            .builder()
+                            .ownerName(ownerSignupTokenDTO.getOwnerName())
+                            .ownerEmail(ownerSignupTokenDTO.getOwnerEmail())
+                            .ownerPassword(ownerSignupTokenDTO.getOwnerPassword())
+                            .build()) > 0)
+                return ResponseEntity.ok("OWNER CREATED");
 
-//         sessoin.removeAttribute("owner-signup-session");
+            return ResponseEntity
+                    .status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body("OWNER CREATION FAILED");
 
-//         createOwnerDTO.setOwnerEmail(createOwnerSignupDTO.getOwnerEmail());
-//         createOwnerDTO.setOwnerName(createOwnerSignupDTO.getOwnerName());
-//         createOwnerDTO.setOwnerPassword(createOwnerSignupDTO.getOwnerPassword());
+        } catch (ExpiredJwtException e) {
+            return ResponseEntity
+                    .status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body("TOKEN EXPIRED");
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResponseEntity
+                    .status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body("INVALID TOKEN");
+        }
+    }
 
-//         if (ownerService.createOwner(createOwnerDTO) > 0) {
-//             return ResultDTO.builder()
-//                     .code(201)
-//                     .message("Owner created")
-//                     .build();
-//         }
+    @GetMapping("/{email}")
+    public Boolean isOwnerEmailExists(@PathVariable String email) {
+        return ownerService.getOwnerByEmail(email) != null;
+    }
 
-//         return ResultDTO.builder()
-//                 .code(500)
-//                 .message("Owner create failure")
-//                 .build();
-
-//     }
-
-//     @GetMapping("/owner-exists/{email}")
-//     public Boolean checkOwnerExists(@PathVariable String email) {
-//         return ownerService.getOwnerByEmail(email) != null;
-//     }
-
-// }
+}

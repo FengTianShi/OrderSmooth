@@ -1,118 +1,126 @@
-// package com.nobody.OrderSmoothAPI.controller;
+package com.nobody.OrderSmoothAPI.controller;
 
-// import java.nio.charset.StandardCharsets;
+import java.nio.charset.StandardCharsets;
 
-// import javax.servlet.http.HttpServletRequest;
-// import javax.servlet.http.HttpSession;
-// import javax.validation.Valid;
+import javax.servlet.http.HttpServletRequest;
+import javax.validation.Valid;
 
-// import org.slf4j.Logger;
-// import org.slf4j.LoggerFactory;
-// import org.springframework.beans.factory.annotation.Autowired;
-// import org.springframework.beans.factory.annotation.Value;
-// import org.springframework.core.io.ClassPathResource;
-// import org.springframework.util.FileCopyUtils;
-// import org.springframework.web.bind.annotation.PostMapping;
-// import org.springframework.web.bind.annotation.PutMapping;
-// import org.springframework.web.bind.annotation.RequestBody;
-// import org.springframework.web.bind.annotation.RestController;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.io.ClassPathResource;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.util.FileCopyUtils;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
-// import com.nobody.OrderSmoothAPI.common.StringUtils;
-// import com.nobody.OrderSmoothAPI.dto.OwnerResetPasswordParamDTO;
-// import com.nobody.OrderSmoothAPI.dto.VerifyOwnerResetPasswordParamDTO;
-// import com.nobody.OrderSmoothAPI.dto.common.ResultDTO;
-// import com.nobody.OrderSmoothAPI.service.EmailService;
-// import com.nobody.OrderSmoothAPI.service.OwnerService;
+import com.nobody.OrderSmoothAPI.common.JwtUtils;
+import com.nobody.OrderSmoothAPI.common.StringUtils;
+import com.nobody.OrderSmoothAPI.dto.ConfirmOPTParamDTO;
+import com.nobody.OrderSmoothAPI.dto.OwnerResetPasswordParamDTO;
+import com.nobody.OrderSmoothAPI.dto.OwnerResetPasswordTokenDTO;
+import com.nobody.OrderSmoothAPI.dto.OwnerSignupParamDTO;
+import com.nobody.OrderSmoothAPI.dto.OwnerSignupTokenDTO;
+import com.nobody.OrderSmoothAPI.service.EmailService;
+import com.nobody.OrderSmoothAPI.service.OwnerService;
 
-// @RestController
-// public class OwnerResetPasswordController {
+import io.jsonwebtoken.ExpiredJwtException;
 
-//     Logger logger = LoggerFactory.getLogger(OwnerResetPasswordController.class);
+@RestController
+@RequestMapping("/owner")
+public class OwnerResetPasswordController {
 
-//     @Autowired
-//     private OwnerService ownerService;
+    Logger logger = LoggerFactory.getLogger(OwnerSignupController.class);
 
-//     @Autowired
-//     private EmailService emailService;
+    @Value("${owner.reset-password-session.expiration}")
+    private Long ownerResetPasswordSessionExpiration;
 
-//     @Value("${owner.reset-password-session.holding-seconds}")
-//     private Integer ownerResetPasswordSessionHoldingSeconds;
+    @Autowired
+    private OwnerService ownerService;
 
-//     @PostMapping("/owner/password/reset-session")
-//     public ResultDTO createOwnerPasswordResetSession(
-//             @Valid @RequestBody OwnerResetPasswordParamDTO createOwnerPasswordResetDTO,
-//             HttpServletRequest request) {
+    @Autowired
+    private EmailService emailService;
 
-//         String verifyCode = StringUtils.generateRandomCode(6);
-//         createOwnerPasswordResetDTO.setVerifyCode(verifyCode);
+    @PostMapping("/reset-password")
+    public ResponseEntity<String> ownerResetPassword(
+            @Valid @RequestBody OwnerResetPasswordParamDTO ownerResetPasswordParamDTO,
+            HttpServletRequest request) {
 
-//         try {
-//             String to = createOwnerPasswordResetDTO.getOwnerEmail();
-//             String subject = "Please Verify Your Email";
+        if (ownerService.getOwnerByEmail(ownerResetPasswordParamDTO.getOwnerEmail()) == null)
+            return ResponseEntity
+                    .badRequest()
+                    .body("OWNER NOT EXISTS");
 
-//             ClassPathResource emailTemplate = new ClassPathResource("/email-template-verifycode.html");
-//             byte[] contentBytes = FileCopyUtils.copyToByteArray(emailTemplate.getInputStream());
-//             String emailHtmlContent = new String(contentBytes, StandardCharsets.UTF_8);
+        String otp = StringUtils.generateOPT(6);
 
-//             emailHtmlContent = emailHtmlContent.replace("${verifyCode}", verifyCode);
-//             emailService.sendHtmlEmail(to, subject, emailHtmlContent);
+        try {
+            String to = ownerResetPasswordParamDTO.getOwnerEmail();
+            String subject = "PLEASE VERIFY YOUR EMAIL";
 
-//         } catch (Exception e) {
-//             return ResultDTO.builder()
-//                     .code(500)
-//                     .message("Error occurred when sending email")
-//                     .build();
-//         }
+            ClassPathResource emailTemplate = new ClassPathResource("/email-template-opt.html");
+            byte[] contentBytes = FileCopyUtils.copyToByteArray(emailTemplate.getInputStream());
+            String emailHtmlContent = new String(contentBytes, StandardCharsets.UTF_8);
 
-//         HttpSession sessoin = request.getSession();
-//         sessoin.setAttribute("owner-reset-password-session", createOwnerPasswordResetDTO);
-//         sessoin.setMaxInactiveInterval(ownerResetPasswordSessionHoldingSeconds);
+            emailHtmlContent = emailHtmlContent.replace("${otp}", otp);
+            emailService.sendHtmlEmail(to, subject, emailHtmlContent);
 
-//         return ResultDTO.builder()
-//                 .code(201)
-//                 .message("Owner reset password session created")
-//                 .build();
-//     }
+        } catch (Exception e) {
+            return ResponseEntity
+                    .status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body("ERROR OCCURRED WHEN SENDING EMAIL");
+        }
 
-//     @PutMapping("owner/password")
-//     public ResultDTO updateOwnerPassword(
-//             @Valid @RequestBody VerifyOwnerResetPasswordParamDTO updateOwnerPasswordDTO,
-//             HttpServletRequest request) {
+        return ResponseEntity.ok(
+                JwtUtils.generateToken(
+                        "owner-reset-password-session-token",
+                        OwnerResetPasswordTokenDTO.builder()
+                                .ownerEmail(ownerResetPasswordParamDTO.getOwnerEmail())
+                                .newPassword(ownerResetPasswordParamDTO.getNewPassword())
+                                .otp(otp)
+                                .build(),
+                        ownerResetPasswordSessionExpiration));
+    }
 
-//         HttpSession sessoin = request.getSession();
-//         OwnerResetPasswordParamDTO createOwnerPasswordResetDTO = (OwnerResetPasswordParamDTO) sessoin
-//                 .getAttribute("owner-reset-password-session");
+    @PostMapping("/reset-password/confirm")
+    public ResponseEntity<String> confirmOwnerResetPassword(
+            @Valid @RequestBody ConfirmOPTParamDTO confirmOPTParamDTO) {
 
-//         if (createOwnerPasswordResetDTO == null) {
-//             return ResultDTO.builder()
-//                     .code(404)
-//                     .message("Owner reset password session not found")
-//                     .build();
-//         }
+        try {
+            OwnerResetPasswordTokenDTO ownerSignupTokenDTO = JwtUtils.getContent(
+                    confirmOPTParamDTO.getToken(),
+                    OwnerResetPasswordTokenDTO.class);
 
-//         if (!createOwnerPasswordResetDTO.getVerifyCode().equals(updateOwnerPasswordDTO.getVerifyCode())) {
-//             return ResultDTO.builder()
-//                     .code(500)
-//                     .message("Verify code not correct")
-//                     .build();
-//         }
+            if (!ownerSignupTokenDTO.getOtp().equals(confirmOPTParamDTO.getOtp()))
+                return ResponseEntity
+                        .status(HttpStatus.INTERNAL_SERVER_ERROR)
+                        .body("OPT NOT CORRECT");
 
-//         sessoin.removeAttribute("owner-reset-password-session");
+            if (ownerService.updateOwnerPasswordByEmail(
+                    OwnerResetPasswordParamDTO
+                            .builder()
+                            .ownerEmail(ownerSignupTokenDTO.getOwnerEmail())
+                            .newPassword(ownerSignupTokenDTO.getNewPassword())
+                            .build()) > 0)
+                return ResponseEntity.ok("PASSWORD RESET SUCCESS");
 
-//         updateOwnerPasswordDTO.setOwnerEmail(createOwnerPasswordResetDTO.getOwnerEmail());
-//         updateOwnerPasswordDTO.setNewPassword(createOwnerPasswordResetDTO.getNewPassword());
+            return ResponseEntity
+                    .status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body("PASSWORD RESET FAILED");
 
-//         if (ownerService.updateOwnerPasswordByEmail(updateOwnerPasswordDTO) > 0) {
-//             return ResultDTO.builder()
-//                     .code(201)
-//                     .message("Owner password update success")
-//                     .build();
-//         }
+        } catch (ExpiredJwtException e) {
+            return ResponseEntity
+                    .status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body("TOKEN EXPIRED");
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResponseEntity
+                    .status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body("INVALID TOKEN");
+        }
+    }
 
-//         return ResultDTO.builder()
-//                 .code(404)
-//                 .message("Owner not found")
-//                 .build();
-//     }
-
-// }
+}

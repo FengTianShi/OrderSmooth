@@ -13,7 +13,7 @@ import lombok.NoArgsConstructor;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class ConfirmContentParamDTO implements Serializable {
+public class ConfirmOPTParamDTO implements Serializable {
 
     @NotBlank
     private String token;
