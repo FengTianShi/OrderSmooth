@@ -11,7 +11,7 @@ import lombok.NoArgsConstructor;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class ConfirmOPTParamDTO implements Serializable {
+public class ConfirmOTPParamDTO implements Serializable {
 
   @NotBlank
   private String token;

@@ -39,7 +39,7 @@
         block
         color="grey"
         size="large"
-        @click="this.$router.push('/Login')">
+        @click="this.$router.push('/Signin')">
         ログインに戻る
       </v-btn>
     </div>

@@ -21,7 +21,7 @@ public class StringUtils {
     }
   }
 
-  public static String generateOPT(int length) {
+  public static String generateOTP(int length) {
     if (length <= 0) {
       throw new IllegalArgumentException("length must be greater than 0");
     }

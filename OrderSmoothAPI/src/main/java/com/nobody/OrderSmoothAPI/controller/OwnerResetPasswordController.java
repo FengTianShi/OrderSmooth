@@ -2,7 +2,7 @@ package com.nobody.OrderSmoothAPI.controller;
 
 import com.nobody.OrderSmoothAPI.common.JwtUtils;
 import com.nobody.OrderSmoothAPI.common.StringUtils;
-import com.nobody.OrderSmoothAPI.dto.ConfirmOPTParamDTO;
+import com.nobody.OrderSmoothAPI.dto.ConfirmOTPParamDTO;
 import com.nobody.OrderSmoothAPI.dto.OwnerResetPasswordParamDTO;
 import com.nobody.OrderSmoothAPI.dto.OwnerResetPasswordTokenDTO;
 import com.nobody.OrderSmoothAPI.service.EmailService;
@@ -30,8 +30,8 @@ public class OwnerResetPasswordController {
 
   Logger logger = LoggerFactory.getLogger(OwnerSignupController.class);
 
-  @Value("${owner.reset-password-session.expiration}")
-  private Long ownerResetPasswordSessionExpiration;
+  @Value("${owner.reset-password.expiration}")
+  private Long ownerResetPasswordExpiration;
 
   @Autowired
   private OwnerService ownerService;
@@ -50,17 +50,19 @@ public class OwnerResetPasswordController {
       ) ==
       null
     ) {
-      return ResponseEntity.badRequest().body("OWNER NOT EXISTS");
+      return ResponseEntity
+        .status(HttpStatus.NOT_FOUND)
+        .body("OWNER NOT EXISTS");
     }
 
-    String otp = StringUtils.generateOPT(6);
+    String otp = StringUtils.generateOTP(6);
 
     try {
       String to = ownerResetPasswordParamDTO.getOwnerEmail();
       String subject = "PLEASE VERIFY YOUR EMAIL";
 
       ClassPathResource emailTemplate = new ClassPathResource(
-        "/email-template-opt.html"
+        "/email-template-otp.html"
       );
       byte[] contentBytes = FileCopyUtils.copyToByteArray(
         emailTemplate.getInputStream()
@@ -73,39 +75,39 @@ public class OwnerResetPasswordController {
       emailHtmlContent = emailHtmlContent.replace("${otp}", otp);
       emailService.sendHtmlEmail(to, subject, emailHtmlContent);
     } catch (Exception e) {
-      return ResponseEntity
-        .status(HttpStatus.INTERNAL_SERVER_ERROR)
-        .body("ERROR OCCURRED WHEN SENDING EMAIL");
+      return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
     }
 
-    return ResponseEntity.ok(
-      JwtUtils.generateToken(
-        "owner-reset-password-session-token",
-        OwnerResetPasswordTokenDTO
-          .builder()
-          .ownerEmail(ownerResetPasswordParamDTO.getOwnerEmail())
-          .newPassword(ownerResetPasswordParamDTO.getNewPassword())
-          .otp(otp)
-          .build(),
-        ownerResetPasswordSessionExpiration
-      )
-    );
+    return ResponseEntity
+      .status(HttpStatus.CREATED)
+      .body(
+        JwtUtils.generateToken(
+          "owner-reset-password-token",
+          OwnerResetPasswordTokenDTO
+            .builder()
+            .ownerEmail(ownerResetPasswordParamDTO.getOwnerEmail())
+            .newPassword(ownerResetPasswordParamDTO.getNewPassword())
+            .otp(otp)
+            .build(),
+          ownerResetPasswordExpiration
+        )
+      );
   }
 
   @PostMapping("/reset-password/confirm")
   public ResponseEntity<String> ownerResetPasswordConfirm(
-    @Valid @RequestBody ConfirmOPTParamDTO confirmOPTParamDTO
+    @Valid @RequestBody ConfirmOTPParamDTO confirmOTPParamDTO
   ) {
     try {
       OwnerResetPasswordTokenDTO ownerSignupTokenDTO = JwtUtils.getContent(
-        confirmOPTParamDTO.getToken(),
+        confirmOTPParamDTO.getToken(),
         OwnerResetPasswordTokenDTO.class
       );
 
-      if (!ownerSignupTokenDTO.getOtp().equals(confirmOPTParamDTO.getOtp())) {
+      if (!ownerSignupTokenDTO.getOtp().equals(confirmOTPParamDTO.getOtp())) {
         return ResponseEntity
-          .status(HttpStatus.INTERNAL_SERVER_ERROR)
-          .body("OPT NOT CORRECT");
+          .status(HttpStatus.FORBIDDEN)
+          .body("OTP NOT CORRECT");
       }
 
       if (
@@ -118,19 +120,17 @@ public class OwnerResetPasswordController {
         ) >
         0
       ) {
-        return ResponseEntity.ok("PASSWORD RESET SUCCESS");
+        return ResponseEntity.status(HttpStatus.CREATED).build();
       }
 
-      return ResponseEntity
-        .status(HttpStatus.INTERNAL_SERVER_ERROR)
-        .body("PASSWORD RESET FAILED");
+      return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
     } catch (ExpiredJwtException e) {
       return ResponseEntity
-        .status(HttpStatus.INTERNAL_SERVER_ERROR)
+        .status(HttpStatus.UNAUTHORIZED)
         .body("TOKEN EXPIRED");
     } catch (Exception e) {
       return ResponseEntity
-        .status(HttpStatus.INTERNAL_SERVER_ERROR)
+        .status(HttpStatus.UNAUTHORIZED)
         .body("INVALID TOKEN");
     }
   }

@@ -2,7 +2,7 @@ package com.nobody.OrderSmoothAPI.controller;
 
 import com.nobody.OrderSmoothAPI.common.JwtUtils;
 import com.nobody.OrderSmoothAPI.common.StringUtils;
-import com.nobody.OrderSmoothAPI.dto.ConfirmOPTParamDTO;
+import com.nobody.OrderSmoothAPI.dto.ConfirmOTPParamDTO;
 import com.nobody.OrderSmoothAPI.dto.OwnerSignupParamDTO;
 import com.nobody.OrderSmoothAPI.dto.OwnerSignupTokenDTO;
 import com.nobody.OrderSmoothAPI.service.EmailService;
@@ -32,8 +32,8 @@ public class OwnerSignupController {
 
   Logger logger = LoggerFactory.getLogger(OwnerSignupController.class);
 
-  @Value("${owner.signup-session.expiration}")
-  private Long ownerSignupSessionExpiration;
+  @Value("${owner.signup.expiration}")
+  private Long ownerSignupExpiration;
 
   @Autowired
   private OwnerService ownerService;
@@ -47,17 +47,19 @@ public class OwnerSignupController {
     HttpServletRequest request
   ) {
     if (isOwnerExists(ownerSignupParamDTO.getOwnerEmail())) {
-      return ResponseEntity.badRequest().body("EMAIL DUPLICATED");
+      return ResponseEntity
+        .status(HttpStatus.CONFLICT)
+        .body("OWNER EMAIL DUPLICATED");
     }
 
-    String otp = StringUtils.generateOPT(6);
+    String otp = StringUtils.generateOTP(6);
 
     try {
       String to = ownerSignupParamDTO.getOwnerEmail();
       String subject = "PLEASE VERIFY YOUR EMAIL";
 
       ClassPathResource emailTemplate = new ClassPathResource(
-        "/email-template-opt.html"
+        "/email-template-otp.html"
       );
       byte[] contentBytes = FileCopyUtils.copyToByteArray(
         emailTemplate.getInputStream()
@@ -70,40 +72,40 @@ public class OwnerSignupController {
       emailHtmlContent = emailHtmlContent.replace("${otp}", otp);
       emailService.sendHtmlEmail(to, subject, emailHtmlContent);
     } catch (Exception e) {
-      return ResponseEntity
-        .status(HttpStatus.INTERNAL_SERVER_ERROR)
-        .body("ERROR OCCURRED WHEN SENDING EMAIL");
+      return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
     }
 
-    return ResponseEntity.ok(
-      JwtUtils.generateToken(
-        "owner-signup-session-token",
-        OwnerSignupTokenDTO
-          .builder()
-          .ownerName(ownerSignupParamDTO.getOwnerName())
-          .ownerEmail(ownerSignupParamDTO.getOwnerEmail())
-          .ownerPassword(ownerSignupParamDTO.getOwnerPassword())
-          .otp(otp)
-          .build(),
-        ownerSignupSessionExpiration
-      )
-    );
+    return ResponseEntity
+      .status(HttpStatus.CREATED)
+      .body(
+        JwtUtils.generateToken(
+          "owner-signup-token",
+          OwnerSignupTokenDTO
+            .builder()
+            .ownerName(ownerSignupParamDTO.getOwnerName())
+            .ownerEmail(ownerSignupParamDTO.getOwnerEmail())
+            .ownerPassword(ownerSignupParamDTO.getOwnerPassword())
+            .otp(otp)
+            .build(),
+          ownerSignupExpiration
+        )
+      );
   }
 
   @PostMapping("/signup/confirm")
   public ResponseEntity<String> ownerSignupConfirm(
-    @Valid @RequestBody ConfirmOPTParamDTO confirmOPTParamDTO
+    @Valid @RequestBody ConfirmOTPParamDTO confirmOTPParamDTO
   ) {
     try {
       OwnerSignupTokenDTO ownerSignupTokenDTO = JwtUtils.getContent(
-        confirmOPTParamDTO.getToken(),
+        confirmOTPParamDTO.getToken(),
         OwnerSignupTokenDTO.class
       );
 
-      if (!ownerSignupTokenDTO.getOtp().equals(confirmOPTParamDTO.getOtp())) {
+      if (!ownerSignupTokenDTO.getOtp().equals(confirmOTPParamDTO.getOtp())) {
         return ResponseEntity
-          .status(HttpStatus.INTERNAL_SERVER_ERROR)
-          .body("OPT NOT CORRECT");
+          .status(HttpStatus.FORBIDDEN)
+          .body("OTP NOT CORRECT");
       }
 
       if (
@@ -117,19 +119,17 @@ public class OwnerSignupController {
         ) >
         0
       ) {
-        return ResponseEntity.ok("OWNER CREATED");
+        return ResponseEntity.status(HttpStatus.CREATED).build();
+      } else {
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
       }
-
-      return ResponseEntity
-        .status(HttpStatus.INTERNAL_SERVER_ERROR)
-        .body("OWNER CREATION FAILED");
     } catch (ExpiredJwtException e) {
       return ResponseEntity
-        .status(HttpStatus.INTERNAL_SERVER_ERROR)
+        .status(HttpStatus.UNAUTHORIZED)
         .body("TOKEN EXPIRED");
     } catch (Exception e) {
       return ResponseEntity
-        .status(HttpStatus.INTERNAL_SERVER_ERROR)
+        .status(HttpStatus.UNAUTHORIZED)
         .body("INVALID TOKEN");
     }
   }

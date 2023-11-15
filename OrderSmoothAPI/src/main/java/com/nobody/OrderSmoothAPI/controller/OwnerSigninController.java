@@ -1,8 +1,8 @@
 package com.nobody.OrderSmoothAPI.controller;
 
 import com.nobody.OrderSmoothAPI.common.RequestUtils;
-import com.nobody.OrderSmoothAPI.dto.OwnerLoginParamDTO;
-import com.nobody.OrderSmoothAPI.service.OwnerLoginService;
+import com.nobody.OrderSmoothAPI.dto.OwnerSigninParamDTO;
+import com.nobody.OrderSmoothAPI.service.OwnerSigninService;
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 import org.apache.commons.lang3.StringUtils;
@@ -18,37 +18,41 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequestMapping("/owner")
-public class OwnerLoginController {
+public class OwnerSigninController {
 
-  Logger logger = LoggerFactory.getLogger(OwnerLoginController.class);
+  Logger logger = LoggerFactory.getLogger(OwnerSigninController.class);
 
   @Autowired
-  private OwnerLoginService ownerLoginService;
+  private OwnerSigninService ownerSigninService;
 
-  @PostMapping("/login")
-  public ResponseEntity<String> ownerLogin(
-    @Valid @RequestBody OwnerLoginParamDTO ownerLoginParamDTO,
+  @PostMapping("/signin")
+  public ResponseEntity<String> ownerSignin(
+    @Valid @RequestBody OwnerSigninParamDTO ownerSigninParamDTO,
     HttpServletRequest request
   ) {
     String ipAddress = RequestUtils.getIpAdrress(request);
     if (StringUtils.isBlank(ipAddress)) {
-      return ResponseEntity.badRequest().body("IP ADDRESS NOT FOUND");
+      return ResponseEntity
+        .status(HttpStatus.BAD_REQUEST)
+        .body("IP ADDRESS REQUIRED");
     }
-    ownerLoginParamDTO.setIpAddress(ipAddress);
+    ownerSigninParamDTO.setIpAddress(ipAddress);
 
     String deviceinfo = RequestUtils.getDeviceInfo(request);
     if (StringUtils.isBlank(deviceinfo)) {
-      return ResponseEntity.badRequest().body("DEVICE INFO NOT FOUND");
-    }
-    ownerLoginParamDTO.setDeviceInfo(deviceinfo);
-
-    String ownerSessionToken = ownerLoginService.ownerLogin(ownerLoginParamDTO);
-    if (ownerSessionToken == null) {
       return ResponseEntity
-        .status(HttpStatus.INTERNAL_SERVER_ERROR)
+        .status(HttpStatus.BAD_REQUEST)
+        .body("DEVICE INFO REQUIRED");
+    }
+    ownerSigninParamDTO.setDeviceInfo(deviceinfo);
+
+    String ownerToken = ownerSigninService.ownerSignin(ownerSigninParamDTO);
+    if (ownerToken == null) {
+      return ResponseEntity
+        .status(HttpStatus.UNAUTHORIZED)
         .body("EMAIL OR PASSWORD NOT CORRECT");
     }
 
-    return ResponseEntity.ok(ownerSessionToken);
+    return ResponseEntity.status(HttpStatus.CREATED).body(ownerToken);
   }
 }

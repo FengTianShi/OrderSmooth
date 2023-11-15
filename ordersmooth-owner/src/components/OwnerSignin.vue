@@ -4,31 +4,33 @@
 
     <v-form validate-on="submit lazy">
       <v-text-field
+        class="mb-2"
         v-model="ownerEmail"
         density="compact"
+        variant="outlined"
         placeholder="メールアドレス"
         prepend-inner-icon="mdi-email-outline"
-        variant="outlined"
-        class="mb-2"
-        :rules="[required, email, isLegalOwner]" />
+        maxlength="100"
+        :rules="[required, email, legalOwner]" />
 
       <v-text-field
+        class="mb-2"
         v-model="ownerPassword"
         density="compact"
+        variant="outlined"
         placeholder="パスワード"
         prepend-inner-icon="mdi-lock-outline"
-        variant="outlined"
-        class="mb-2"
+        maxlength="100"
         :append-inner-icon="passwordVisible ? 'mdi-eye-off' : 'mdi-eye'"
         :type="passwordVisible ? 'text' : 'password'"
-        @click:append-inner="passwordVisible = !passwordVisible"
-        :rules="[required]" />
+        :rules="[required]"
+        @click:append-inner="passwordVisible = !passwordVisible" />
 
       <div class="text-caption mb-2">
         パスワードをお忘れた場合は
-        <router-link class="text-decoration-none" to="/ResetPassword"
-          >こちら</router-link
-        >
+        <router-link class="text-decoration-none" to="/ResetPassword">
+          こちら
+        </router-link>
       </div>
 
       <v-btn
@@ -42,9 +44,9 @@
       </v-btn>
     </v-form>
     <v-card-text class="text-center">
-      <router-link class="text-decoration-none" to="/Signup"
-        >今すぐ登録</router-link
-      >
+      <router-link class="text-decoration-none" to="/Signup">
+        今すぐ登録
+      </router-link>
     </v-card-text>
   </v-card>
 </template>
@@ -59,14 +61,14 @@ export default {
   }),
   methods: {
     required(value) {
-      return !!value || "ご入力ください";
+      return !!value || "必須項目を入力してください";
     },
     email(value) {
       const pattern =
         /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
       return pattern.test(value) || "メールアドレスを正しく入力してください";
     },
-    async isLegalOwner() {
+    async legalOwner() {
       this.loading = true;
 
       if (!this.ownerPassword) {
@@ -75,23 +77,26 @@ export default {
       }
 
       await this.$http
-        .post("/owner/session", {
+        .post("/owner/signin", {
           ownerEmail: this.ownerEmail,
           ownerPassword: this.ownerPassword,
         })
         .then((response) => {
-          if (response.data.ownerId && response.data.sessionToken) {
+          if (response.status == 201) {
             window.localStorage.setItem(
-              "owner-session",
+              "owner-token",
               JSON.stringify(response.data)
             );
             this.$router.push("/Dashboard");
           }
+        })
+        .catch((error) => {
+          console.log(error.response);
         });
 
       this.loading = false;
 
-      return false || "メールアドレスもしくはパスワードが間違っています";
+      return "メールアドレスもしくはパスワードが間違っています";
     },
   },
 };

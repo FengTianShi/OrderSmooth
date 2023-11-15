@@ -3,55 +3,57 @@
     <v-img class="mx-auto my-6" :src="require('../assets/logo.png')"></v-img>
 
     <div v-if="signupStep == 0">
-      <v-form
-        validate-on="submit lazy"
-        @submit.prevent="createOwnerSignSession">
+      <v-form validate-on="submit lazy" @submit.prevent="signup">
         <v-text-field
           v-model="ownerName"
+          maxlength="100"
+          class="mb-2"
           density="compact"
+          variant="outlined"
           placeholder="お名前"
           prepend-inner-icon="mdi-account"
-          variant="outlined"
-          class="mb-2"
-          maxlength="100"
           :rules="[required]" />
 
         <v-text-field
           v-model="ownerEmail"
+          maxlength="100"
+          class="mb-2"
           density="compact"
+          variant="outlined"
           placeholder="メールアドレス"
           prepend-inner-icon="mdi-email-outline"
-          variant="outlined"
-          class="mb-2"
-          maxlength="100"
-          :rules="[required, email, notDuplicate]" />
+          :rules="[required, email, unique]" />
 
         <v-text-field
           v-model="ownerPassword"
-          density="compact"
-          placeholder="パスワード"
-          prepend-inner-icon="mdi-lock-outline"
-          variant="outlined"
+          maxlength="100"
           class="mb-2"
+          density="compact"
+          variant="outlined"
+          placeholder="パスワード"
+          hint="パスワードは8桁以上入力ください"
+          prepend-inner-icon="mdi-lock-outline"
           :append-inner-icon="passwordVisible ? 'mdi-eye-off' : 'mdi-eye'"
           :type="passwordVisible ? 'text' : 'password'"
-          @click:append-inner="passwordVisible = !passwordVisible"
           :rules="[required, minLength]"
-          maxlength="100"
-          hint="パスワードは8桁以上入力ください" />
+          @click:append-inner="passwordVisible = !passwordVisible" />
 
         <v-text-field
-          v-model="ownerPasswordVerify"
+          v-model="ownerPasswordConfirm"
+          maxlength="100"
+          class="mb-2"
           density="compact"
+          variant="outlined"
           placeholder="パスワード确认"
           prepend-inner-icon="mdi-lock-outline"
-          variant="outlined"
-          :append-inner-icon="passwordVerifyVisible ? 'mdi-eye-off' : 'mdi-eye'"
-          :type="passwordVerifyVisible ? 'text' : 'password'"
-          @click:append-inner="passwordVerifyVisible = !passwordVerifyVisible"
-          :rules="[required, samePassword]"
-          class="mb-2"
-          maxlength="100" />
+          :append-inner-icon="
+            passwordConfirmVisible ? 'mdi-eye-off' : 'mdi-eye'
+          "
+          :type="passwordConfirmVisible ? 'text' : 'password'"
+          :rules="[required, same]"
+          @click:append-inner="
+            passwordConfirmVisible = !passwordConfirmVisible
+          " />
 
         <v-btn
           block
@@ -66,44 +68,54 @@
     </div>
 
     <div v-if="signupStep == 1">
-      <h3 class="text-h6 mb-4 text-center">Verify Your Account</h3>
+      <h3 class="text-h7 mb-4 text-center">メールアドレスを認証してください</h3>
 
       <div class="text-body-2 text-center">
-        {{ ownerEmail }}
+        <strong>{{ ownerEmail }}</strong>
         <br />
-        チェック、入力
+        <p>宛に認証コードが送信されました</p>
+        <br />
+        <p>
+          メール受信箱を確認し、下記に認証コードを入力してあなたのメールアドレスを認証してください
+        </p>
       </div>
 
       <v-otp-input
-        :loading="loading"
-        v-model="verifyCode"
+        v-model="otp"
         class="mb-2"
-        :error="verifyCodeIncorrect"></v-otp-input>
+        :disabled="loading"
+        :error="otpIncorrect">
+      </v-otp-input>
 
       <div class="text-caption mb-2">
-        Didn't receive the code?
-        <a href="#" @click.prevent="verifyCode = ''">Resend</a>
+        認証コードを受信していませんか?
+        <a
+          v-if="!loading"
+          class="text-decoration-none"
+          href="#"
+          @click="getToken">
+          <strong>認証コードを再送</strong>
+        </a>
+        <span v-if="loading" class="text-decoration-none">
+          <strong>送信中</strong>
+        </span>
       </div>
 
       <v-btn
         block
-        :disabled="verifyCode.length < 6 || loading"
         color="amber"
         size="large"
+        :disabled="otp.length < 6 || loading"
         :loading="loading"
-        @click="sendVerifyCode">
-        送信
+        @click="confirmSignup">
+        認証
       </v-btn>
 
       <v-divider class="my-3"></v-divider>
 
       <v-btn block color="grey" size="large" @click="signupStep = 0">
-        修正
+        メールアドレスを変更
       </v-btn>
-    </div>
-
-    <div v-if="signupStep == 2">
-      <h3 class="text-h6 mb-4 text-center">OK</h3>
     </div>
   </v-card>
 </template>
@@ -114,88 +126,107 @@ export default {
     ownerName: "",
     ownerEmail: "",
     ownerPassword: "",
-    ownerPasswordVerify: "",
-    verifyCode: "",
-    verifyCodeIncorrect: false,
+    ownerPasswordConfirm: "",
+    otp: "",
     passwordVisible: false,
-    passwordVerifyVisible: false,
+    passwordConfirmVisible: false,
+    otpIncorrect: false,
     loading: false,
     signupStep: 0,
   }),
   methods: {
-    async createOwnerSignSession(event) {
+    async getToken() {
       this.loading = true;
-      const results = await event;
-      if (results.valid) {
-        await this.$http
-          .post("/owner/signup-session", {
-            ownerName: this.ownerName,
-            ownerEmail: this.ownerEmail,
-            ownerPassword: this.ownerPassword,
-          })
-          .then((response) => {
-            if (response.data.code == 201) {
-              // var ownerSignUpSession = {
-              //     "ownerName": this.ownerName,
-              //     "ownerEmail": this.ownerEmail,
-              //     "ownerPassword": this.ownerPassword
-              // };
-              // window.localStorage.setItem("owner-signup-session", JSON.stringify(ownerSignUpSession));
-              this.signupStep = 1;
-            }
-          });
-      }
+      this.otp = "";
+      await this.$http
+        .post("/owner/signup", {
+          ownerName: this.ownerName,
+          ownerEmail: this.ownerEmail,
+          ownerPassword: this.ownerPassword,
+        })
+        .then((response) => {
+          if (response.status == 201) {
+            window.localStorage.setItem(
+              "owner-signup-token",
+              JSON.stringify(response.data)
+            );
+            this.signupStep = 1;
+          }
+        })
+        .catch((error) => {
+          console.log(error.response);
+        });
       this.loading = false;
     },
+    async signup(event) {
+      const results = await event;
+      if (results.valid) {
+        await this.getToken();
+      }
+    },
+    async confirmSignup() {
+      this.loading = true;
+      var ownerSignToken = JSON.parse(
+        window.localStorage.getItem("owner-signup-token")
+      );
+      await this.$http
+        .post("/owner/signup/confirm", {
+          otp: this.otp,
+          token: ownerSignToken,
+        })
+        .then((response) => {
+          if (response.status == 201) {
+            this.signin();
+          }
+        })
+        .catch((error) => {
+          console.log(error.response);
+          this.otpIncorrect = true;
+        });
+      this.loading = false;
+    },
+    async unique(value) {
+      var unique = false;
+      await this.$http.get(`/owner/${value}`).then((response) => {
+        if (!response.data) {
+          unique = true;
+        }
+      });
+      return unique || "メールアドレスは既に登録されています";
+    },
     required(value) {
-      return !!value || "ご入力ください";
+      return !!value || "必須項目を入力してください";
     },
     email(value) {
       const pattern =
         /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
       return pattern.test(value) || "メールアドレスを正しく入力してください";
     },
-    async notDuplicate(value) {
-      var isDuplicate = true;
-      var ownerEmail = value;
-      await this.$http.get(`/owner-exists/${ownerEmail}`).then((response) => {
-        if (!response.data) {
-          isDuplicate = false;
-        }
-      });
-      return !isDuplicate || "メールアドレスは既に登録されています";
-    },
     minLength(value) {
       return value?.length >= 8 || "パスワードは8桁以上入力ください";
     },
-    samePassword(value) {
+    same(value) {
       return value == this.ownerPassword || "パスワードは一致しません";
     },
-    async sendVerifyCode() {
-      this.loading = true;
+    async signin() {
       await this.$http
-        .post("/owner", {
-          verifyCode: this.verifyCode,
+        .post("/owner/signin", {
+          ownerEmail: this.ownerEmail,
+          ownerPassword: this.ownerPassword,
         })
         .then((response) => {
-          console.log(response.data.code);
-          if (response.data.code == 201) {
-            this.signupStep = 2;
-          } else {
-            this.verifyCodeIncorrect = true;
+          if (response.status == 201) {
+            window.localStorage.setItem(
+              "owner-token",
+              JSON.stringify(response.data)
+            );
+            this.$router.push("/Dashboard");
           }
+        })
+        .catch((error) => {
+          console.log(error.response);
         });
-      this.loading = false;
     },
   },
-  // created: function () {
-  //     var ownerSignUpSession = JSON.parse(window.localStorage.getItem("owner-signup-session"));
-  //     if (ownerSignUpSession) {
-  //         this.ownerName = ownerSignUpSession.ownerId;
-  //         this.ownerEmail = ownerSignUpSession.ownerEmail;
-  //         this.ownerPassword = ownerSignUpSession.ownerPassword;
-  //     }
-  //     window.localStorage.removeItem("owner-signup-session");
-  // }
 };
 </script>

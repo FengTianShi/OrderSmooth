@@ -14,7 +14,7 @@ import lombok.NoArgsConstructor;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class OwnerLoginParamDTO implements Serializable {
+public class OwnerSigninParamDTO implements Serializable {
 
   @NotBlank
   @Email

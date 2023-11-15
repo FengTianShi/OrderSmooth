@@ -12,7 +12,7 @@ public class CorsConfig implements WebMvcConfigurer {
     registry
       .addMapping("/**") // 项目中的所有接口都支持跨域
       .allowedOriginPatterns("*") // 所有地址都可以访问，也可以配置具体地址
-      .allowedMethods("*") // "GET", "HEAD", "POST", "PUT", "DELETE", "OPTIONS"
+      .allowedMethods("*") // "GET", "HEAD", "POST", "PUT", "DELETE", "OTPIONS"
       .maxAge(Long.MAX_VALUE); // 跨域允许时间
   }
 }

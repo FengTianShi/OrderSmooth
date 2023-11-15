@@ -1,8 +1,8 @@
 package com.nobody.OrderSmoothAPI.mapper;
 
 import com.github.yulichang.base.MPJBaseMapper;
-import com.nobody.OrderSmoothAPI.entity.OwnerLoginMgt;
+import com.nobody.OrderSmoothAPI.entity.OwnerSigninMgt;
 import org.apache.ibatis.annotations.Mapper;
 
 @Mapper
-public interface OwnerLoginMapper extends MPJBaseMapper<OwnerLoginMgt> {}
+public interface OwnerSigninMapper extends MPJBaseMapper<OwnerSigninMgt> {}

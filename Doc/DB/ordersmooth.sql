@@ -1,6 +1,6 @@
-CREATE TABLE IF NOT EXISTS public.t_owner_login
+CREATE TABLE IF NOT EXISTS public.t_owner_signin_mgt
 (
-    login_id bigserial NOT NULL,
+    signin_id bigserial NOT NULL,
     owner_id integer NOT NULL,
     ip_address character varying(100) NOT NULL,
     device_info character varying(100) NOT NULL,
@@ -12,7 +12,7 @@ CREATE TABLE IF NOT EXISTS public.t_owner_login
     inserted_by character varying(100) NOT NULL,
     update_time timestamp with time zone NOT NULL,
     updated_by character varying(100) NOT NULL,
-    PRIMARY KEY (login_id)
+    PRIMARY KEY (signin_id)
 );
 
 CREATE TABLE IF NOT EXISTS public.t_owner

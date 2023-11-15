@@ -5,7 +5,7 @@ import {
 } from "vue-router";
 
 // 1、引入组件
-import OwnerLogin from "../components/OwnerLogin.vue";
+import OwnerSignin from "../components/OwnerSignin.vue";
 import OwnerSignup from "../components/OwnerSignup.vue";
 import OwnerResetPassword from "../components/OwnerResetPassword.vue";
 import OwnerDashboard from "../components/OwnerDashboard.vue";
@@ -15,8 +15,8 @@ import TestVuex from "../components/TestVuex.vue";
  * 2、配置路由映射关系
  */
 const routes = [
-  { path: "/", redirect: "/Login" },
-  { path: "/Login", component: OwnerLogin },
+  { path: "/", redirect: "/Signin" },
+  { path: "/Signin", component: OwnerSignin },
   { path: "/Signup", component: OwnerSignup },
   { path: "/ResetPassword", component: OwnerResetPassword },
   { path: "/Dashboard", component: OwnerDashboard },
@@ -35,32 +35,16 @@ const router = createRouter({
   routes: routes,
 });
 
-import axios from "axios";
-
 router.beforeEach(async (to) => {
-  var isAuthenticated = false;
-  var ownerSession = JSON.parse(window.localStorage.getItem("owner-session"));
-
-  if (ownerSession) {
-    var ownerId = ownerSession.ownerId;
-    var sessionToken = ownerSession.sessionToken;
-
-    await axios
-      .get(`/owner/session/${ownerId}/${sessionToken}`)
-      .then((response) => {
-        if (response.data) {
-          isAuthenticated = true;
-        }
-      });
-  }
+  var ownerToken = JSON.parse(window.localStorage.getItem("owner-token"));
 
   if (
-    !isAuthenticated &&
-    to.path !== "/Login" &&
+    !ownerToken &&
+    to.path !== "/Signin" &&
     to.path !== "/Signup" &&
     to.path !== "/ResetPassword"
   ) {
-    return "/Login";
+    return "/Signin";
   }
 });
 

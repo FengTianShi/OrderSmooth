@@ -14,11 +14,11 @@ import lombok.NoArgsConstructor;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@TableName("t_owner_login_mgt")
-public class OwnerLoginMgt implements Serializable {
+@TableName("t_owner_signin_mgt")
+public class OwnerSigninMgt implements Serializable {
 
   @TableId(type = IdType.AUTO)
-  private Long loginId;
+  private Long signinId;
 
   private Long ownerId;
 
