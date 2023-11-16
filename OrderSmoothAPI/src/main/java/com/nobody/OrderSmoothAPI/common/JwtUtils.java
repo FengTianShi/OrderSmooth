@@ -47,6 +47,15 @@ public class JwtUtils {
       .compact();
   }
 
+  public static Boolean isValid(String token) {
+    try {
+      Jwts.parser().setSigningKey(secret).parseClaimsJws(token);
+      return true;
+    } catch (Exception e) {
+      return false;
+    }
+  }
+
   public static Claims getBody(String token) {
     return Jwts.parser().setSigningKey(secret).parseClaimsJws(token).getBody();
   }

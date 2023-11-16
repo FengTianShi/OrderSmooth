@@ -1,5 +1,6 @@
 package com.nobody.OrderSmoothAPI.controller;
 
+import com.nobody.OrderSmoothAPI.common.JwtUtils;
 import com.nobody.OrderSmoothAPI.common.RequestUtils;
 import com.nobody.OrderSmoothAPI.dto.OwnerSigninParamDTO;
 import com.nobody.OrderSmoothAPI.service.OwnerSigninService;
@@ -11,6 +12,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -54,5 +56,22 @@ public class OwnerSigninController {
     }
 
     return ResponseEntity.status(HttpStatus.CREATED).body(ownerToken);
+  }
+
+  @GetMapping("/is-signin")
+  public ResponseEntity<String> isOwnerSignin(HttpServletRequest request) {
+    String ownerToken = request.getHeader("Authorization");
+
+    if (ownerToken == null || !ownerToken.startsWith("Bearer ")) {
+      return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+    }
+
+    ownerToken = ownerToken.substring(7);
+    if (!JwtUtils.isValid(ownerToken)) {
+      logger.info("Token invalid");
+      return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+    }
+
+    return ResponseEntity.status(HttpStatus.OK).build();
   }
 }

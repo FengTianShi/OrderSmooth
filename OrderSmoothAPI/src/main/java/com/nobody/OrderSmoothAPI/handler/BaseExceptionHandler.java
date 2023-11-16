@@ -18,7 +18,7 @@ public class BaseExceptionHandler {
     if (fieldError != null) {
       return ResponseEntity.badRequest().body(fieldError.getDefaultMessage());
     } else {
-      return ResponseEntity.badRequest().body(null);
+      return ResponseEntity.badRequest().build();
     }
   }
 }

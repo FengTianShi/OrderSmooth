@@ -8,8 +8,9 @@ import {
 import OwnerSignin from "../components/OwnerSignin.vue";
 import OwnerSignup from "../components/OwnerSignup.vue";
 import OwnerResetPassword from "../components/OwnerResetPassword.vue";
+
 import OwnerDashboard from "../components/OwnerDashboard.vue";
-import TestVuex from "../components/TestVuex.vue";
+import OwnerRestaurant from "../components/OwnerRestaurant.vue";
 
 /**
  * 2、配置路由映射关系
@@ -19,8 +20,9 @@ const routes = [
   { path: "/Signin", component: OwnerSignin },
   { path: "/Signup", component: OwnerSignup },
   { path: "/ResetPassword", component: OwnerResetPassword },
+
   { path: "/Dashboard", component: OwnerDashboard },
-  { path: "/TestVuex", component: TestVuex },
+  { path: "/OwnerRestaurant", component: OwnerRestaurant },
 ];
 
 // 3、创建一个路由的对象
@@ -35,11 +37,29 @@ const router = createRouter({
   routes: routes,
 });
 
+import axios from "axios";
+
 router.beforeEach(async (to) => {
+  var isAuthenticated = false;
+
   var ownerToken = JSON.parse(window.localStorage.getItem("owner-token"));
+  if (ownerToken) {
+    await axios
+      .get(`/owner/is-signin`, {
+        headers: { Authorization: `Bearer ${ownerToken}` },
+      })
+      .then((response) => {
+        if (response.status === 200) {
+          isAuthenticated = true;
+        }
+      })
+      .catch((error) => {
+        console.log(error);
+      });
+  }
 
   if (
-    !ownerToken &&
+    !isAuthenticated &&
     to.path !== "/Signin" &&
     to.path !== "/Signup" &&
     to.path !== "/ResetPassword"

@@ -28,7 +28,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/owner")
 public class OwnerResetPasswordController {
 
-  Logger logger = LoggerFactory.getLogger(OwnerSignupController.class);
+  Logger logger = LoggerFactory.getLogger(OwnerResetPasswordController.class);
 
   @Value("${owner.reset-password.expiration}")
   private Long ownerResetPasswordExpiration;
@@ -110,9 +110,9 @@ public class OwnerResetPasswordController {
         0
       ) {
         return ResponseEntity.status(HttpStatus.CREATED).build();
+      } else {
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
       }
-
-      return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
     } catch (ExpiredJwtException e) {
       return ResponseEntity
         .status(HttpStatus.UNAUTHORIZED)
@@ -120,7 +120,7 @@ public class OwnerResetPasswordController {
     } catch (Exception e) {
       return ResponseEntity
         .status(HttpStatus.UNAUTHORIZED)
-        .body("INVALID TOKEN");
+        .body("TOKEN INVALID");
     }
   }
 }

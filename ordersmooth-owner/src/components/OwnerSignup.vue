@@ -198,7 +198,7 @@ export default {
     },
     async unique(value) {
       var unique = false;
-      await this.$http.get(`/owner/${value}`).then((response) => {
+      await this.$http.get(`/owner/is-exists/${value}`).then((response) => {
         if (!response.data) {
           unique = true;
         }

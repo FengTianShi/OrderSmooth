@@ -130,11 +130,11 @@ public class OwnerSignupController {
     } catch (Exception e) {
       return ResponseEntity
         .status(HttpStatus.UNAUTHORIZED)
-        .body("INVALID TOKEN");
+        .body("TOKEN INVALID");
     }
   }
 
-  @GetMapping("/{email}")
+  @GetMapping("/is-exists/{email}")
   public Boolean isOwnerExists(@PathVariable String email) {
     return ownerService.getOwnerByEmail(email) != null;
   }
