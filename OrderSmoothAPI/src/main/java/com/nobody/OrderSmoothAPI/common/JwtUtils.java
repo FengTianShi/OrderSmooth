@@ -39,7 +39,6 @@ public class JwtUtils {
 
     return Jwts
       .builder()
-      .setHeaderParam("type", "JWT")
       .setClaims(claims)
       .setIssuedAt(now)
       .setExpiration(expiration)

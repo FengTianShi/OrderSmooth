@@ -3,6 +3,8 @@ package com.nobody.OrderSmoothAPI.controller;
 import com.nobody.OrderSmoothAPI.common.JwtUtils;
 import com.nobody.OrderSmoothAPI.common.RequestUtils;
 import com.nobody.OrderSmoothAPI.dto.OwnerSigninParamDTO;
+import com.nobody.OrderSmoothAPI.entity.Owner;
+import com.nobody.OrderSmoothAPI.service.OwnerService;
 import com.nobody.OrderSmoothAPI.service.OwnerSigninService;
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
@@ -26,6 +28,9 @@ public class OwnerSigninController {
 
   @Autowired
   private OwnerSigninService ownerSigninService;
+
+  @Autowired
+  private OwnerService ownerService;
 
   @PostMapping("/signin")
   public ResponseEntity<String> ownerSignin(
@@ -68,7 +73,13 @@ public class OwnerSigninController {
 
     ownerToken = ownerToken.substring(7);
     if (!JwtUtils.isValid(ownerToken)) {
-      logger.info("Token invalid");
+      return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+    }
+
+    Owner owner = ownerService.getOwnerById(
+      JwtUtils.getContent(ownerToken, Owner.class).getOwnerId()
+    );
+    if (owner == null) {
       return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
     }
 

@@ -22,6 +22,16 @@ public class OwnerService {
   @Autowired
   private OwnerMapper ownerMapper;
 
+  public Owner getOwnerById(Long ownerId) {
+    return ownerMapper.selectOne(
+      new MPJLambdaWrapper<Owner>()
+        .selectAll(Owner.class)
+        .eq(Owner::getOwnerId, ownerId)
+        .eq(Owner::getIsInvalid, false)
+        .eq(Owner::getIsDeleted, false)
+    );
+  }
+
   public Owner getOwnerByEmail(String ownerEmail) {
     return ownerMapper.selectOne(
       new MPJLambdaWrapper<Owner>()

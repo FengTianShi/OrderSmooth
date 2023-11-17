@@ -24,8 +24,8 @@ public class OwnerSigninService {
   @Value("${owner.signin.failure-ban-seconds}")
   private Long ownerSigninFailureBanSeconds;
 
-  @Value("${owner.signup.expiration}")
-  private Long ownerExpiration;
+  @Value("${owner.signin.expiration}")
+  private Long ownerSigninExpiration;
 
   @Autowired
   private OwnerService ownerService;
@@ -104,6 +104,6 @@ public class OwnerSigninService {
 
     owner.setOwnerPassword(null);
 
-    return JwtUtils.generateToken("owner-token", owner, ownerExpiration);
+    return JwtUtils.generateToken("owner-token", owner, ownerSigninExpiration);
   }
 }

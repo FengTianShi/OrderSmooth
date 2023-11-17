@@ -22,7 +22,7 @@ const routes = [
   { path: "/ResetPassword", component: OwnerResetPassword },
 
   { path: "/Dashboard", component: OwnerDashboard },
-  { path: "/OwnerRestaurant", component: OwnerRestaurant },
+  { path: "/Restaurant", component: OwnerRestaurant },
 ];
 
 // 3、创建一个路由的对象

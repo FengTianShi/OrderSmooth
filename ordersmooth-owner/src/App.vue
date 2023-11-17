@@ -13,4 +13,7 @@ export default {
 #app {
   font-family: "Noto Sans JP", sans-serif;
 }
+body {
+  background-color: #f5f5f5;
+}
 </style>
