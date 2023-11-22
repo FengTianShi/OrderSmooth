@@ -1,54 +1,35 @@
 <template>
-  <v-card class="mx-auto pa-8" elevation="0" max-width="400">
-    <v-img class="mx-auto my-6" :src="require('../assets/logo.png')"></v-img>
+  <div class="px-4">
+    <v-card class="mx-auto pa-8 mt-4" elevation="0" max-width="400">
+      <v-img class="mx-auto mb-6 mt-3" :src="require('../assets/logo.png')"></v-img>
 
-    <v-form validate-on="submit lazy">
-      <v-text-field
-        class="mb-2"
-        v-model="ownerEmail"
-        density="compact"
-        variant="outlined"
-        placeholder="メールアドレス"
-        prepend-inner-icon="mdi-email-outline"
-        maxlength="100"
-        :rules="[required, email, legalOwner]" />
+      <v-form validate-on="submit lazy">
+        <v-text-field class="mb-2" v-model="ownerEmail" density="compact" variant="outlined" placeholder="メールアドレス"
+          prepend-inner-icon="mdi-email-outline" maxlength="100" :rules="[required, email, legalOwner]" />
 
-      <v-text-field
-        class="mb-2"
-        v-model="ownerPassword"
-        density="compact"
-        variant="outlined"
-        placeholder="パスワード"
-        prepend-inner-icon="mdi-lock-outline"
-        maxlength="100"
-        :append-inner-icon="passwordVisible ? 'mdi-eye-off' : 'mdi-eye'"
-        :type="passwordVisible ? 'text' : 'password'"
-        :rules="[required]"
-        @click:append-inner="passwordVisible = !passwordVisible" />
+        <v-text-field class="mb-2" v-model="ownerPassword" density="compact" variant="outlined" placeholder="パスワード"
+          prepend-inner-icon="mdi-lock-outline" maxlength="100"
+          :append-inner-icon="passwordVisible ? 'mdi-eye-off' : 'mdi-eye'" :type="passwordVisible ? 'text' : 'password'"
+          :rules="[required]" @click:append-inner="passwordVisible = !passwordVisible" />
 
-      <div class="text-caption mb-2">
-        パスワードをお忘れた場合は
-        <router-link class="text-decoration-none" to="/ResetPassword">
-          こちら
+        <div class="text-caption mb-2">
+          パスワードをお忘れた場合は
+          <router-link class="text-decoration-none" to="/ResetPassword">
+            こちら
+          </router-link>
+        </div>
+
+        <v-btn block type="submit" color="black" size="large" :disabled="loading" :loading="loading">
+          ログイン
+        </v-btn>
+      </v-form>
+      <v-card-text class="text-center">
+        <router-link class="text-decoration-none" to="/Signup">
+          今すぐ登録
         </router-link>
-      </div>
-
-      <v-btn
-        block
-        type="submit"
-        color="black"
-        size="large"
-        :disabled="loading"
-        :loading="loading">
-        ログイン
-      </v-btn>
-    </v-form>
-    <v-card-text class="text-center">
-      <router-link class="text-decoration-none" to="/Signup">
-        今すぐ登録
-      </router-link>
-    </v-card-text>
-  </v-card>
+      </v-card-text>
+    </v-card>
+  </div>
 </template>
 
 <script>

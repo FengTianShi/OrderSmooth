@@ -1,130 +1,82 @@
 <template>
-  <v-card class="mx-auto pa-8" elevation="0" max-width="400">
-    <v-img class="mx-auto my-6" :src="require('../assets/logo.png')"></v-img>
+  <div class="px-4">
+    <v-card class="mx-auto pa-8 mt-4" elevation="0" max-width="400">
+      <v-img class="mx-auto mb-6 mt-3" :src="require('../assets/logo.png')"></v-img>
 
-    <div v-if="step == 0">
-      <v-form validate-on="submit lazy" @submit.prevent="signup">
-        <v-text-field
-          v-model="ownerName"
-          maxlength="100"
-          class="mb-2"
-          density="compact"
-          variant="outlined"
-          placeholder="お名前"
-          prepend-inner-icon="mdi-account"
-          :rules="[required]" />
+      <div v-if="step == 0">
+        <v-form validate-on="submit lazy" @submit.prevent="signup">
+          <v-text-field v-model="ownerName" maxlength="100" class="mb-2" density="compact" variant="outlined"
+            placeholder="お名前" prepend-inner-icon="mdi-account" :rules="[required]" />
 
-        <v-text-field
-          v-model="ownerEmail"
-          maxlength="100"
-          class="mb-2"
-          density="compact"
-          variant="outlined"
-          placeholder="メールアドレス"
-          prepend-inner-icon="mdi-email-outline"
-          :rules="[required, email, unique]" />
+          <v-text-field v-model="ownerEmail" maxlength="100" class="mb-2" density="compact" variant="outlined"
+            placeholder="メールアドレス" prepend-inner-icon="mdi-email-outline" :rules="[required, email, unique]" />
 
-        <v-text-field
-          v-model="ownerPassword"
-          maxlength="100"
-          class="mb-2"
-          density="compact"
-          variant="outlined"
-          placeholder="パスワード"
-          hint="パスワードは8桁以上入力ください"
-          prepend-inner-icon="mdi-lock-outline"
-          :append-inner-icon="passwordVisible ? 'mdi-eye-off' : 'mdi-eye'"
-          :type="passwordVisible ? 'text' : 'password'"
-          :rules="[required, minLength]"
-          @click:append-inner="passwordVisible = !passwordVisible" />
+          <v-text-field v-model="ownerPassword" maxlength="100" class="mb-2" density="compact" variant="outlined"
+            placeholder="パスワード" hint="パスワードは8桁以上入力ください" prepend-inner-icon="mdi-lock-outline"
+            :append-inner-icon="passwordVisible ? 'mdi-eye-off' : 'mdi-eye'" :type="passwordVisible ? 'text' : 'password'"
+            :rules="[required, minLength]" @click:append-inner="passwordVisible = !passwordVisible" />
 
-        <v-text-field
-          v-model="ownerPasswordConfirm"
-          maxlength="100"
-          class="mb-2"
-          density="compact"
-          variant="outlined"
-          placeholder="パスワード确认"
-          prepend-inner-icon="mdi-lock-outline"
-          :append-inner-icon="
-            passwordConfirmVisible ? 'mdi-eye-off' : 'mdi-eye'
-          "
-          :type="passwordConfirmVisible ? 'text' : 'password'"
-          :rules="[required, same]"
-          @click:append-inner="
-            passwordConfirmVisible = !passwordConfirmVisible
-          " />
+          <v-text-field v-model="ownerPasswordConfirm" maxlength="100" class="mb-2" density="compact" variant="outlined"
+            placeholder="パスワード确认" prepend-inner-icon="mdi-lock-outline" :append-inner-icon="passwordConfirmVisible ? 'mdi-eye-off' : 'mdi-eye'
+              " :type="passwordConfirmVisible ? 'text' : 'password'" :rules="[required, same]" @click:append-inner="
+    passwordConfirmVisible = !passwordConfirmVisible
+    " />
 
-        <v-btn
-          block
-          type="submit"
-          color="amber"
-          size="large"
-          :disabled="loading"
-          :loading="loading">
-          登録
+          <v-btn block type="submit" color="amber" size="large" :disabled="loading" :loading="loading">
+            登録
+          </v-btn>
+
+          <v-card-text class="text-center">
+            <router-link class="text-decoration-none" to="/Signin">
+              Signin
+            </router-link>
+          </v-card-text>
+
+        </v-form>
+      </div>
+
+      <div v-if="step == 1">
+        <h3 class="text-h7 mb-4 text-center">メールアドレスを認証してください</h3>
+
+        <div class="text-body-2 text-center">
+          <strong>{{ ownerEmail }}</strong>
+          <br />
+          <p>宛に認証コードが送信されました</p>
+          <br />
+          <p>
+            メール受信箱を確認し、下記に認証コードを入力してあなたのメールアドレスを認証してください
+          </p>
+        </div>
+
+        <v-otp-input v-model="otp" class="mb-2" :disabled="loading" :error="otpIncorrect">
+        </v-otp-input>
+
+        <div class="text-caption mb-2">
+          認証コードを受信していませんか?
+          <a v-if="!resend" class="text-decoration-none" href="#" @click="getToken">
+            <strong>認証コードを再送</strong>
+          </a>
+          <span v-if="resend" class="text-decoration-none">
+            <strong>送信中</strong>
+          </span>
+        </div>
+
+        <v-btn block color="amber" size="large" :disabled="otp.length < 6 || loading" :loading="loading"
+          @click="confirmSignup">
+          認証
         </v-btn>
-      </v-form>
-    </div>
 
-    <div v-if="step == 1">
-      <h3 class="text-h7 mb-4 text-center">メールアドレスを認証してください</h3>
+        <v-divider class="my-3"></v-divider>
 
-      <div class="text-body-2 text-center">
-        <strong>{{ ownerEmail }}</strong>
-        <br />
-        <p>宛に認証コードが送信されました</p>
-        <br />
-        <p>
-          メール受信箱を確認し、下記に認証コードを入力してあなたのメールアドレスを認証してください
-        </p>
-      </div>
-
-      <v-otp-input
-        v-model="otp"
-        class="mb-2"
-        :disabled="loading"
-        :error="otpIncorrect">
-      </v-otp-input>
-
-      <div class="text-caption mb-2">
-        認証コードを受信していませんか?
-        <a
-          v-if="!resend"
-          class="text-decoration-none"
-          href="#"
-          @click="getToken">
-          <strong>認証コードを再送</strong>
-        </a>
-        <span v-if="resend" class="text-decoration-none">
-          <strong>送信中</strong>
-        </span>
-      </div>
-
-      <v-btn
-        block
-        color="amber"
-        size="large"
-        :disabled="otp.length < 6 || loading"
-        :loading="loading"
-        @click="confirmSignup">
-        認証
-      </v-btn>
-
-      <v-divider class="my-3"></v-divider>
-
-      <v-btn
-        block
-        color="grey"
-        size="large"
-        @click="
+        <v-btn block color="grey" size="large" @click="
           step = 0;
-          otpIncorrect = false;
+        otpIncorrect = false;
         ">
-        メールアドレスを変更
-      </v-btn>
-    </div>
-  </v-card>
+          メールアドレスを変更
+        </v-btn>
+      </div>
+    </v-card>
+  </div>
 </template>
 
 <script>
