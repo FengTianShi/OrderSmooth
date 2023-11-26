@@ -8,16 +8,15 @@ import java.util.UUID;
 
 public class StringUtils {
 
-  public static String encryptPassword(String password) {
+  public static String hashPassword(String password) {
     try {
-      return Base64
-        .getEncoder()
-        .encodeToString(
-          MessageDigest.getInstance("SHA-256").digest(password.getBytes())
-        );
+      byte[] passwordBytes = password.getBytes();
+      MessageDigest digest = MessageDigest.getInstance("SHA-256");
+      byte[] hashedBytes = digest.digest(passwordBytes);
+      return Base64.getEncoder().encodeToString(hashedBytes);
     } catch (NoSuchAlgorithmException e) {
       e.printStackTrace();
-      return password;
+      return null;
     }
   }
 

@@ -1,5 +1,6 @@
 package com.nobody.OrderSmoothAPI.common;
 
+import com.nobody.OrderSmoothAPI.entity.Owner;
 import javax.servlet.http.HttpServletRequest;
 import nl.bitwalker.useragentutils.Browser;
 import nl.bitwalker.useragentutils.OperatingSystem;
@@ -8,65 +9,30 @@ import org.apache.commons.lang3.StringUtils;
 
 public class RequestUtils {
 
-  public static String getIpAdrress(HttpServletRequest request) {
-    String ip = null;
+  public static String getIpAddress(HttpServletRequest request) {
+    String[] headers = {
+      "X-Forwarded-For", // Squid service proxy
+      "Proxy-Client-IP", // Apache service proxy
+      "WL-Proxy-Client-IP", // Weblogic service proxy
+      "HTTP_CLIENT_IP", // Some proxy servers
+      "X-Real-IP", // Nginx service proxy
+    };
 
-    // X-Forwarded-For：Squid 服务代理
-    String ipAddresses = request.getHeader("X-Forwarded-For");
-
-    String unknown = "unknown";
-    if (
-      ipAddresses == null ||
-      ipAddresses.length() == 0 ||
-      unknown.equalsIgnoreCase(ipAddresses)
-    ) {
-      // Proxy-Client-IP：apache 服务代理
-      ipAddresses = request.getHeader("Proxy-Client-IP");
+    for (String header : headers) {
+      String ipAddresses = request.getHeader(header);
+      if (
+        ipAddresses != null &&
+        ipAddresses.length() != 0 &&
+        !"unknown".equalsIgnoreCase(ipAddresses)
+      ) {
+        return ipAddresses.split(",")[0];
+      }
     }
 
-    if (
-      ipAddresses == null ||
-      ipAddresses.length() == 0 ||
-      unknown.equalsIgnoreCase(ipAddresses)
-    ) {
-      // WL-Proxy-Client-IP：weblogic 服务代理
-      ipAddresses = request.getHeader("WL-Proxy-Client-IP");
-    }
-
-    if (
-      ipAddresses == null ||
-      ipAddresses.length() == 0 ||
-      unknown.equalsIgnoreCase(ipAddresses)
-    ) {
-      // HTTP_CLIENT_IP：有些代理服务器
-      ipAddresses = request.getHeader("HTTP_CLIENT_IP");
-    }
-
-    if (
-      ipAddresses == null ||
-      ipAddresses.length() == 0 ||
-      unknown.equalsIgnoreCase(ipAddresses)
-    ) {
-      // X-Real-IP：nginx服务代理
-      ipAddresses = request.getHeader("X-Real-IP");
-    }
-
-    // 有些网络通过多层代理，那么获取到的ip就会有多个，一般都是通过逗号（,）分割开来，并且第一个ip为客户端的真实IP
-    if (ipAddresses != null && ipAddresses.length() != 0) {
-      ip = ipAddresses.split(",")[0];
-    }
-
-    // 还是不能获取到，最后再通过request.getRemoteAddr();获取
-    if (
-      ip == null || ip.length() == 0 || unknown.equalsIgnoreCase(ipAddresses)
-    ) {
-      ip = request.getRemoteAddr();
-    }
-
-    return ip;
+    return request.getRemoteAddr();
   }
 
-  public static String getDeviceInfo(HttpServletRequest request) {
+  public static String getDevice(HttpServletRequest request) {
     String userAgentStr = request.getHeader("User-Agent");
     if (StringUtils.isBlank(userAgentStr)) {
       return null;
@@ -76,6 +42,20 @@ public class RequestUtils {
     OperatingSystem os = userAgent.getOperatingSystem();
     Browser browser = userAgent.getBrowser();
 
-    return "OS:" + os.getName() + ",Browser:" + browser.getName();
+    return String.format("%s,%s", os.getName(), browser.getName());
+  }
+
+  public static Owner getOwner(HttpServletRequest request) {
+    String ownerToken = request.getHeader("Authorization");
+    if (ownerToken == null || !ownerToken.startsWith("Bearer ")) {
+      return null;
+    }
+
+    ownerToken = ownerToken.substring(7);
+    if (!JwtUtils.isValid(ownerToken)) {
+      return null;
+    }
+
+    return JwtUtils.getContent(ownerToken, Owner.class);
   }
 }

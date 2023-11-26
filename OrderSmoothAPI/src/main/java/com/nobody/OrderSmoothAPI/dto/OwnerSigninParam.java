@@ -1,5 +1,6 @@
 package com.nobody.OrderSmoothAPI.dto;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import java.io.Serializable;
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotBlank;
@@ -13,7 +14,7 @@ import lombok.NoArgsConstructor;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class OwnerResetPasswordParamDTO implements Serializable {
+public class OwnerSigninParam implements Serializable {
 
   @NotBlank
   @Email
@@ -22,5 +23,11 @@ public class OwnerResetPasswordParamDTO implements Serializable {
 
   @NotBlank
   @Size(max = 100)
-  private String newPassword;
+  private String ownerPassword;
+
+  @JsonIgnore
+  private String ipAddress;
+
+  @JsonIgnore
+  private String deviceInfo;
 }

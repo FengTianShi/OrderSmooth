@@ -3,12 +3,12 @@
     <OwnerHeader />
 
     <v-main>
-      <v-container fluid class="pa-3">
+      <v-container fluid class="pa-4">
         <v-form validate-on="submit lazy" @submit.prevent="">
           <v-card class="mx-auto pa-8 ma-3" elevation="2" max-width="1000">
             <v-row>
               <v-col class="pa-1" cols="12" md="12">
-                <p class="text-h6">店舗追加</p>
+                <p class="text-h6">店舗情報</p>
               </v-col>
             </v-row>
 

@@ -15,11 +15,7 @@ public class JwtUtils {
 
   private static String secret = "affe506d-dcff-4444-825d-63d4d3e9c7d0";
 
-  public static String generateToken(
-    String subject,
-    Object ContentClass,
-    long expire
-  ) {
+  public static String generate(String subject, Object content, long expire) {
     Map<String, Object> claims = new HashMap<>();
     claims.put("subject", subject);
 
@@ -28,10 +24,10 @@ public class JwtUtils {
         .builder()
         .addModule(new JavaTimeModule())
         .build();
-
-      claims.put("content", mapper.writeValueAsString(ContentClass));
+      claims.put("content", mapper.writeValueAsString(content));
     } catch (JsonProcessingException e) {
       e.printStackTrace();
+      return null;
     }
 
     Date now = new Date();

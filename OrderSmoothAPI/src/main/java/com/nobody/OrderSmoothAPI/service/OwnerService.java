@@ -2,25 +2,23 @@ package com.nobody.OrderSmoothAPI.service;
 
 import com.github.yulichang.wrapper.MPJLambdaWrapper;
 import com.nobody.OrderSmoothAPI.common.StringUtils;
-import com.nobody.OrderSmoothAPI.dto.OwnerResetPasswordParamDTO;
-import com.nobody.OrderSmoothAPI.dto.OwnerSignupParamDTO;
+import com.nobody.OrderSmoothAPI.dto.OwnerResetPasswordParam;
+import com.nobody.OrderSmoothAPI.dto.OwnerSignupParam;
 import com.nobody.OrderSmoothAPI.entity.Owner;
 import com.nobody.OrderSmoothAPI.mapper.OwnerMapper;
 import java.time.OffsetDateTime;
 import java.time.ZoneOffset;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
 public class OwnerService {
 
-  Logger logger = LoggerFactory.getLogger(OwnerService.class);
+  private final OwnerMapper ownerMapper;
 
-  @Autowired
-  private OwnerMapper ownerMapper;
+  public OwnerService(OwnerMapper ownerMapper) {
+    this.ownerMapper = ownerMapper;
+  }
 
   public Owner getOwnerById(Long ownerId) {
     return ownerMapper.selectOne(
@@ -43,16 +41,15 @@ public class OwnerService {
   }
 
   @Transactional
-  public Integer createOwner(OwnerSignupParamDTO ownerSignupParamDTO) {
+  public Integer createOwner(OwnerSignupParam ownerSignupParam) {
     OffsetDateTime nowTime = OffsetDateTime.now(ZoneOffset.UTC);
-
     return ownerMapper.insert(
       Owner
         .builder()
-        .ownerName(ownerSignupParamDTO.getOwnerName())
-        .ownerEmail(ownerSignupParamDTO.getOwnerEmail())
+        .ownerName(ownerSignupParam.getOwnerName())
+        .ownerEmail(ownerSignupParam.getOwnerEmail())
         .ownerPassword(
-          StringUtils.encryptPassword(ownerSignupParamDTO.getOwnerPassword())
+          StringUtils.hashPassword(ownerSignupParam.getOwnerPassword())
         )
         .isInvalid(false)
         .isDeleted(false)
@@ -66,23 +63,20 @@ public class OwnerService {
 
   @Transactional
   public Integer updateOwnerPasswordByEmail(
-    OwnerResetPasswordParamDTO ownerResetPasswordParamDTO
+    OwnerResetPasswordParam ownerResetPasswordParam
   ) {
     OffsetDateTime nowTime = OffsetDateTime.now(ZoneOffset.UTC);
-
     return ownerMapper.update(
       Owner
         .builder()
         .ownerPassword(
-          StringUtils.encryptPassword(
-            ownerResetPasswordParamDTO.getNewPassword()
-          )
+          StringUtils.hashPassword(ownerResetPasswordParam.getNewPassword())
         )
         .updateTime(nowTime)
         .updatedBy("SYSTEM")
         .build(),
       new MPJLambdaWrapper<Owner>()
-        .eq(Owner::getOwnerEmail, ownerResetPasswordParamDTO.getOwnerEmail())
+        .eq(Owner::getOwnerEmail, ownerResetPasswordParam.getOwnerEmail())
         .eq(Owner::getIsInvalid, false)
         .eq(Owner::getIsDeleted, false)
     );

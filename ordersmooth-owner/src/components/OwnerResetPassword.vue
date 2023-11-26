@@ -1,74 +1,128 @@
 <template>
   <div class="px-4">
     <v-card class="mx-auto pa-8 mt-4" elevation="0" max-width="400">
-      <v-img class="mx-auto mb-6 mt-3" :src="require('../assets/logo.png')"></v-img>
+      <v-img class="mx-auto mb-6 mt-3" :src="require('../assets/logo.png')" />
 
       <div v-if="step == 0">
         <v-form validate-on="submit lazy" @submit.prevent="resetPassword">
-          <v-text-field v-model="ownerEmail" maxlength="100" class="mb-2" density="compact" variant="outlined"
-            placeholder="メールアドレス" prepend-inner-icon="mdi-email-outline" :rules="[required, email]" />
+          <v-text-field
+            class="mb-2"
+            density="compact"
+            variant="outlined"
+            prepend-inner-icon="mdi-email-outline"
+            maxlength="100"
+            v-model="ownerEmail"
+            :placeholder="$t('resetPassword.mailAddress')"
+            :rules="[required, email]" />
 
-          <v-text-field v-model="ownerPassword" maxlength="100" class="mb-2" density="compact" variant="outlined"
-            placeholder="新しいパスワード" hint="パスワードは8桁以上入力ください" prepend-inner-icon="mdi-lock-outline"
-            :append-inner-icon="passwordVisible ? 'mdi-eye-off' : 'mdi-eye'" :type="passwordVisible ? 'text' : 'password'"
-            :rules="[required, minLength]" @click:append-inner="passwordVisible = !passwordVisible" />
+          <v-text-field
+            class="mb-2"
+            density="compact"
+            variant="outlined"
+            prepend-inner-icon="mdi-lock-outline"
+            maxlength="100"
+            v-model="ownerPassword"
+            :placeholder="$t('resetPassword.newPassword')"
+            :hint="$t('resetPassword.passwordLengthHint')"
+            :append-inner-icon="passwordVisible ? 'mdi-eye-off' : 'mdi-eye'"
+            :type="passwordVisible ? 'text' : 'password'"
+            :rules="[required, minLength]"
+            @click:append-inner="passwordVisible = !passwordVisible" />
 
-          <v-text-field v-model="ownerPasswordConfirm" maxlength="100" class="mb-2" density="compact" variant="outlined"
-            placeholder="パスワード确认" prepend-inner-icon="mdi-lock-outline" :append-inner-icon="passwordConfirmVisible ? 'mdi-eye-off' : 'mdi-eye'
-              " :type="passwordConfirmVisible ? 'text' : 'password'" :rules="[required, same]" @click:append-inner="
-    passwordConfirmVisible = !passwordConfirmVisible
-    " />
+          <v-text-field
+            class="mb-2"
+            density="compact"
+            variant="outlined"
+            prepend-inner-icon="mdi-lock-outline"
+            maxlength="100"
+            v-model="ownerPasswordConfirm"
+            :placeholder="$t('resetPassword.passwordConfirm')"
+            :append-inner-icon="
+              passwordConfirmVisible ? 'mdi-eye-off' : 'mdi-eye'
+            "
+            :type="passwordConfirmVisible ? 'text' : 'password'"
+            :rules="[required, same]"
+            @click:append-inner="
+              passwordConfirmVisible = !passwordConfirmVisible
+            " />
 
-          <v-btn block type="submit" color="amber" size="large" :disabled="loading" :loading="loading">
-            変更
+          <v-btn
+            block
+            type="submit"
+            color="amber"
+            size="large"
+            :disabled="loading"
+            :loading="loading">
+            {{ $t("resetPassword.reset") }}
           </v-btn>
 
           <v-card-text class="text-center">
             <router-link class="text-decoration-none" to="/Signin">
-              Signin
+              {{ $t("resetPassword.backToSignin") }}
             </router-link>
           </v-card-text>
         </v-form>
       </div>
 
       <div v-if="step == 1">
-        <h3 class="text-h7 mb-4 text-center">メールアドレスを認証してください</h3>
+        <h3 class="text-h7 mb-4 text-center">
+          {{ $t("resetPassword.verifyMailTitle") }}
+        </h3>
 
         <div class="text-body-2 text-center">
           <strong>{{ ownerEmail }}</strong>
           <br />
-          <p>宛に認証コードが送信されました</p>
+          <p>
+            {{ $t("resetPassword.verifyMailSubTitle") }}
+          </p>
           <br />
           <p>
-            メール受信箱を確認し、下記に認証コードを入力してあなたのメールアドレスを認証してください
+            {{ $t("resetPassword.verifyMailContent") }}
           </p>
         </div>
 
-        <v-otp-input v-model="otp" class="mb-2" :disabled="loading" :error="otpIncorrect">
+        <v-otp-input
+          class="mb-2"
+          v-model="otp"
+          :disabled="loading"
+          :error="otpIncorrect">
         </v-otp-input>
 
         <div class="text-caption mb-2">
-          認証コードを受信していませんか?
-          <a v-if="!resend" class="text-decoration-none" href="#" @click="getToken">
-            <strong>認証コードを再送</strong>
+          {{ $t("resetPassword.otpNotSentHint") }}
+          <a
+            href="#"
+            class="text-decoration-none"
+            v-if="!resending"
+            @click="getToken">
+            <strong> {{ $t("resetPassword.resentOtp") }}</strong>
           </a>
-          <span v-if="resend" class="text-decoration-none">
-            <strong>送信中</strong>
+          <span v-if="resending" class="text-decoration-none">
+            <strong> {{ $t("resetPassword.otpSending") }}</strong>
           </span>
         </div>
 
-        <v-btn block color="amber" size="large" :disabled="otp.length < 6 || loading" :loading="loading"
+        <v-btn
+          block
+          color="amber"
+          size="large"
+          :disabled="otp.length < 6 || loading"
+          :loading="loading"
           @click="confirmResetPassword">
-          認証
+          {{ $t("resetPassword.verifyOtp") }}
         </v-btn>
 
         <v-divider class="my-3"></v-divider>
 
-        <v-btn block color="grey" size="large" @click="
-          step = 0;
-        otpIncorrect = false;
-        ">
-          メールアドレスを変更
+        <v-btn
+          block
+          color="grey"
+          size="large"
+          @click="
+            step = 0;
+            otpIncorrect = false;
+          ">
+          {{ $t("resetPassword.changeMailAddress") }}
         </v-btn>
       </div>
     </v-card>
@@ -86,14 +140,15 @@ export default {
     passwordConfirmVisible: false,
     otpIncorrect: false,
     loading: false,
-    resend: false,
+    resending: false,
     step: 0,
   }),
   methods: {
     async getToken() {
       this.loading = true;
-      this.resend = true;
+      this.resending = true;
       this.otp = "";
+
       await this.$http
         .post("/owner/reset-password", {
           ownerEmail: this.ownerEmail,
@@ -111,7 +166,8 @@ export default {
         .catch((error) => {
           console.log(error.response);
         });
-      this.resend = false;
+
+      this.resending = false;
       this.loading = false;
       this.otpIncorrect = false;
     },
@@ -123,9 +179,11 @@ export default {
     },
     async confirmResetPassword() {
       this.loading = true;
+
       var ownerSignToken = JSON.parse(
         window.localStorage.getItem("owner-reset-password-token")
       );
+
       await this.$http
         .post("/owner/reset-password/confirm", {
           otp: this.otp,
@@ -140,21 +198,25 @@ export default {
           console.log(error.response);
           this.otpIncorrect = true;
         });
+
       this.loading = false;
     },
     required(value) {
-      return !!value || "必須項目を入力してください";
+      return !!value || this.$t("resetPassword.requiredError");
     },
     email(value) {
       const pattern =
         /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
-      return pattern.test(value) || "メールアドレスを正しく入力してください";
+      return pattern.test(value) || this.$t("resetPassword.emailError");
     },
     minLength(value) {
-      return value?.length >= 8 || "パスワードは8桁以上入力ください";
+      return value?.length >= 8 || this.$t("resetPassword.passwordLengthError");
     },
     same(value) {
-      return value == this.ownerPassword || "パスワードは一致しません";
+      return (
+        value == this.ownerPassword ||
+        this.$t("resetPassword.passwordConfirmError")
+      );
     },
     async signin() {
       await this.$http

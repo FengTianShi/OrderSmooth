@@ -2,49 +2,58 @@ package com.nobody.OrderSmoothAPI.service;
 
 import com.nobody.OrderSmoothAPI.common.JwtUtils;
 import com.nobody.OrderSmoothAPI.common.StringUtils;
-import com.nobody.OrderSmoothAPI.dto.OwnerSigninParamDTO;
+import com.nobody.OrderSmoothAPI.dto.OwnerSigninParam;
 import com.nobody.OrderSmoothAPI.entity.Owner;
 import com.nobody.OrderSmoothAPI.entity.OwnerSigninMgt;
 import java.time.OffsetDateTime;
 import java.time.ZoneOffset;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 @Service
 public class OwnerSigninService {
 
-  Logger logger = LoggerFactory.getLogger(OwnerSigninService.class);
+  private final OwnerService ownerService;
 
-  @Value("${owner.signin.failure-max-times}")
-  private Long ownerSigninFailureMaxTimes;
+  private final OwnerSigninMgtService ownerSigninMgtService;
 
-  @Value("${owner.signin.failure-ban-seconds}")
-  private Long ownerSigninFailureBanSeconds;
+  private final Long OWNER_SIGNIN_EXPIRATION;
 
-  @Value("${owner.signin.expiration}")
-  private Long ownerSigninExpiration;
+  private final Long OWNER_SIGNIN_FAILURE_MAX_TIMES;
 
-  @Autowired
-  private OwnerService ownerService;
+  private final Long OWNER_SIGNIN_FAILURE_BAN_SECONDS;
 
-  @Autowired
-  private OwnerSigninMgtService ownerSigninMgtService;
+  public OwnerSigninService(
+    OwnerService ownerService,
+    OwnerSigninMgtService ownerSigninMgtService,
+    @Value("${owner.signin.expiration}") Long OWNER_SIGNIN_EXPIRATION,
+    @Value(
+      "${owner.signin.failure-max-times}"
+    ) Long OWNER_SIGNIN_FAILURE_MAX_TIMES,
+    @Value(
+      "${owner.signin.failure-ban-seconds}"
+    ) Long OWNER_SIGNIN_FAILURE_BAN_SECONDS
+  ) {
+    this.ownerService = ownerService;
+    this.ownerSigninMgtService = ownerSigninMgtService;
+    this.OWNER_SIGNIN_EXPIRATION = OWNER_SIGNIN_EXPIRATION;
+    this.OWNER_SIGNIN_FAILURE_MAX_TIMES = OWNER_SIGNIN_FAILURE_MAX_TIMES;
+    this.OWNER_SIGNIN_FAILURE_BAN_SECONDS = OWNER_SIGNIN_FAILURE_BAN_SECONDS;
+  }
 
-  public String ownerSignin(OwnerSigninParamDTO ownerSigninParamDTO) {
+  public String ownerSignin(OwnerSigninParam ownerSigninParam) {
     Owner owner = ownerService.getOwnerByEmail(
-      ownerSigninParamDTO.getOwnerEmail()
+      ownerSigninParam.getOwnerEmail()
     );
-
-    if (owner == null) return null;
+    if (owner == null) {
+      return null;
+    }
 
     OffsetDateTime nowTime = OffsetDateTime.now(ZoneOffset.UTC);
 
     OwnerSigninMgt ownerSigninMgt = ownerSigninMgtService.getOwnerSigninMgt(
       owner.getOwnerId(),
-      ownerSigninParamDTO.getIpAddress()
+      ownerSigninParam.getIpAddress()
     );
 
     if (ownerSigninMgt == null) {
@@ -52,8 +61,8 @@ public class OwnerSigninService {
         OwnerSigninMgt
           .builder()
           .ownerId(owner.getOwnerId())
-          .ipAddress(ownerSigninParamDTO.getIpAddress())
-          .deviceInfo(ownerSigninParamDTO.getDeviceInfo())
+          .ipAddress(ownerSigninParam.getIpAddress())
+          .deviceInfo(ownerSigninParam.getDeviceInfo())
           .failureCount(0)
           .isBan(false)
           .banStartTime(null)
@@ -69,15 +78,15 @@ public class OwnerSigninService {
 
     if (
       !StringUtils
-        .encryptPassword(ownerSigninParamDTO.getOwnerPassword())
+        .hashPassword(ownerSigninParam.getOwnerPassword())
         .equals(owner.getOwnerPassword())
     ) {
       ownerSigninMgt.setFailureCount(ownerSigninMgt.getFailureCount() + 1);
-      if (ownerSigninMgt.getFailureCount() >= ownerSigninFailureMaxTimes) {
+      if (ownerSigninMgt.getFailureCount() >= OWNER_SIGNIN_FAILURE_MAX_TIMES) {
         ownerSigninMgt.setIsBan(true);
         ownerSigninMgt.setBanStartTime(nowTime);
         ownerSigninMgt.setBanEndTime(
-          nowTime.plusSeconds(ownerSigninFailureBanSeconds)
+          nowTime.plusSeconds(OWNER_SIGNIN_FAILURE_BAN_SECONDS)
         );
       }
       ownerSigninMgt.setUpdateTime(nowTime);
@@ -103,7 +112,6 @@ public class OwnerSigninService {
     ownerSigninMgtService.updateOwnerSigninMgt(ownerSigninMgt);
 
     owner.setOwnerPassword(null);
-
-    return JwtUtils.generateToken("owner-token", owner, ownerSigninExpiration);
+    return JwtUtils.generate("owner-token", owner, OWNER_SIGNIN_EXPIRATION);
   }
 }

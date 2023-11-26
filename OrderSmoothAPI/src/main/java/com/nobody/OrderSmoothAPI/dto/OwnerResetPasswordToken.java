@@ -10,13 +10,11 @@ import lombok.NoArgsConstructor;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class OwnerSignupTokenDTO implements Serializable {
-
-  private String ownerName;
+public class OwnerResetPasswordToken implements Serializable {
 
   private String ownerEmail;
 
-  private String ownerPassword;
+  private String newPassword;
 
   private String otp;
 }

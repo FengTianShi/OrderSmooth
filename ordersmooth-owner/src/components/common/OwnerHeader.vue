@@ -40,10 +40,36 @@
       </v-card>
     </v-menu>
 
-    <v-btn icon="mdi-translate"></v-btn>
+    <v-menu min-width="200px" rounded>
+      <template v-slot:activator="{ props }">
+        <v-btn icon="mdi-translate" v-bind="props"></v-btn>
+      </template>
+
+      <v-card>
+        <v-card-text>
+          <div class="mx-auto text-center">
+            <v-btn rounded variant="text" @click="changeLang('en')">
+              English
+            </v-btn>
+            <v-divider class="my-3"></v-divider>
+            <v-btn rounded variant="text" @click="changeLang('ja')">
+              日本語
+            </v-btn>
+            <v-divider class="my-3"></v-divider>
+            <v-btn rounded variant="text" @click="changeLang('zh-CN')">
+              中文
+            </v-btn>
+            <v-divider class="my-3"></v-divider>
+            <v-btn size="small" disabled rounded variant="text">
+              Coming Soon
+            </v-btn>
+          </div>
+        </v-card-text>
+      </v-card>
+    </v-menu>
   </v-app-bar>
 
-  <v-navigation-drawer v-model="drawer" width="350">
+  <v-navigation-drawer v-model="drawer" temporary width="350">
     <v-list nav>
       <div class="pa-2">
         <v-text-field
@@ -88,9 +114,8 @@
         </v-list-item>
       </v-list-group>
 
-      <v-list-item prepend-icon="mdi-history" value="z"> 注文履歴 </v-list-item>
-      <v-list-item prepend-icon="mdi-history" value="zz">
-        サービス履歴
+      <v-list-item prepend-icon="mdi-history" value="z">
+        歴史データ
       </v-list-item>
     </v-list>
   </v-navigation-drawer>
@@ -99,7 +124,7 @@
 <script>
 export default {
   data: () => ({
-    drawer: true,
+    drawer: false,
     user: {
       initials: "馮",
       fullName: "馮 天時",
@@ -115,7 +140,14 @@ export default {
       ["Update", "mdi-update"],
       ["Delete", "mdi-delete"],
     ],
+    langs: [{ title: "English" }, { title: "日本語" }, { title: "简体中文" }],
   }),
   created: function () {},
+  methods: {
+    changeLang: function (lang) {
+      this.$i18n.locale = lang;
+      localStorage.setItem("lang", lang);
+    },
+  },
 };
 </script>

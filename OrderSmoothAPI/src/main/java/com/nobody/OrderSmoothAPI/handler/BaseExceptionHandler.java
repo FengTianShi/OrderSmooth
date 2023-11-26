@@ -14,11 +14,9 @@ public class BaseExceptionHandler {
   @ExceptionHandler(MethodArgumentNotValidException.class)
   public ResponseEntity<String> handle(MethodArgumentNotValidException e) {
     FieldError fieldError = e.getBindingResult().getFieldError();
-
     if (fieldError != null) {
       return ResponseEntity.badRequest().body(fieldError.getDefaultMessage());
-    } else {
-      return ResponseEntity.badRequest().build();
     }
+    return ResponseEntity.badRequest().build();
   }
 }

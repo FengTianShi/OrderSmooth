@@ -11,6 +11,8 @@ import OwnerResetPassword from "../components/OwnerResetPassword.vue";
 
 import OwnerDashboard from "../components/OwnerDashboard.vue";
 import OwnerRestaurant from "../components/OwnerRestaurant.vue";
+import OwnerCreateRestaurant from "../components/OwnerCreateRestaurant.vue";
+import OwnerUpdateRestaurant from "../components/OwnerUpdateRestaurant.vue";
 
 /**
  * 2、配置路由映射关系
@@ -23,6 +25,8 @@ const routes = [
 
   { path: "/Dashboard", component: OwnerDashboard },
   { path: "/Restaurant", component: OwnerRestaurant },
+  { path: "/CreateRestaurant", component: OwnerCreateRestaurant },
+  { path: "/UpdateRestaurant", component: OwnerUpdateRestaurant },
 ];
 
 // 3、创建一个路由的对象
