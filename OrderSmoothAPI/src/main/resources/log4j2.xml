@@ -1,101 +1,77 @@
 <?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE xml>
 <configuration monitorInterval="5">
-    <!-- Variable Configuration -->
     <Properties>
-        <!-- Format Output: %date for date, %thread for thread name, %-5level for level (5 characters wide), %msg for log message, %n for newline -->
-        <!-- %logger{36} represents the logger name with a maximum length of 36 characters -->
         <property
             name="LOG_PATTERN"
             value="%date{HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n" />
-        <!-- Define the log storage path -->
         <property name="FILE_PATH" value="./logs" />
-        <property name="FILE_NAME" value="ordersmoothapi" />
+        <property name="FILE_NAME" value="ordersmooth-api" />
     </Properties>
     <appenders>
         <Console name="Console" target="SYSTEM_OUT">
-            <!-- Set log format and colors -->
             <PatternLayout
                 pattern="%style{%d{ISO8601}}{bright,green} %highlight{%-5level} [%style{%t}{bright,blue}] %style{%C{}}{bright,yellow}: %msg%n%style{%throwable}{red}"
                 disableAnsi="false"
                 noConsoleNoAnsi="false" />
         </Console>
-        <!-- The following log will print all information, and the log file will be cleared on each program run based on the 'append' attribute; suitable for temporary testing -->
         <File name="Filelog" fileName="${FILE_PATH}/test.log" append="false">
             <PatternLayout pattern="${LOG_PATTERN}" />
         </File>
-        <!-- This log will print all info and above levels of information; when the log size exceeds 'size', the logs will be automatically archived in folders named by year and month and compressed -->
-        <RollingFile
-            name="RollingFileInfo"
-            fileName="${FILE_PATH}/info.log"
-            filePattern="${FILE_PATH}/${FILE_NAME}-INFO-%d{yyyy-MM-dd}_%i.log.gz">
-            <!-- Console will output only level and above (onMatch); other levels will be rejected (onMismatch) -->
-            <ThresholdFilter level="info" onMatch="ACCEPT" onMismatch="DENY" />
-            <PatternLayout pattern="${LOG_PATTERN}" />
-            <Policies>
-                <!-- 'interval' attribute specifies how often to roll the logs; default is 1 hour -->
-                <TimeBasedTriggeringPolicy interval="1" />
-                <SizeBasedTriggeringPolicy size="10MB" />
-            </Policies>
-            <!-- If 'DefaultRolloverStrategy' attribute is not set, it defaults to a maximum of 7 files in the same folder before overwriting -->
-            <DefaultRolloverStrategy max="15" />
-        </RollingFile>
-        <!-- This log will print all warn and above levels of information; when the log size exceeds 'size', the logs will be automatically archived in folders named by year and month and compressed -->
-        <RollingFile
-            name="RollingFileWarn"
-            fileName="${FILE_PATH}/warn.log"
-            filePattern="${FILE_PATH}/${FILE_NAME}-WARN-%d{yyyy-MM-dd}_%i.log.gz">
-            <!-- Console will output only level and above (onMatch); other levels will be rejected (onMismatch) -->
-            <ThresholdFilter level="warn" onMatch="ACCEPT" onMismatch="DENY" />
-            <PatternLayout pattern="${LOG_PATTERN}" />
-            <Policies>
-                <!-- 'interval' attribute specifies how often to roll the logs; default is 1 hour -->
-                <TimeBasedTriggeringPolicy interval="1" />
-                <SizeBasedTriggeringPolicy size="10MB" />
-            </Policies>
-            <!-- If 'DefaultRolloverStrategy' attribute is not set, it defaults to a maximum of 7 files in the same folder before overwriting -->
-            <DefaultRolloverStrategy max="15" />
-        </RollingFile>
-        <!-- This log will print all error and above levels of information; when the log size exceeds 'size', the logs will be automatically archived in folders named by year and month and compressed -->
-        <RollingFile
-            name="RollingFileError"
-            fileName="${FILE_PATH}/error.log"
-            filePattern="${FILE_PATH}/${FILE_NAME}-ERROR-%d{yyyy-MM-dd}_%i.log.gz">
-            <!-- Console will output only level and above (onMatch); other levels will be rejected (onMismatch) -->
-            <ThresholdFilter level="error" onMatch="ACCEPT" onMismatch="DENY" />
-            <PatternLayout pattern="${LOG_PATTERN}" />
-            <Policies>
-                <!-- 'interval' attribute specifies how often to roll the logs; default is 1 hour -->
-                <TimeBasedTriggeringPolicy interval="1" />
-                <SizeBasedTriggeringPolicy size="10MB" />
-            </Policies>
-            <!-- If 'DefaultRolloverStrategy' attribute is not set, it defaults to a maximum of 7 files in the same folder before overwriting -->
-            <DefaultRolloverStrategy max="15" />
-        </RollingFile>
-        <!-- This log will print all debug and above levels of information; when the log size exceeds 'size', the logs will be automatically archived in folders named by year and month and compressed -->
         <RollingFile
             name="RollingFileDebug"
             fileName="${FILE_PATH}/debug.log"
             filePattern="${FILE_PATH}/${FILE_NAME}-DEBUG-%d{yyyy-MM-dd}_%i.log.gz">
-            <!-- Console will output only level and above (onMatch); other levels will be rejected (onMismatch) -->
             <ThresholdFilter level="debug" onMatch="ACCEPT" onMismatch="DENY" />
             <PatternLayout pattern="${LOG_PATTERN}" />
             <Policies>
-                <!-- 'interval' attribute specifies how often to roll the logs; default is 1 hour -->
                 <TimeBasedTriggeringPolicy interval="1" />
                 <SizeBasedTriggeringPolicy size="10MB" />
             </Policies>
-            <!-- If 'DefaultRolloverStrategy' attribute is not set, it defaults to a maximum of 7 files in the same folder before overwriting -->
+            <DefaultRolloverStrategy max="15" />
+        </RollingFile>
+        <RollingFile
+            name="RollingFileInfo"
+            fileName="${FILE_PATH}/info.log"
+            filePattern="${FILE_PATH}/${FILE_NAME}-INFO-%d{yyyy-MM-dd}_%i.log.gz">
+            <ThresholdFilter level="info" onMatch="ACCEPT" onMismatch="DENY" />
+            <PatternLayout pattern="${LOG_PATTERN}" />
+            <Policies>
+                <TimeBasedTriggeringPolicy interval="1" />
+                <SizeBasedTriggeringPolicy size="10MB" />
+            </Policies>
+            <DefaultRolloverStrategy max="15" />
+        </RollingFile>
+        <RollingFile
+            name="RollingFileWarn"
+            fileName="${FILE_PATH}/warn.log"
+            filePattern="${FILE_PATH}/${FILE_NAME}-WARN-%d{yyyy-MM-dd}_%i.log.gz">
+            <ThresholdFilter level="warn" onMatch="ACCEPT" onMismatch="DENY" />
+            <PatternLayout pattern="${LOG_PATTERN}" />
+            <Policies>
+                <TimeBasedTriggeringPolicy interval="1" />
+                <SizeBasedTriggeringPolicy size="10MB" />
+            </Policies>
+            <DefaultRolloverStrategy max="15" />
+        </RollingFile>
+        <RollingFile
+            name="RollingFileError"
+            fileName="${FILE_PATH}/error.log"
+            filePattern="${FILE_PATH}/${FILE_NAME}-ERROR-%d{yyyy-MM-dd}_%i.log.gz">
+            <ThresholdFilter level="error" onMatch="ACCEPT" onMismatch="DENY" />
+            <PatternLayout pattern="${LOG_PATTERN}" />
+            <Policies>
+                <TimeBasedTriggeringPolicy interval="1" />
+                <SizeBasedTriggeringPolicy size="10MB" />
+            </Policies>
             <DefaultRolloverStrategy max="15" />
         </RollingFile>
     </appenders>
-    <!-- Logger nodes are used to specify the log format for specific packages or classes -->
-    <!-- Define loggers; appenders are effective only when defined in loggers -->
     <loggers>
         <logger
             level="debug"
             name="com.nobody.OrderSmoothAPI.mapper"
             additivity="false">
-            <!-- Output SQL statements to the 'RollingFileDebug' file -->
             <AppenderRef ref="RollingFileDebug" />
             <AppenderRef ref="Filelog" />
             <AppenderRef ref="Console" />

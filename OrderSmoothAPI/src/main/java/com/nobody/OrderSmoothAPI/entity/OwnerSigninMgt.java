@@ -18,7 +18,7 @@ import lombok.NoArgsConstructor;
 public class OwnerSigninMgt implements Serializable {
 
   @TableId(type = IdType.AUTO)
-  private Long signinId;
+  private Long seq;
 
   private Long ownerId;
 

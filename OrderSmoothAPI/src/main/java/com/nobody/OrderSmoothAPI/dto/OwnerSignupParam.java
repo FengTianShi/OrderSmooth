@@ -25,6 +25,6 @@ public class OwnerSignupParam implements Serializable {
   private String ownerEmail;
 
   @NotBlank
-  @Size(max = 100)
+  @Size(min = 8, max = 100)
   private String ownerPassword;
 }

@@ -1,5 +1,7 @@
 package com.nobody.OrderSmoothAPI.entity;
 
+import com.baomidou.mybatisplus.annotation.IdType;
+import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 import java.io.Serializable;
 import java.time.OffsetDateTime;
@@ -14,6 +16,9 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @TableName("m_restaurant_genre")
 public class RestaurantGenre implements Serializable {
+
+  @TableId(type = IdType.AUTO)
+  private Integer seq;
 
   private Integer genreId;
 
