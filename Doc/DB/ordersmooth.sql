@@ -9,7 +9,6 @@ CREATE TABLE IF NOT EXISTS public.m_restaurant_genre
     inserted_by character varying(100) NOT NULL,
     update_time timestamp with time zone NOT NULL,
     updated_by character varying(100) NOT NULL,
-
     PRIMARY KEY (genre_id, lang_code)
 );
 
@@ -80,7 +79,8 @@ CREATE TABLE IF NOT EXISTS public.t_owner_signin_mgt
     inserted_by character varying(100) NOT NULL,
     update_time timestamp with time zone NOT NULL,
     updated_by character varying(100) NOT NULL,
-    PRIMARY KEY (signin_id)
+    PRIMARY KEY (signin_id),
+    FOREIGN KEY (owner_id) REFERENCES t_owner(owner_id)
 );
 
 CREATE TABLE IF NOT EXISTS public.t_owner
