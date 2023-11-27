@@ -54,7 +54,7 @@ CREATE TABLE IF NOT EXISTS public.t_restaurant (
     PRIMARY KEY (restaurant_id),
     FOREIGN KEY (owner_id) REFERENCES t_owner(owner_id),
     FOREIGN KEY (genre_id) REFERENCES m_restaurant_genre(genre_id),
-    FOREIGN KEY (currency_id) REFERENCES m_currency(currency_id),
+    FOREIGN KEY (currency_id) REFERENCES m_currency(currency_id)
 );
 
 CREATE TABLE IF NOT EXISTS public.t_restaurant_i18n (
@@ -72,7 +72,7 @@ CREATE TABLE IF NOT EXISTS public.t_restaurant_i18n (
     updated_by character varying(100) NOT NULL,
     PRIMARY KEY (seq),
     FOREIGN KEY (restaurant_id) REFERENCES t_restaurant(restaurant_id),
-    FOREIGN KEY (lang_code) REFERENCES m_language(lang_code),
+    FOREIGN KEY (lang_code) REFERENCES m_language(lang_code)
 );
 
 CREATE TABLE IF NOT EXISTS public.t_restaurant_pay_method (
@@ -87,7 +87,7 @@ CREATE TABLE IF NOT EXISTS public.t_restaurant_pay_method (
     updated_by character varying(100) NOT NULL,
     PRIMARY KEY (seq),
     FOREIGN KEY (restaurant_id) REFERENCES t_restaurant(restaurant_id),
-    FOREIGN KEY (pay_method_id) REFERENCES m_pay_method(pay_method_id),
+    FOREIGN KEY (pay_method_id) REFERENCES m_pay_method(pay_method_id)
 );
 
 CREATE TABLE IF NOT EXISTS public.t_restaurant_opening_hours (
@@ -103,7 +103,7 @@ CREATE TABLE IF NOT EXISTS public.t_restaurant_opening_hours (
     update_time timestamp with time zone NOT NULL,
     updated_by character varying(100) NOT NULL,
     PRIMARY KEY (seq),
-    FOREIGN KEY (restaurant_id) REFERENCES t_restaurant(restaurant_id),
+    FOREIGN KEY (restaurant_id) REFERENCES t_restaurant(restaurant_id)
 );
 
 CREATE TABLE IF NOT EXISTS public.t_restaurant_image (
@@ -117,7 +117,7 @@ CREATE TABLE IF NOT EXISTS public.t_restaurant_image (
     update_time timestamp with time zone NOT NULL,
     updated_by character varying(100) NOT NULL,
     PRIMARY KEY (seq),
-    FOREIGN KEY (restaurant_id) REFERENCES t_restaurant(restaurant_id),
+    FOREIGN KEY (restaurant_id) REFERENCES t_restaurant(restaurant_id)
 );
 
 CREATE TABLE IF NOT EXISTS public.t_printer (
@@ -132,7 +132,7 @@ CREATE TABLE IF NOT EXISTS public.t_printer (
     update_time timestamp with time zone NOT NULL,
     updated_by character varying(100) NOT NULL,
     PRIMARY KEY (printer_id),
-    FOREIGN KEY (restaurant_id) REFERENCES t_restaurant(restaurant_id),
+    FOREIGN KEY (restaurant_id) REFERENCES t_restaurant(restaurant_id)
 );
 
 CREATE TABLE IF NOT EXISTS public.t_printer_i18n (
@@ -149,5 +149,5 @@ CREATE TABLE IF NOT EXISTS public.t_printer_i18n (
     updated_by character varying(100) NOT NULL,
     PRIMARY KEY (seq),
     FOREIGN KEY (printer_id) REFERENCES t_printer(printer_id),
-    FOREIGN KEY (lang_code) REFERENCES m_language(lang_code),
+    FOREIGN KEY (lang_code) REFERENCES m_language(lang_code)
 );
