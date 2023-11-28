@@ -8,16 +8,14 @@
           <v-card class="mx-auto pa-8" elevation="0" max-width="1400">
             <h2 class="text-h4 font-weight-black text-orange">店舗を追加!</h2>
 
+            <p class="text-body-2 mb-4">店舗の基本情報を入力してください。</p>
+
+            <v-divider class="mb-6"></v-divider>
             <v-form
               validate-on="submit lazy"
               @submit.prevent="createRestaurant">
               <v-row>
                 <v-col cols="12" md="4">
-                  <p class="text-body-2 mb-4">
-                    店舗の基本情報を入力してください。
-                  </p>
-
-                  <v-divider class="mb-6"></v-divider>
                   <v-select
                     label="ジャンル"
                     class="mb-2"
@@ -100,11 +98,8 @@
                     v-model="restaurantIntroduction"
                     :rules="[required]" />
                 </v-col>
+
                 <v-col cols="12" md="4">
-                  <p class="text-body-2 mb-4">
-                    店舗の基本情報を入力してください。
-                  </p>
-                  <v-divider class="mb-6"></v-divider>
                   <v-select
                     label="通貨"
                     class="mb-2"
@@ -131,10 +126,19 @@
                     v-model="selectedpayMethod"
                     :rules="[selected]" />
 
-                  <p class="text-body-2 mb-4">
-                    店舗の基本情報を入力してください。
-                  </p>
-                  <v-divider class="mb-6"></v-divider>
+                  <v-text-field
+                    label="Service fee"
+                    placeholder="%"
+                    class="mb-2"
+                    density="compact"
+                    variant="outlined"
+                    prepend-inner-icon="mdi-cash"
+                    append-inner-icon="mdi-percent-outline"
+                    persistent-hint
+                    maxlength="3"
+                    v-model="restaurantAddress"
+                    :rules="[required]" />
+
                   <v-text-field
                     label="Tex"
                     placeholder="%"
@@ -148,24 +152,147 @@
                     v-model="restaurantAddress"
                     :rules="[required]" />
 
-                  <v-switch label="Switch" color="primary" inset></v-switch>
+                  <v-chip-group filter>
+                    <v-chip size="small">表示税金</v-chip>
+                    <v-chip size="small">不表示税金</v-chip>
+                  </v-chip-group>
                 </v-col>
+
                 <v-col cols="12" md="4">
-                  <v-btn block color="primary"> 時間帯追加 </v-btn>
+                  <v-select
+                    label="曜日"
+                    multiple
+                    class="mb-2"
+                    density="compact"
+                    variant="outlined"
+                    persistent-hint
+                    :items="weekList"
+                    item-title="weekName"
+                    item-value="weekId"
+                    v-model="selectedweek" />
+
+                  <v-text-field
+                    label="Tex"
+                    placeholder="%"
+                    class="mb-2"
+                    density="compact"
+                    variant="outlined"
+                    persistent-hint
+                    maxlength="3"
+                    v-model="restaurantAddress"
+                    :rules="[required]" />
+
+                  <v-text-field
+                    label="Tex"
+                    placeholder="%"
+                    class="mb-2"
+                    density="compact"
+                    variant="outlined"
+                    persistent-hint
+                    maxlength="3"
+                    v-model="restaurantAddress"
+                    :rules="[required]" />
+
+                  <v-btn
+                    block
+                    height="40"
+                    variant="text"
+                    class="mb-4"
+                    append-icon="mdi-plus">
+                    時間帯追加
+                  </v-btn>
+
+                  <div class="text-center mb-6">
+                    <div>
+                      <span>月曜日</span>
+                      <v-chip
+                        size="small"
+                        v-if="chip"
+                        class="ma-2"
+                        closable
+                        @click:close="chip = false">
+                        9:00 ~ 12:00
+                      </v-chip>
+                    </div>
+                    <div>
+                      <span>月曜日</span>
+                      <v-chip
+                        size="small"
+                        v-if="chip"
+                        class="ma-2"
+                        closable
+                        @click:close="chip = false">
+                        9:00 ~ 12:00
+                      </v-chip>
+                    </div>
+                    <div>
+                      <span>月曜日</span>
+                      <v-chip
+                        size="small"
+                        v-if="chip"
+                        class="ma-2"
+                        closable
+                        @click:close="chip = false">
+                        9:00 ~ 12:00
+                      </v-chip>
+                    </div>
+                    <div>
+                      <span>月曜日</span>
+                      <v-chip
+                        size="small"
+                        v-if="chip"
+                        class="ma-2"
+                        closable
+                        @click:close="chip = false">
+                        9:00 ~ 12:00
+                      </v-chip>
+                    </div>
+                    <div>
+                      <span>月曜日</span>
+                      <v-chip
+                        size="small"
+                        v-if="chip"
+                        class="ma-2"
+                        closable
+                        @click:close="chip = false">
+                        9:00 ~ 12:00
+                      </v-chip>
+                    </div>
+                    <div>
+                      <span>月曜日</span>
+                      <v-chip
+                        size="small"
+                        v-if="chip"
+                        class="ma-2"
+                        closable
+                        @click:close="chip = false">
+                        9:00 ~ 12:00
+                      </v-chip>
+                    </div>
+                    <div>
+                      <span>月曜日</span>
+                      <v-chip
+                        size="small"
+                        v-if="chip"
+                        class="ma-2"
+                        closable
+                        @click:close="chip = false">
+                        9:00 ~ 12:00
+                      </v-chip>
+                    </div>
+                  </div>
                 </v-col>
               </v-row>
 
-              <div class="text-right">
-                <v-btn
-                  width="200"
-                  type="submit"
-                  color="deep-purple-accent-4"
-                  size="large"
-                  :disabled="loading"
-                  :loading="loading">
-                  店舗登録
-                </v-btn>
-              </div>
+              <v-btn
+                width="300"
+                type="submit"
+                color="deep-purple-accent-4"
+                size="large"
+                :disabled="loading"
+                :loading="loading">
+                店舗登録
+              </v-btn>
             </v-form>
           </v-card>
         </v-card>
@@ -186,6 +313,15 @@ export default {
     genreList: [],
     currencyList: [],
     payMethodList: [],
+    weekList: [
+      { weekId: 1, weekName: "月曜日" },
+      { weekId: 2, weekName: "火曜日" },
+      { weekId: 3, weekName: "水曜日" },
+      { weekId: 4, weekName: "木曜日" },
+      { weekId: 5, weekName: "金曜日" },
+      { weekId: 6, weekName: "土曜日" },
+      { weekId: 7, weekName: "日曜日" },
+    ],
     selectedGenre: null,
     selectedLang: null,
     selectedCurrency: null,
@@ -196,6 +332,7 @@ export default {
     restaurantAddress: "",
     restaurantIntroduction: "",
     loading: false,
+    chip: true,
   }),
   methods: {
     async createRestaurant(event) {
