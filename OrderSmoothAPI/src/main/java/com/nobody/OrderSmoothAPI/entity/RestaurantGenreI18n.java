@@ -14,11 +14,17 @@ import lombok.NoArgsConstructor;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@TableName("m_restaurant_genre")
-public class RestaurantGenre implements Serializable {
+@TableName("m_restaurant_genre_i18n")
+public class RestaurantGenreI18n implements Serializable {
 
   @TableId(type = IdType.AUTO)
+  private Integer seq;
+
   private Integer genreId;
+
+  private String langCode;
+
+  private String genreName;
 
   private Boolean isInvalid;
 

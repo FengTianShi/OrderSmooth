@@ -1,7 +1,7 @@
 package com.nobody.OrderSmoothAPI.controller;
 
+import com.nobody.OrderSmoothAPI.dto.RestaurantGenreDTO;
 import com.nobody.OrderSmoothAPI.entity.Language;
-import com.nobody.OrderSmoothAPI.entity.RestaurantGenre;
 import com.nobody.OrderSmoothAPI.service.LanguageService;
 import com.nobody.OrderSmoothAPI.service.RestaurantGenreService;
 import java.util.List;
@@ -36,7 +36,7 @@ public class MasterController {
   }
 
   @GetMapping("/restaurant-genre/{langCode}")
-  public ResponseEntity<List<RestaurantGenre>> getRestaurantGenre(
+  public ResponseEntity<List<RestaurantGenreDTO>> getRestaurantGenre(
     @PathVariable String langCode
   ) {
     return ResponseEntity
