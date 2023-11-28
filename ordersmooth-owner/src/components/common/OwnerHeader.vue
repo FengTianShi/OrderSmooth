@@ -87,7 +87,9 @@
       </div>
 
       <div class="pa-2">
-        <v-btn prepend-icon="mdi-store-plus-outline" block>店舗追加</v-btn>
+        <v-btn color="amber" prepend-icon="mdi-store-plus-outline" block
+          >店舗追加</v-btn
+        >
       </div>
 
       <v-list-group>

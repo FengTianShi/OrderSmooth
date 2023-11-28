@@ -160,7 +160,7 @@
 
                 <v-col cols="12" md="4">
                   <v-select
-                    label="曜日"
+                    placeholder="曜日"
                     multiple
                     class="mb-2"
                     density="compact"
@@ -172,8 +172,7 @@
                     v-model="selectedweek" />
 
                   <v-text-field
-                    label="Tex"
-                    placeholder="%"
+                    placeholder="営業開始時間"
                     class="mb-2"
                     density="compact"
                     variant="outlined"
@@ -183,8 +182,7 @@
                     :rules="[required]" />
 
                   <v-text-field
-                    label="Tex"
-                    placeholder="%"
+                    placeholder="営業終了時間"
                     class="mb-2"
                     density="compact"
                     variant="outlined"
