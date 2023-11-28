@@ -1,16 +1,4 @@
-CREATE TABLE IF NOT EXISTS public.t_owner (
-    owner_id bigserial NOT NULL,
-    owner_name character varying(100) NOT NULL,
-    owner_email character varying(100) NOT NULL,
-    owner_password character varying(100) NOT NULL,
-    is_invalid boolean NOT NULL,
-    is_deleted boolean NOT NULL,
-    insert_time timestamp with time zone NOT NULL,
-    inserted_by character varying(100) NOT NULL,
-    update_time timestamp with time zone NOT NULL,
-    updated_by character varying(100) NOT NULL,
-    PRIMARY KEY (owner_id)
-);
+DROP TABLE IF EXISTS public.t_owner_signin_mgt CASCADE;
 
 CREATE TABLE IF NOT EXISTS public.t_owner_signin_mgt (
     seq bigserial NOT NULL,
@@ -28,6 +16,115 @@ CREATE TABLE IF NOT EXISTS public.t_owner_signin_mgt (
     PRIMARY KEY (seq),
     FOREIGN KEY (owner_id) REFERENCES t_owner(owner_id)
 );
+
+DROP TABLE IF EXISTS public.t_printer_i18n CASCADE;
+
+CREATE TABLE IF NOT EXISTS public.t_printer_i18n (
+    seq bigserial NOT NULL,
+    printer_id bigint NOT NULL,
+    lang_code character varying(5) NOT NULL,
+    printer_name character varying(100) NOT NULL,
+    printer_description character varying(1000) NOT NULL,
+    is_invalid boolean NOT NULL,
+    is_deleted boolean NOT NULL,
+    insert_time timestamp with time zone NOT NULL,
+    inserted_by character varying(100) NOT NULL,
+    update_time timestamp with time zone NOT NULL,
+    updated_by character varying(100) NOT NULL,
+    PRIMARY KEY (seq),
+    FOREIGN KEY (printer_id) REFERENCES t_printer(printer_id),
+    FOREIGN KEY (lang_code) REFERENCES m_language(lang_code)
+);
+
+DROP TABLE IF EXISTS public.t_printer CASCADE;
+
+CREATE TABLE IF NOT EXISTS public.t_printer (
+    printer_id bigserial NOT NULL,
+    restaurant_id bigint NOT NULL,
+    ip_address character varying(100) NOT NULL,
+    mac_address character varying(100) NOT NULL,
+    is_invalid boolean NOT NULL,
+    is_deleted boolean NOT NULL,
+    insert_time timestamp with time zone NOT NULL,
+    inserted_by character varying(100) NOT NULL,
+    update_time timestamp with time zone NOT NULL,
+    updated_by character varying(100) NOT NULL,
+    PRIMARY KEY (printer_id),
+    FOREIGN KEY (restaurant_id) REFERENCES t_restaurant(restaurant_id)
+);
+
+DROP TABLE IF EXISTS public.t_restaurant_pay_method CASCADE;
+
+CREATE TABLE IF NOT EXISTS public.t_restaurant_pay_method (
+    seq bigserial NOT NULL,
+    restaurant_id bigint NOT NULL,
+    pay_method_id integer NOT NULL,
+    is_invalid boolean NOT NULL,
+    is_deleted boolean NOT NULL,
+    insert_time timestamp with time zone NOT NULL,
+    inserted_by character varying(100) NOT NULL,
+    update_time timestamp with time zone NOT NULL,
+    updated_by character varying(100) NOT NULL,
+    PRIMARY KEY (seq),
+    FOREIGN KEY (restaurant_id) REFERENCES t_restaurant(restaurant_id),
+    FOREIGN KEY (pay_method_id) REFERENCES m_pay_method(pay_method_id)
+);
+
+DROP TABLE IF EXISTS public.t_restaurant_opening_hours CASCADE;
+
+CREATE TABLE IF NOT EXISTS public.t_restaurant_opening_hours (
+    seq bigserial NOT NULL,
+    restaurant_id bigint NOT NULL,
+    day_of_week integer NOT NULL,
+    open_time time without time zone NOT NULL,
+    close_time time without time zone NOT NULL,
+    is_invalid boolean NOT NULL,
+    is_deleted boolean NOT NULL,
+    insert_time timestamp with time zone NOT NULL,
+    inserted_by character varying(100) NOT NULL,
+    update_time timestamp with time zone NOT NULL,
+    updated_by character varying(100) NOT NULL,
+    PRIMARY KEY (seq),
+    FOREIGN KEY (restaurant_id) REFERENCES t_restaurant(restaurant_id)
+);
+
+DROP TABLE IF EXISTS public.t_restaurant_image CASCADE;
+
+CREATE TABLE IF NOT EXISTS public.t_restaurant_image (
+    seq bigserial NOT NULL,
+    restaurant_id bigint NOT NULL,
+    image_address text NOT NULL,
+    is_invalid boolean NOT NULL,
+    is_deleted boolean NOT NULL,
+    insert_time timestamp with time zone NOT NULL,
+    inserted_by character varying(100) NOT NULL,
+    update_time timestamp with time zone NOT NULL,
+    updated_by character varying(100) NOT NULL,
+    PRIMARY KEY (seq),
+    FOREIGN KEY (restaurant_id) REFERENCES t_restaurant(restaurant_id)
+);
+
+DROP TABLE IF EXISTS public.t_restaurant_i18n CASCADE;
+
+CREATE TABLE IF NOT EXISTS public.t_restaurant_i18n (
+    seq bigserial NOT NULL,
+    restaurant_id bigint NOT NULL,
+    lang_code character varying(5) NOT NULL,
+    restaurant_name character varying(100) NOT NULL,
+    restaurant_address character varying(500) NOT NULL,
+    restaurant_description character varying(2000) NOT NULL,
+    is_invalid boolean NOT NULL,
+    is_deleted boolean NOT NULL,
+    insert_time timestamp with time zone NOT NULL,
+    inserted_by character varying(100) NOT NULL,
+    update_time timestamp with time zone NOT NULL,
+    updated_by character varying(100) NOT NULL,
+    PRIMARY KEY (seq),
+    FOREIGN KEY (restaurant_id) REFERENCES t_restaurant(restaurant_id),
+    FOREIGN KEY (lang_code) REFERENCES m_language(lang_code)
+);
+
+DROP TABLE IF EXISTS public.t_restaurant CASCADE;
 
 CREATE TABLE IF NOT EXISTS public.t_restaurant (
     restaurant_id bigserial NOT NULL,
@@ -57,97 +154,18 @@ CREATE TABLE IF NOT EXISTS public.t_restaurant (
     FOREIGN KEY (currency_id) REFERENCES m_currency(currency_id)
 );
 
-CREATE TABLE IF NOT EXISTS public.t_restaurant_i18n (
-    seq bigserial NOT NULL,
-    restaurant_id bigint NOT NULL,
-    lang_code character varying(5) NOT NULL,
-    restaurant_name character varying(100) NOT NULL,
-    restaurant_address character varying(500) NOT NULL,
-    restaurant_description character varying(2000) NOT NULL,
-    is_invalid boolean NOT NULL,
-    is_deleted boolean NOT NULL,
-    insert_time timestamp with time zone NOT NULL,
-    inserted_by character varying(100) NOT NULL,
-    update_time timestamp with time zone NOT NULL,
-    updated_by character varying(100) NOT NULL,
-    PRIMARY KEY (seq),
-    FOREIGN KEY (restaurant_id) REFERENCES t_restaurant(restaurant_id),
-    FOREIGN KEY (lang_code) REFERENCES m_language(lang_code)
-);
+DROP TABLE IF EXISTS public.t_owner CASCADE;
 
-CREATE TABLE IF NOT EXISTS public.t_restaurant_pay_method (
-    seq bigserial NOT NULL,
-    restaurant_id bigint NOT NULL,
-    pay_method_id integer NOT NULL,
+CREATE TABLE IF NOT EXISTS public.t_owner (
+    owner_id bigserial NOT NULL,
+    owner_name character varying(100) NOT NULL,
+    owner_email character varying(100) NOT NULL,
+    owner_password character varying(100) NOT NULL,
     is_invalid boolean NOT NULL,
     is_deleted boolean NOT NULL,
     insert_time timestamp with time zone NOT NULL,
     inserted_by character varying(100) NOT NULL,
     update_time timestamp with time zone NOT NULL,
     updated_by character varying(100) NOT NULL,
-    PRIMARY KEY (seq),
-    FOREIGN KEY (restaurant_id) REFERENCES t_restaurant(restaurant_id),
-    FOREIGN KEY (pay_method_id) REFERENCES m_pay_method(pay_method_id)
-);
-
-CREATE TABLE IF NOT EXISTS public.t_restaurant_opening_hours (
-    seq bigserial NOT NULL,
-    restaurant_id bigint NOT NULL,
-    day_of_week integer NOT NULL,
-    open_time time without time zone NOT NULL,
-    close_time time without time zone NOT NULL,
-    is_invalid boolean NOT NULL,
-    is_deleted boolean NOT NULL,
-    insert_time timestamp with time zone NOT NULL,
-    inserted_by character varying(100) NOT NULL,
-    update_time timestamp with time zone NOT NULL,
-    updated_by character varying(100) NOT NULL,
-    PRIMARY KEY (seq),
-    FOREIGN KEY (restaurant_id) REFERENCES t_restaurant(restaurant_id)
-);
-
-CREATE TABLE IF NOT EXISTS public.t_restaurant_image (
-    seq bigserial NOT NULL,
-    restaurant_id bigint NOT NULL,
-    image_address text NOT NULL,
-    is_invalid boolean NOT NULL,
-    is_deleted boolean NOT NULL,
-    insert_time timestamp with time zone NOT NULL,
-    inserted_by character varying(100) NOT NULL,
-    update_time timestamp with time zone NOT NULL,
-    updated_by character varying(100) NOT NULL,
-    PRIMARY KEY (seq),
-    FOREIGN KEY (restaurant_id) REFERENCES t_restaurant(restaurant_id)
-);
-
-CREATE TABLE IF NOT EXISTS public.t_printer (
-    printer_id bigserial NOT NULL,
-    restaurant_id bigint NOT NULL,
-    ip_address character varying(100) NOT NULL,
-    mac_address character varying(100) NOT NULL,
-    is_invalid boolean NOT NULL,
-    is_deleted boolean NOT NULL,
-    insert_time timestamp with time zone NOT NULL,
-    inserted_by character varying(100) NOT NULL,
-    update_time timestamp with time zone NOT NULL,
-    updated_by character varying(100) NOT NULL,
-    PRIMARY KEY (printer_id),
-    FOREIGN KEY (restaurant_id) REFERENCES t_restaurant(restaurant_id)
-);
-
-CREATE TABLE IF NOT EXISTS public.t_printer_i18n (
-    seq bigserial NOT NULL,
-    printer_id bigint NOT NULL,
-    lang_code character varying(5) NOT NULL,
-    printer_name character varying(100) NOT NULL,
-    printer_description character varying(1000) NOT NULL,
-    is_invalid boolean NOT NULL,
-    is_deleted boolean NOT NULL,
-    insert_time timestamp with time zone NOT NULL,
-    inserted_by character varying(100) NOT NULL,
-    update_time timestamp with time zone NOT NULL,
-    updated_by character varying(100) NOT NULL,
-    PRIMARY KEY (seq),
-    FOREIGN KEY (printer_id) REFERENCES t_printer(printer_id),
-    FOREIGN KEY (lang_code) REFERENCES m_language(lang_code)
+    PRIMARY KEY (owner_id)
 );
