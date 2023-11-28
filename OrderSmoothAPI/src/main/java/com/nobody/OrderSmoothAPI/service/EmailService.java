@@ -22,7 +22,7 @@ public class EmailService {
   private final String from;
 
   private static final String OTP_EMAIL_TEMPLATE_PATH =
-    "/template/email/otp.html";
+    "/templates/email/otp.html";
 
   public EmailService(
     JavaMailSender javaMailSender,
