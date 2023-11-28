@@ -573,7 +573,7 @@ CREATE TABLE IF NOT EXISTS public.m_pay_method_i18n (
     inserted_by character varying(100) NOT NULL,
     update_time timestamp with time zone NOT NULL,
     updated_by character varying(100) NOT NULL,
-    PRIMARY KEY (pay_method_id)
+    PRIMARY KEY (seq) FOREIGN KEY (pay_method_id) REFERENCES m_pay_method(pay_method_id)
 );
 
 INSERT INTO
