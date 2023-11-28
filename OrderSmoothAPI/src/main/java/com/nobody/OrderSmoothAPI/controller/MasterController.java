@@ -8,7 +8,6 @@ import java.util.List;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -35,12 +34,10 @@ public class MasterController {
       .body(languageService.getAllLanguage());
   }
 
-  @GetMapping("/restaurant-genre/{langCode}")
-  public ResponseEntity<List<RestaurantGenreDTO>> getRestaurantGenre(
-    @PathVariable String langCode
-  ) {
+  @GetMapping("/restaurant-genre")
+  public ResponseEntity<List<RestaurantGenreDTO>> getRestaurantGenre() {
     return ResponseEntity
       .status(HttpStatus.OK)
-      .body(restaurantGenreService.getRestaurantGenre(langCode));
+      .body(restaurantGenreService.getRestaurantGenre());
   }
 }

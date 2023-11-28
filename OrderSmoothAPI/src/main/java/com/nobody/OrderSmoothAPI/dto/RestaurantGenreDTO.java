@@ -15,5 +15,5 @@ public class RestaurantGenreDTO implements Serializable {
 
   private Integer genreId;
 
-  private List<RestaurantGenreI18nDTO> restaurantGenreI18nDTOList;
+  private List<RestaurantGenreI18nDTO> i18n;
 }
