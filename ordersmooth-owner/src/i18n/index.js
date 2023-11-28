@@ -1,31 +1,34 @@
 import { createI18n } from "vue-i18n";
 
-import zhCN from "@/i18n/langs/zh-CN";
 import en from "@/i18n/langs/en";
 import ja from "@/i18n/langs/ja";
+import zhCN from "@/i18n/langs/zh-CN";
+import zhTW from "@/i18n/langs/zh-TW";
+
+var lang = localStorage.getItem("lang") || navigator.language || "en";
+
+if (lang.startsWith("en")) {
+  lang = "en";
+} else if (lang.startsWith("ja")) {
+  lang = "ja";
+} else if (lang.startsWith("zh")) {
+  if (lang == "zh" || lang == "zh-CN") {
+    lang = "zh-CN";
+  } else {
+    lang = "zh-TW";
+  }
+} else {
+  lang = "en";
+}
 
 const i18n = new createI18n({
-  locale: localStorage.getItem("lang") || navigator.language || "en",
+  locale: lang,
 
   messages: {
     en: en,
-    "en-US": en,
-    "en-AU": en,
-    "en-BZ": en,
-    "en-CA": en,
-    "en-CB": en,
-    "en-GB": en,
-    "en-IE": en,
-    "en-JM": en,
-    "en-NZ": en,
-    "en-PH": en,
-    "en-TT": en,
-    "en-ZA": en,
-    "en-ZW": en,
     ja: ja,
-    "ja-JP": ja,
-    zh: zhCN,
     "zh-CN": zhCN,
+    "zh-TW": zhTW,
   },
 });
 

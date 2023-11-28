@@ -15,7 +15,7 @@ public class LanguageService {
     this.LanguageMapper = LanguageMapper;
   }
 
-  public List<Language> getAllLanguage() {
+  public List<Language> getLanguage() {
     return LanguageMapper.selectList(
       new MPJLambdaWrapper<Language>()
         .select(Language::getLangCode, Language::getLangName)

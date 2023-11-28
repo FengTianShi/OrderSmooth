@@ -17,7 +17,7 @@ public class RestaurantGenreService {
     this.restaurantGenreMapper = restaurantGenreMapper;
   }
 
-  public List<RestaurantGenreDTO> getRestaurantGenre() {
+  public List<RestaurantGenreDTO> getRestaurantGenre(String langCode) {
     return restaurantGenreMapper.selectJoinList(
       RestaurantGenreDTO.class,
       new MPJLambdaWrapper<RestaurantGenre>()
@@ -31,6 +31,7 @@ public class RestaurantGenreService {
           RestaurantGenreI18n::getGenreId,
           RestaurantGenre::getGenreId
         )
+        .eq(RestaurantGenreI18n::getLangCode, langCode)
         .eq(RestaurantGenre::getIsInvalid, false)
         .eq(RestaurantGenre::getIsDeleted, false)
         .eq(RestaurantGenreI18n::getIsInvalid, false)

@@ -1,3 +1,5 @@
+DROP TABLE IF EXISTS public.m_language CASCADE;
+
 CREATE TABLE IF NOT EXISTS public.m_language (
     lang_code character varying(5) NOT NULL,
     lang_name character varying(100) NOT NULL,
@@ -78,6 +80,8 @@ VALUES
         now(),
         'SYSTEM'
     );
+
+DROP TABLE IF EXISTS public.m_currency CASCADE;
 
 CREATE TABLE IF NOT EXISTS public.m_currency (
     currency_id integer NOT NULL,
@@ -174,6 +178,8 @@ VALUES
         'SYSTEM'
     );
 
+DROP TABLE IF EXISTS public.m_restaurant_genre CASCADE;
+
 CREATE TABLE IF NOT EXISTS public.m_restaurant_genre (
     genre_id integer NOT NULL,
     is_invalid boolean NOT NULL,
@@ -247,6 +253,8 @@ VALUES
         now(),
         'SYSTEM'
     );
+
+DROP TABLE IF EXISTS public.m_restaurant_genre_i18n CASCADE;
 
 CREATE TABLE IF NOT EXISTS public.m_restaurant_genre_i18n (
     seq serial NOT NULL,
@@ -352,6 +360,31 @@ INSERT INTO
     )
 VALUES
     (
+        1,
+        'zh-TW',
+        '披薩',
+        false,
+        false,
+        now(),
+        'SYSTEM',
+        now(),
+        'SYSTEM'
+    );
+
+INSERT INTO
+    public.m_restaurant_genre_i18n(
+        genre_id,
+        lang_code,
+        genre_name,
+        is_invalid,
+        is_deleted,
+        insert_time,
+        inserted_by,
+        update_time,
+        updated_by
+    )
+VALUES
+    (
         2,
         'en',
         'Sushi',
@@ -405,6 +438,31 @@ VALUES
         2,
         'zh-CN',
         '寿司',
+        false,
+        false,
+        now(),
+        'SYSTEM',
+        now(),
+        'SYSTEM'
+    );
+
+INSERT INTO
+    public.m_restaurant_genre_i18n(
+        genre_id,
+        lang_code,
+        genre_name,
+        is_invalid,
+        is_deleted,
+        insert_time,
+        inserted_by,
+        update_time,
+        updated_by
+    )
+VALUES
+    (
+        2,
+        'zh-TW',
+        '壽司',
         false,
         false,
         now(),
@@ -488,6 +546,33 @@ VALUES
         'SYSTEM'
     );
 
+INSERT INTO
+    public.m_restaurant_genre_i18n(
+        genre_id,
+        lang_code,
+        genre_name,
+        is_invalid,
+        is_deleted,
+        insert_time,
+        inserted_by,
+        update_time,
+        updated_by
+    )
+VALUES
+    (
+        3,
+        'zh-TW',
+        '中餐',
+        false,
+        false,
+        now(),
+        'SYSTEM',
+        now(),
+        'SYSTEM'
+    );
+
+DROP TABLE IF EXISTS public.m_pay_method CASCADE;
+
 CREATE TABLE IF NOT EXISTS public.m_pay_method (
     pay_method_id integer NOT NULL,
     is_invalid boolean NOT NULL,
@@ -561,6 +646,8 @@ VALUES
         now(),
         'SYSTEM'
     );
+
+DROP TABLE IF EXISTS public.m_pay_method_i18n CASCADE;
 
 CREATE TABLE IF NOT EXISTS public.m_pay_method_i18n (
     seq serial NOT NULL,
@@ -666,6 +753,31 @@ INSERT INTO
     )
 VALUES
     (
+        1,
+        'zh-TW',
+        '現金',
+        false,
+        false,
+        now(),
+        'SYSTEM',
+        now(),
+        'SYSTEM'
+    );
+
+INSERT INTO
+    public.m_pay_method_i18n(
+        pay_method_id,
+        lang_code,
+        pay_method_name,
+        is_invalid,
+        is_deleted,
+        insert_time,
+        inserted_by,
+        update_time,
+        updated_by
+    )
+VALUES
+    (
         2,
         'en',
         'Credit Card',
@@ -718,6 +830,31 @@ VALUES
     (
         2,
         'zh-CN',
+        '信用卡',
+        false,
+        false,
+        now(),
+        'SYSTEM',
+        now(),
+        'SYSTEM'
+    );
+
+INSERT INTO
+    public.m_pay_method_i18n(
+        pay_method_id,
+        lang_code,
+        pay_method_name,
+        is_invalid,
+        is_deleted,
+        insert_time,
+        inserted_by,
+        update_time,
+        updated_by
+    )
+VALUES
+    (
+        2,
+        'zh-TW',
         '信用卡',
         false,
         false,
@@ -794,6 +931,31 @@ VALUES
         3,
         'zh-CN',
         '贝宝',
+        false,
+        false,
+        now(),
+        'SYSTEM',
+        now(),
+        'SYSTEM'
+    );
+
+INSERT INTO
+    public.m_pay_method_i18n(
+        pay_method_id,
+        lang_code,
+        pay_method_name,
+        is_invalid,
+        is_deleted,
+        insert_time,
+        inserted_by,
+        update_time,
+        updated_by
+    )
+VALUES
+    (
+        3,
+        'zh-TW',
+        '貝寶',
         false,
         false,
         now(),

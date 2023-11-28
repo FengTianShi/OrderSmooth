@@ -57,7 +57,11 @@
             </v-btn>
             <v-divider class="my-3"></v-divider>
             <v-btn rounded variant="text" @click="changeLang('zh-CN')">
-              中文
+              简体中文
+            </v-btn>
+            <v-divider class="my-3"></v-divider>
+            <v-btn rounded variant="text" @click="changeLang('zh-TW')">
+              繁体中文
             </v-btn>
             <v-divider class="my-3"></v-divider>
             <v-btn size="small" disabled rounded variant="text">
@@ -140,7 +144,6 @@ export default {
       ["Update", "mdi-update"],
       ["Delete", "mdi-delete"],
     ],
-    langs: [{ title: "English" }, { title: "日本語" }, { title: "简体中文" }],
   }),
   created: function () {},
   methods: {
