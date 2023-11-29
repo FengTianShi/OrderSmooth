@@ -2,12 +2,14 @@ package com.nobody.OrderSmoothAPI.controller;
 
 import com.nobody.OrderSmoothAPI.dto.PayMethodDTO;
 import com.nobody.OrderSmoothAPI.dto.RestaurantGenreDTO;
+import com.nobody.OrderSmoothAPI.dto.WeekDTO;
 import com.nobody.OrderSmoothAPI.entity.Currency;
 import com.nobody.OrderSmoothAPI.entity.Language;
 import com.nobody.OrderSmoothAPI.service.CurrencyService;
 import com.nobody.OrderSmoothAPI.service.LanguageService;
 import com.nobody.OrderSmoothAPI.service.PayMethodService;
 import com.nobody.OrderSmoothAPI.service.RestaurantGenreService;
+import com.nobody.OrderSmoothAPI.service.WeekService;
 import java.util.List;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -28,16 +30,20 @@ public class MasterController {
 
   private final PayMethodService payMethodService;
 
+  private final WeekService weekService;
+
   public MasterController(
     LanguageService languageService,
     RestaurantGenreService restaurantGenreService,
     CurrencyService currencyService,
-    PayMethodService payMethodService
+    PayMethodService payMethodService,
+    WeekService weekService
   ) {
     this.languageService = languageService;
     this.restaurantGenreService = restaurantGenreService;
     this.currencyService = currencyService;
     this.payMethodService = payMethodService;
+    this.weekService = weekService;
   }
 
   @GetMapping("/language")
@@ -70,5 +76,12 @@ public class MasterController {
     return ResponseEntity
       .status(HttpStatus.OK)
       .body(payMethodService.getPayMethod(langCode));
+  }
+
+  @GetMapping("/week/{langCode}")
+  public ResponseEntity<List<WeekDTO>> getWeek(@PathVariable String langCode) {
+    return ResponseEntity
+      .status(HttpStatus.OK)
+      .body(weekService.getWeek(langCode));
   }
 }
