@@ -5,15 +5,12 @@
     <v-main>
       <v-container fluid class="pa-4">
         <v-card class="mx-auto" elevation="0">
-          <v-card class="mx-auto pa-8" elevation="0" max-width="1400">
+          <v-card class="mx-auto pa-8" elevation="0" max-width="1200">
             <h2 class="text-h4 font-weight-black text-orange">店舗を追加!</h2>
-
             <p class="text-body-2 mb-4">店舗の基本情報を入力してください。</p>
-
             <v-divider class="mb-6"></v-divider>
-            <v-form
-              validate-on="submit lazy"
-              @submit.prevent="createRestaurant">
+
+            <v-form validate-on="submit lazy" submit.prevent="createRestaurant">
               <v-row>
                 <v-col cols="12" md="4">
                   <v-select
@@ -202,77 +199,77 @@
 
                   <div class="text-center mb-6">
                     <div>
-                      <span>月曜日</span>
+                      <span class="mr-1">月曜日</span>
                       <v-chip
                         size="small"
                         v-if="chip"
-                        class="ma-2"
+                        class="ma-1"
                         closable
                         @click:close="chip = false">
                         9:00 ~ 12:00
                       </v-chip>
                     </div>
                     <div>
-                      <span>月曜日</span>
+                      <span class="mr-1">月曜日</span>
                       <v-chip
                         size="small"
                         v-if="chip"
-                        class="ma-2"
+                        class="ma-1"
                         closable
                         @click:close="chip = false">
                         9:00 ~ 12:00
                       </v-chip>
                     </div>
                     <div>
-                      <span>月曜日</span>
+                      <span class="mr-1">月曜日</span>
                       <v-chip
                         size="small"
                         v-if="chip"
-                        class="ma-2"
+                        class="ma-1"
                         closable
                         @click:close="chip = false">
                         9:00 ~ 12:00
                       </v-chip>
                     </div>
                     <div>
-                      <span>月曜日</span>
+                      <span class="mr-1">月曜日</span>
                       <v-chip
                         size="small"
                         v-if="chip"
-                        class="ma-2"
+                        class="ma-1"
                         closable
                         @click:close="chip = false">
                         9:00 ~ 12:00
                       </v-chip>
                     </div>
                     <div>
-                      <span>月曜日</span>
+                      <span class="mr-1">月曜日</span>
                       <v-chip
                         size="small"
                         v-if="chip"
-                        class="ma-2"
+                        class="ma-1"
                         closable
                         @click:close="chip = false">
                         9:00 ~ 12:00
                       </v-chip>
                     </div>
                     <div>
-                      <span>月曜日</span>
+                      <span class="mr-1">月曜日</span>
                       <v-chip
                         size="small"
                         v-if="chip"
-                        class="ma-2"
+                        class="ma-1"
                         closable
                         @click:close="chip = false">
                         9:00 ~ 12:00
                       </v-chip>
                     </div>
                     <div>
-                      <span>月曜日</span>
+                      <span class="mr-1">月曜日</span>
                       <v-chip
                         size="small"
                         v-if="chip"
-                        class="ma-2"
+                        class="ma-1"
                         closable
                         @click:close="chip = false">
                         9:00 ~ 12:00
@@ -282,15 +279,18 @@
                 </v-col>
               </v-row>
 
-              <v-btn
-                width="300"
-                type="submit"
-                color="deep-purple-accent-4"
-                size="large"
-                :disabled="loading"
-                :loading="loading">
-                店舗登録
-              </v-btn>
+              <v-divider class="mb-6"></v-divider>
+
+              <div class="text-right">
+                <v-btn
+                  type="submit"
+                  color="deep-purple-accent-4"
+                  size="large"
+                  :disabled="loading"
+                  :loading="loading">
+                  店舗登録
+                </v-btn>
+              </div>
             </v-form>
           </v-card>
         </v-card>
@@ -403,6 +403,11 @@ export default {
       .then((response) => {
         if (response.status === 200) {
           this.langList = response.data;
+          if (
+            this.langList.some((item) => item.langCode === this.$i18n.locale)
+          ) {
+            this.selectedLang = this.$i18n.locale;
+          }
         }
       })
       .catch((error) => {
