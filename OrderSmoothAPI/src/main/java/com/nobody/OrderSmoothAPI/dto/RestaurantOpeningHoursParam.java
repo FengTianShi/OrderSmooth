@@ -16,7 +16,7 @@ import lombok.NoArgsConstructor;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class WeekOpeningHoursParam implements Serializable {
+public class RestaurantOpeningHoursParam implements Serializable {
 
   @NotNull
   @Positive

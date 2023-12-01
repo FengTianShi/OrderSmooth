@@ -27,31 +27,19 @@ public class CreateRestaurantParam implements Serializable {
   @Positive
   private Integer genreId;
 
-  @NotBlank
-  @Size(max = 5)
-  private String langCode;
-
-  @NotBlank
-  @Size(max = 100)
-  private String restaurantName;
+  @Valid
+  @NotNull
+  RestaurantI18nParam restaurantI18n;
 
   @NotBlank
   @Size(max = 11)
   @Pattern(regexp = "\\d+")
-  private String phoneNumber;
+  private String tel;
 
   @NotBlank
   @Size(max = 10)
   @Pattern(regexp = "\\d+")
   private String postalCode;
-
-  @NotBlank
-  @Size(max = 500)
-  private String address;
-
-  @NotBlank
-  @Size(max = 2000)
-  private String description;
 
   @NotNull
   @Positive
@@ -65,12 +53,12 @@ public class CreateRestaurantParam implements Serializable {
   @NotNull
   @Min(0)
   @Max(100)
-  private Integer defultServiceFee;
+  private Integer defaultServiceFee;
 
   @NotNull
   @Min(0)
   @Max(100)
-  private Integer defultTax;
+  private Integer defaultTax;
 
   @NotNull
   private Boolean isDisplayServiceFee;
@@ -82,5 +70,5 @@ public class CreateRestaurantParam implements Serializable {
   @NotNull
   @Size(min = 1)
   @KeyNotDuplicate(key = "dayInWeekId")
-  List<WeekOpeningHoursParam> weekOpeningHours;
+  List<RestaurantOpeningHoursParam> restaurantOpeningHours;
 }
