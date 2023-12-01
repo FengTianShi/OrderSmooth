@@ -459,7 +459,7 @@ VALUES
         'SYSTEM'
     );
 
-DROP TABLE IF EXISTS public.m_day_in_week CASCADE;
+DROP TABLE IF EXISTS public.m_day_in_week_i18n CASCADE;
 
 CREATE TABLE IF NOT EXISTS public.m_day_in_week_i18n (
     seq serial NOT NULL,
