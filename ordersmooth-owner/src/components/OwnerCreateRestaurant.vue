@@ -117,6 +117,7 @@
                     prepend-inner-icon="mdi-credit-card"
                     persistent-hint
                     multiple
+                    chips
                     :items="payMethodList"
                     item-title="i18n[0].payMethodName"
                     item-value="payMethodId"
@@ -148,13 +149,13 @@
                     :rules="[required]" />
 
                   <v-chip-group class="mb-2" filter>
-                    <v-chip>表示服务费</v-chip>
-                    <v-chip>不表示服务费</v-chip>
+                    <v-chip size="small">表示服务费</v-chip>
+                    <v-chip size="small">不表示服务费</v-chip>
                   </v-chip-group>
 
                   <v-chip-group filter>
-                    <v-chip>表示税金</v-chip>
-                    <v-chip>不表示税金</v-chip>
+                    <v-chip size="small">表示税金</v-chip>
+                    <v-chip size="small">不表示税金</v-chip>
                   </v-chip-group>
                 </v-col>
 
@@ -162,14 +163,16 @@
                   <v-select
                     placeholder="曜日"
                     multiple
+                    clearable
+                    chips
                     class="mb-2"
                     density="compact"
                     variant="outlined"
                     prepend-inner-icon="mdi-calendar-week"
                     persistent-hint
-                    :items="weekList"
-                    item-title="weekList.i18n[0].weekName"
-                    item-value="weekId"
+                    :items="dayInWeekList"
+                    item-title="i18n[0].dayInWeekName"
+                    item-value="dayInWeekId"
                     v-model="selectedDayInWeek" />
 
                   <v-text-field
@@ -210,7 +213,6 @@
                       <p>月曜日</p>
                       <v-chip
                         size="small"
-                        v-if="chip"
                         class="ma-1"
                         closable
                         @click:close="chip = false">
@@ -222,7 +224,6 @@
                       <p>月曜日</p>
                       <v-chip
                         size="small"
-                        v-if="chip"
                         class="ma-1"
                         closable
                         @click:close="chip = false">
@@ -230,7 +231,6 @@
                       </v-chip>
                       <v-chip
                         size="small"
-                        v-if="chip"
                         class="ma-1"
                         closable
                         @click:close="chip = false">
@@ -238,19 +238,6 @@
                       </v-chip>
                       <v-chip
                         size="small"
-                        v-if="chip"
-                        class="ma-1"
-                        closable
-                        @click:close="chip = false">
-                        9:00 ~ 12:00
-                      </v-chip>
-
-                      <v-divider class="my-3"></v-divider>
-
-                      <p>月曜日</p>
-                      <v-chip
-                        size="small"
-                        v-if="chip"
                         class="ma-1"
                         closable
                         @click:close="chip = false">
@@ -262,7 +249,6 @@
                       <p>月曜日</p>
                       <v-chip
                         size="small"
-                        v-if="chip"
                         class="ma-1"
                         closable
                         @click:close="chip = false">
@@ -274,7 +260,6 @@
                       <p>月曜日</p>
                       <v-chip
                         size="small"
-                        v-if="chip"
                         class="ma-1"
                         closable
                         @click:close="chip = false">
@@ -286,7 +271,6 @@
                       <p>月曜日</p>
                       <v-chip
                         size="small"
-                        v-if="chip"
                         class="ma-1"
                         closable
                         @click:close="chip = false">
@@ -298,7 +282,17 @@
                       <p>月曜日</p>
                       <v-chip
                         size="small"
-                        v-if="chip"
+                        class="ma-1"
+                        closable
+                        @click:close="chip = false">
+                        9:00 ~ 12:00
+                      </v-chip>
+
+                      <v-divider class="my-3"></v-divider>
+
+                      <p>月曜日</p>
+                      <v-chip
+                        size="small"
                         class="ma-1"
                         closable
                         @click:close="chip = false">
@@ -341,18 +335,18 @@ export default {
     genreList: [],
     currencyList: [],
     payMethodList: [],
-    weekList: [],
+    dayInWeekList: [],
     selectedGenre: null,
     selectedLang: null,
     selectedCurrency: null,
     selectedpayMethod: [],
+    selectedDayInWeek: [],
     restaurantName: "",
     restaurantTel: "",
     restaurantPost: "",
     restaurantAddress: "",
     restaurantIntroduction: "",
     loading: false,
-    chip: true,
   }),
   methods: {
     async createRestaurant(event) {
@@ -458,7 +452,7 @@ export default {
       });
 
     await this.$http
-      .get(`/master/week/${this.$i18n.locale}`, {
+      .get(`/master/day-in-week/${this.$i18n.locale}`, {
         headers: {
           Authorization: `Bearer ${JSON.parse(
             window.localStorage.getItem("owner-token")
@@ -467,7 +461,7 @@ export default {
       })
       .then((response) => {
         if (response.status === 200) {
-          this.weekList = response.data;
+          this.dayInWeekList = response.data;
         }
       })
       .catch((error) => {

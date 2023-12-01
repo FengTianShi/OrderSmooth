@@ -14,17 +14,11 @@ import lombok.NoArgsConstructor;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@TableName("m_week_i18n")
-public class WeekI18n implements Serializable {
+@TableName("m_day_in_week")
+public class DayInWeek implements Serializable {
 
   @TableId(type = IdType.AUTO)
-  private Integer seq;
-
-  private Integer weekId;
-
-  private String langCode;
-
-  private String weekName;
+  private Integer dayInWeekId;
 
   private Boolean isInvalid;
 

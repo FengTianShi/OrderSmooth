@@ -1,7 +1,6 @@
 package com.nobody.OrderSmoothAPI.dto;
 
 import java.io.Serializable;
-import java.util.List;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -11,9 +10,9 @@ import lombok.NoArgsConstructor;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class WeekDTO implements Serializable {
+public class DayInWeekI18nDTO implements Serializable {
 
-  private Integer weekId;
+  private String langCode;
 
-  private List<WeekI18nDTO> i18n;
+  private String dayInWeekName;
 }
