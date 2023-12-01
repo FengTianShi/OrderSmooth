@@ -75,7 +75,7 @@ DROP TABLE IF EXISTS public.t_restaurant_opening_hours CASCADE;
 CREATE TABLE IF NOT EXISTS public.t_restaurant_opening_hours (
     seq bigserial NOT NULL,
     restaurant_id bigint NOT NULL,
-    day_of_week integer NOT NULL,
+    day_in_week_id integer NOT NULL,
     open_time time without time zone NOT NULL,
     close_time time without time zone NOT NULL,
     is_invalid boolean NOT NULL,
@@ -85,7 +85,8 @@ CREATE TABLE IF NOT EXISTS public.t_restaurant_opening_hours (
     update_time timestamp with time zone NOT NULL,
     updated_by character varying(100) NOT NULL,
     PRIMARY KEY (seq),
-    FOREIGN KEY (restaurant_id) REFERENCES t_restaurant(restaurant_id)
+    FOREIGN KEY (restaurant_id) REFERENCES t_restaurant(restaurant_id),
+    FOREIGN KEY (day_in_week_id) REFERENCES m_day_in_week(day_in_week_id)
 );
 
 DROP TABLE IF EXISTS public.t_restaurant_image CASCADE;
@@ -140,6 +141,7 @@ CREATE TABLE IF NOT EXISTS public.t_restaurant (
     defult_service_fee integer NOT NULL,
     defult_tax integer NOT NULL,
     is_display_tax boolean NOT NULL,
+    is_display_service_fee boolean NOT NULL,
     wifi_ssid character varying(100),
     wifi_password character varying(100),
     is_invalid boolean NOT NULL,

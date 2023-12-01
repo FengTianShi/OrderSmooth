@@ -5,7 +5,7 @@
     <v-img
       height="45"
       max-width="170"
-      :src="require('../../assets/logo-only-content.png')"></v-img>
+      :src="require('../../assets/logo-only-content.png')" />
 
     <v-spacer></v-spacer>
 
@@ -70,9 +70,11 @@
         </v-card-text>
       </v-card>
     </v-menu>
+
+    <v-btn icon="mdi-theme-light-dark" @click="toggleTheme"></v-btn>
   </v-app-bar>
 
-  <v-navigation-drawer v-model="drawer" temporary width="350">
+  <v-navigation-drawer v-model="drawer" temporary width="300">
     <v-list nav>
       <div class="pa-2">
         <v-text-field
@@ -86,9 +88,9 @@
       </div>
 
       <div class="pa-2">
-        <v-btn color="amber" prepend-icon="mdi-store-plus-outline" block
-          >店舗追加</v-btn
-        >
+        <v-btn color="amber" prepend-icon="mdi-store-plus-outline" block>
+          店舗追加
+        </v-btn>
       </div>
 
       <v-list-group>
@@ -125,6 +127,17 @@
     </v-list>
   </v-navigation-drawer>
 </template>
+
+<script setup>
+import { useTheme } from "vuetify";
+
+const theme = useTheme();
+
+function toggleTheme() {
+  theme.global.name.value = theme.global.current.value.dark ? "light" : "dark";
+  localStorage.setItem("theme", theme.global.name.value);
+}
+</script>
 
 <script>
 export default {

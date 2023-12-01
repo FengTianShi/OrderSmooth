@@ -5,10 +5,10 @@
     <v-main>
       <v-container fluid class="pa-4">
         <v-card class="mx-auto" elevation="0">
-          <v-card class="mx-auto pa-8" elevation="0" max-width="1200">
+          <v-card class="mx-auto pa-8" elevation="0" max-width="1300">
             <h2 class="text-h4 font-weight-black text-orange">店舗を追加!</h2>
             <p class="text-body-2 mb-4">店舗の基本情報を入力してください。</p>
-            <v-divider class="mb-6"></v-divider>
+            <v-divider class="my-6"></v-divider>
 
             <v-form validate-on="submit lazy" submit.prevent="createRestaurant">
               <v-row>
@@ -114,7 +114,7 @@
                     class="mb-2"
                     density="compact"
                     variant="outlined"
-                    prepend-inner-icon="mdi-cash-multiple"
+                    prepend-inner-icon="mdi-credit-card"
                     persistent-hint
                     multiple
                     :items="payMethodList"
@@ -129,7 +129,6 @@
                     class="mb-2"
                     density="compact"
                     variant="outlined"
-                    prepend-inner-icon="mdi-cash"
                     append-inner-icon="mdi-percent-outline"
                     persistent-hint
                     maxlength="3"
@@ -137,21 +136,25 @@
                     :rules="[required]" />
 
                   <v-text-field
-                    label="Tex"
+                    label="Tax"
                     placeholder="%"
                     class="mb-2"
                     density="compact"
                     variant="outlined"
-                    prepend-inner-icon="mdi-cash"
                     append-inner-icon="mdi-percent-outline"
                     persistent-hint
                     maxlength="3"
                     v-model="restaurantAddress"
                     :rules="[required]" />
 
+                  <v-chip-group class="mb-2" filter>
+                    <v-chip>表示服务费</v-chip>
+                    <v-chip>不表示服务费</v-chip>
+                  </v-chip-group>
+
                   <v-chip-group filter>
-                    <v-chip size="small">表示税金</v-chip>
-                    <v-chip size="small">不表示税金</v-chip>
+                    <v-chip>表示税金</v-chip>
+                    <v-chip>不表示税金</v-chip>
                   </v-chip-group>
                 </v-col>
 
@@ -162,6 +165,7 @@
                     class="mb-2"
                     density="compact"
                     variant="outlined"
+                    prepend-inner-icon="mdi-calendar-week"
                     persistent-hint
                     :items="weekList"
                     item-title="weekName"
@@ -169,20 +173,24 @@
                     v-model="selectedweek" />
 
                   <v-text-field
-                    placeholder="営業開始時間"
+                    label="営業開始時間"
+                    placeholder="9:00"
                     class="mb-2"
                     density="compact"
                     variant="outlined"
+                    prepend-inner-icon="mdi-clock-time-eight-outline"
                     persistent-hint
                     maxlength="3"
                     v-model="restaurantAddress"
                     :rules="[required]" />
 
                   <v-text-field
-                    placeholder="営業終了時間"
+                    label="営業終了時間"
+                    placeholder="20:00"
                     class="mb-2"
                     density="compact"
                     variant="outlined"
+                    prepend-inner-icon="mdi-clock-outline"
                     persistent-hint
                     maxlength="3"
                     v-model="restaurantAddress"
@@ -190,16 +198,16 @@
 
                   <v-btn
                     block
-                    height="40"
-                    variant="text"
                     class="mb-4"
+                    height="40"
+                    variant="tonal"
                     append-icon="mdi-plus">
                     時間帯追加
                   </v-btn>
 
-                  <div class="text-center mb-6">
-                    <div>
-                      <span class="mr-1">月曜日</span>
+                  <v-card flat>
+                    <v-card-text>
+                      <p>月曜日</p>
                       <v-chip
                         size="small"
                         v-if="chip"
@@ -208,9 +216,10 @@
                         @click:close="chip = false">
                         9:00 ~ 12:00
                       </v-chip>
-                    </div>
-                    <div>
-                      <span class="mr-1">月曜日</span>
+
+                      <v-divider class="my-3"></v-divider>
+
+                      <p>月曜日</p>
                       <v-chip
                         size="small"
                         v-if="chip"
@@ -219,9 +228,6 @@
                         @click:close="chip = false">
                         9:00 ~ 12:00
                       </v-chip>
-                    </div>
-                    <div>
-                      <span class="mr-1">月曜日</span>
                       <v-chip
                         size="small"
                         v-if="chip"
@@ -230,9 +236,6 @@
                         @click:close="chip = false">
                         9:00 ~ 12:00
                       </v-chip>
-                    </div>
-                    <div>
-                      <span class="mr-1">月曜日</span>
                       <v-chip
                         size="small"
                         v-if="chip"
@@ -241,9 +244,10 @@
                         @click:close="chip = false">
                         9:00 ~ 12:00
                       </v-chip>
-                    </div>
-                    <div>
-                      <span class="mr-1">月曜日</span>
+
+                      <v-divider class="my-3"></v-divider>
+
+                      <p>月曜日</p>
                       <v-chip
                         size="small"
                         v-if="chip"
@@ -252,9 +256,10 @@
                         @click:close="chip = false">
                         9:00 ~ 12:00
                       </v-chip>
-                    </div>
-                    <div>
-                      <span class="mr-1">月曜日</span>
+
+                      <v-divider class="my-3"></v-divider>
+
+                      <p>月曜日</p>
                       <v-chip
                         size="small"
                         v-if="chip"
@@ -263,9 +268,10 @@
                         @click:close="chip = false">
                         9:00 ~ 12:00
                       </v-chip>
-                    </div>
-                    <div>
-                      <span class="mr-1">月曜日</span>
+
+                      <v-divider class="my-3"></v-divider>
+
+                      <p>月曜日</p>
                       <v-chip
                         size="small"
                         v-if="chip"
@@ -274,12 +280,36 @@
                         @click:close="chip = false">
                         9:00 ~ 12:00
                       </v-chip>
-                    </div>
-                  </div>
+
+                      <v-divider class="my-3"></v-divider>
+
+                      <p>月曜日</p>
+                      <v-chip
+                        size="small"
+                        v-if="chip"
+                        class="ma-1"
+                        closable
+                        @click:close="chip = false">
+                        9:00 ~ 12:00
+                      </v-chip>
+
+                      <v-divider class="my-3"></v-divider>
+
+                      <p>月曜日</p>
+                      <v-chip
+                        size="small"
+                        v-if="chip"
+                        class="ma-1"
+                        closable
+                        @click:close="chip = false">
+                        9:00 ~ 12:00
+                      </v-chip>
+                    </v-card-text>
+                  </v-card>
                 </v-col>
               </v-row>
 
-              <v-divider class="mb-6"></v-divider>
+              <v-divider class="my-6"></v-divider>
 
               <div class="text-right">
                 <v-btn

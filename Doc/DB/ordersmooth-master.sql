@@ -371,22 +371,22 @@ VALUES
         'SYSTEM'
     );
 
-DROP TABLE IF EXISTS public.m_week CASCADE;
+DROP TABLE IF EXISTS public.m_day_in_week CASCADE;
 
-CREATE TABLE IF NOT EXISTS public.m_week (
-    week_id integer NOT NULL,
+CREATE TABLE IF NOT EXISTS public.m_day_in_week (
+    day_in_week_id integer NOT NULL,
     is_invalid boolean NOT NULL,
     is_deleted boolean NOT NULL,
     insert_time timestamp with time zone NOT NULL,
     inserted_by character varying(100) NOT NULL,
     update_time timestamp with time zone NOT NULL,
     updated_by character varying(100) NOT NULL,
-    PRIMARY KEY (week_id)
+    PRIMARY KEY (day_in_week_id)
 );
 
 INSERT INTO
     public.m_week(
-        week_id,
+        day_in_week_id,
         is_invalid,
         is_deleted,
         insert_time,
@@ -459,13 +459,13 @@ VALUES
         'SYSTEM'
     );
 
-DROP TABLE IF EXISTS public.m_week_i18n CASCADE;
+DROP TABLE IF EXISTS public.m_day_in_week CASCADE;
 
-CREATE TABLE IF NOT EXISTS public.m_week_i18n (
+CREATE TABLE IF NOT EXISTS public.m_day_in_week_i18n (
     seq serial NOT NULL,
-    week_id integer NOT NULL,
+    day_in_week_id integer NOT NULL,
     lang_code character varying(5) NOT NULL,
-    week_name character varying(100) NOT NULL,
+    day_in_week_name character varying(100) NOT NULL,
     is_invalid boolean NOT NULL,
     is_deleted boolean NOT NULL,
     insert_time timestamp with time zone NOT NULL,
@@ -473,14 +473,14 @@ CREATE TABLE IF NOT EXISTS public.m_week_i18n (
     update_time timestamp with time zone NOT NULL,
     updated_by character varying(100) NOT NULL,
     PRIMARY KEY (seq),
-    FOREIGN KEY (week_id) REFERENCES m_week(week_id)
+    FOREIGN KEY (day_in_week_id) REFERENCES m_week(day_in_week_id)
 );
 
 INSERT INTO
     public.m_week_i18n(
-        week_id,
+        day_in_week_id,
         lang_code,
-        week_name,
+        day_in_week_name,
         is_invalid,
         is_deleted,
         insert_time,
