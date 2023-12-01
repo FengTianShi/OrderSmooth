@@ -32,9 +32,7 @@ public class RestaurantController {
     @Valid @RequestBody CreateRestaurantParam createRestaurantParam,
     HttpServletRequest request
   ) {
-    // Owner owner = RequestUtils.getOwner(request);
-
-    Owner owner = Owner.builder().ownerId(1L).build();
+    Owner owner = RequestUtils.getOwner(request);
 
     try {
       restaurantService.createRestaurant(
@@ -42,13 +40,13 @@ public class RestaurantController {
         createRestaurantParam
       );
       logger.info(
-        "Successfully created restaurant Owner Id : {}",
+        "Successfully created restaurant, Owner Id : {}",
         owner.getOwnerId()
       );
       return ResponseEntity.status(HttpStatus.CREATED).build();
     } catch (Exception e) {
       logger.error(
-        "Failed to create restaurant Owner Id : {}",
+        "Failed to create restaurant, Owner Id : {}",
         owner.getOwnerId(),
         e
       );

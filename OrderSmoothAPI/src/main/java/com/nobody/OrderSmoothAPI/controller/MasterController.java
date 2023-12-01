@@ -26,24 +26,24 @@ public class MasterController {
 
   private final CurrencyService currencyService;
 
-  private final RestaurantGenreService restaurantGenreService;
-
   private final PayMethodService payMethodService;
 
   private final DayInWeekService dayInWeekService;
 
+  private final RestaurantGenreService restaurantGenreService;
+
   public MasterController(
     LanguageService languageService,
-    RestaurantGenreService restaurantGenreService,
     CurrencyService currencyService,
     PayMethodService payMethodService,
-    DayInWeekService dayInWeekService
+    DayInWeekService dayInWeekService,
+    RestaurantGenreService restaurantGenreService
   ) {
     this.languageService = languageService;
-    this.restaurantGenreService = restaurantGenreService;
     this.currencyService = currencyService;
     this.payMethodService = payMethodService;
     this.dayInWeekService = dayInWeekService;
+    this.restaurantGenreService = restaurantGenreService;
   }
 
   @GetMapping("/language")
@@ -58,15 +58,6 @@ public class MasterController {
     return ResponseEntity
       .status(HttpStatus.OK)
       .body(currencyService.getCurrency());
-  }
-
-  @GetMapping("/restaurant-genre/{langCode}")
-  public ResponseEntity<List<RestaurantGenreDTO>> getRestaurantGenre(
-    @PathVariable String langCode
-  ) {
-    return ResponseEntity
-      .status(HttpStatus.OK)
-      .body(restaurantGenreService.getRestaurantGenre(langCode));
   }
 
   @GetMapping("/pay-method/{langCode}")
@@ -85,5 +76,14 @@ public class MasterController {
     return ResponseEntity
       .status(HttpStatus.OK)
       .body(dayInWeekService.getDayInWeek(langCode));
+  }
+
+  @GetMapping("/restaurant-genre/{langCode}")
+  public ResponseEntity<List<RestaurantGenreDTO>> getRestaurantGenre(
+    @PathVariable String langCode
+  ) {
+    return ResponseEntity
+      .status(HttpStatus.OK)
+      .body(restaurantGenreService.getRestaurantGenre(langCode));
   }
 }

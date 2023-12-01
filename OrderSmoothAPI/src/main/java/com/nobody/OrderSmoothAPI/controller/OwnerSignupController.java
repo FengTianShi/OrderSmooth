@@ -100,18 +100,17 @@ public class OwnerSignupController {
           .body("OTP Not correct");
       }
 
-      Integer result = ownerService.createOwner(
-        OwnerSignupParam
-          .builder()
-          .ownerName(ownerSignupToken.getOwnerName())
-          .ownerEmail(ownerSignupToken.getOwnerEmail())
-          .ownerPassword(ownerSignupToken.getOwnerPassword())
-          .build()
-      );
-
-      if (result > 0) {
+      try {
+        ownerService.createOwner(
+          OwnerSignupParam
+            .builder()
+            .ownerName(ownerSignupToken.getOwnerName())
+            .ownerEmail(ownerSignupToken.getOwnerEmail())
+            .ownerPassword(ownerSignupToken.getOwnerPassword())
+            .build()
+        );
         return ResponseEntity.status(HttpStatus.CREATED).build();
-      } else {
+      } catch (Exception e) {
         logger.error("Failed to create owner");
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
       }

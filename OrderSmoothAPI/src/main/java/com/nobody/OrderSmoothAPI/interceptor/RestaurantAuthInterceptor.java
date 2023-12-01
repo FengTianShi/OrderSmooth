@@ -29,18 +29,16 @@ public class RestaurantAuthInterceptor implements HandlerInterceptor {
     HttpServletResponse response,
     Object handler
   ) throws Exception {
-    // Owner owner = RequestUtils.getOwner(request);
-    // if (owner == null) {
-    //   return false;
-    // }
+    Owner owner = RequestUtils.getOwner(request);
+    if (owner == null) {
+      return false;
+    }
 
-    // if (ownerService.getOwnerById(owner.getOwnerId()) == null) {
-    //   return false;
-    // }
+    if (ownerService.getOwnerById(owner.getOwnerId()) == null) {
+      return false;
+    }
 
-    // logger.info("Owner {} is authorized", owner.getOwnerId());
-
-    //TODO prevent multiple requests from the same IP address in a short period of time
+    logger.info("Owner {} is authorized", owner.getOwnerId());
 
     return true;
   }

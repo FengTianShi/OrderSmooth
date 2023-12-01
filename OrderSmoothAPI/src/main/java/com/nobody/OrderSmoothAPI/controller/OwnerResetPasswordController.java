@@ -95,17 +95,16 @@ public class OwnerResetPasswordController {
           .body("OTP Not correct");
       }
 
-      Integer result = ownerService.updateOwnerPasswordByEmail(
-        OwnerResetPasswordParam
-          .builder()
-          .ownerEmail(ownerResetPasswordToken.getOwnerEmail())
-          .newPassword(ownerResetPasswordToken.getNewPassword())
-          .build()
-      );
-
-      if (result > 0) {
+      try {
+        ownerService.updateOwnerPasswordByEmail(
+          OwnerResetPasswordParam
+            .builder()
+            .ownerEmail(ownerResetPasswordToken.getOwnerEmail())
+            .newPassword(ownerResetPasswordToken.getNewPassword())
+            .build()
+        );
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
-      } else {
+      } catch (Exception e) {
         logger.error("Failed to update owner password");
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
       }

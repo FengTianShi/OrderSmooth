@@ -41,9 +41,9 @@ public class OwnerService {
   }
 
   @Transactional
-  public Integer createOwner(OwnerSignupParam ownerSignupParam) {
+  public void createOwner(OwnerSignupParam ownerSignupParam) {
     OffsetDateTime nowTime = OffsetDateTime.now(ZoneOffset.UTC);
-    return ownerMapper.insert(
+    ownerMapper.insert(
       Owner
         .builder()
         .ownerName(ownerSignupParam.getOwnerName())
@@ -62,11 +62,11 @@ public class OwnerService {
   }
 
   @Transactional
-  public Integer updateOwnerPasswordByEmail(
+  public void updateOwnerPasswordByEmail(
     OwnerResetPasswordParam ownerResetPasswordParam
   ) {
     OffsetDateTime nowTime = OffsetDateTime.now(ZoneOffset.UTC);
-    return ownerMapper.update(
+    ownerMapper.update(
       Owner
         .builder()
         .ownerPassword(
