@@ -168,9 +168,9 @@
                     prepend-inner-icon="mdi-calendar-week"
                     persistent-hint
                     :items="weekList"
-                    item-title="weekName"
+                    item-title="weekList.i18n[0].weekName"
                     item-value="weekId"
-                    v-model="selectedweek" />
+                    v-model="selectedDayInWeek" />
 
                   <v-text-field
                     label="営業開始時間"
@@ -341,15 +341,7 @@ export default {
     genreList: [],
     currencyList: [],
     payMethodList: [],
-    weekList: [
-      { weekId: 1, weekName: "月曜日" },
-      { weekId: 2, weekName: "火曜日" },
-      { weekId: 3, weekName: "水曜日" },
-      { weekId: 4, weekName: "木曜日" },
-      { weekId: 5, weekName: "金曜日" },
-      { weekId: 6, weekName: "土曜日" },
-      { weekId: 7, weekName: "日曜日" },
-    ],
+    weekList: [],
     selectedGenre: null,
     selectedLang: null,
     selectedCurrency: null,
@@ -457,6 +449,25 @@ export default {
       .then((response) => {
         if (response.status === 200) {
           this.currencyList = response.data;
+        }
+      })
+      .catch((error) => {
+        if (error.response.status === 401) {
+          this.$router.push("/Signin");
+        }
+      });
+
+    await this.$http
+      .get(`/master/week/${this.$i18n.locale}`, {
+        headers: {
+          Authorization: `Bearer ${JSON.parse(
+            window.localStorage.getItem("owner-token")
+          )}`,
+        },
+      })
+      .then((response) => {
+        if (response.status === 200) {
+          this.weekList = response.data;
         }
       })
       .catch((error) => {

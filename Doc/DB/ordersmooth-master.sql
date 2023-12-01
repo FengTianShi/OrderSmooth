@@ -385,7 +385,7 @@ CREATE TABLE IF NOT EXISTS public.m_day_in_week (
 );
 
 INSERT INTO
-    public.m_week(
+    public.m_day_in_week(
         day_in_week_id,
         is_invalid,
         is_deleted,
@@ -473,11 +473,11 @@ CREATE TABLE IF NOT EXISTS public.m_day_in_week_i18n (
     update_time timestamp with time zone NOT NULL,
     updated_by character varying(100) NOT NULL,
     PRIMARY KEY (seq),
-    FOREIGN KEY (day_in_week_id) REFERENCES m_week(day_in_week_id)
+    FOREIGN KEY (day_in_week_id) REFERENCES m_day_in_week(day_in_week_id)
 );
 
 INSERT INTO
-    public.m_week_i18n(
+    public.m_day_in_week_i18n(
         day_in_week_id,
         lang_code,
         day_in_week_name,
