@@ -28,22 +28,23 @@ public class RestaurantController {
   }
 
   @PostMapping("/restaurant")
-  public ResponseEntity<String> createRestaurant(
+  public ResponseEntity<Long> createRestaurant(
     @Valid @RequestBody CreateRestaurantParam createRestaurantParam,
     HttpServletRequest request
   ) {
     Owner owner = RequestUtils.getOwner(request);
 
     try {
-      restaurantService.createRestaurant(
+      Long restaurantId = restaurantService.createRestaurant(
         owner.getOwnerId(),
         createRestaurantParam
       );
       logger.info(
-        "Successfully created restaurant, Owner Id : {}",
-        owner.getOwnerId()
+        "Successfully created restaurant, Owner Id : {}, Restaurant Id : {}",
+        owner.getOwnerId(),
+        restaurantId
       );
-      return ResponseEntity.status(HttpStatus.CREATED).build();
+      return ResponseEntity.status(HttpStatus.CREATED).body(restaurantId);
     } catch (Exception e) {
       logger.error(
         "Failed to create restaurant, Owner Id : {}",

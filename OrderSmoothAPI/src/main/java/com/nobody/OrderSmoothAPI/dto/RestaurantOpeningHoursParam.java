@@ -25,6 +25,6 @@ public class RestaurantOpeningHoursParam implements Serializable {
   @Valid
   @NotNull
   @Size(min = 1)
-  @NotOverlap(format = "HH:mm", startTime = "startTime", endTime = "endTime")
+  @NotOverlap(format = "HH:mm", startTime = "openingTime", endTime = "closingTime")
   List<DayInWeekOpeningHoursParam> dayInWeekOpeningHours;
 }

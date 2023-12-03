@@ -37,9 +37,13 @@ public class RestaurantOpeningHoursService {
             .restaurantId(restaurantId)
             .dayInWeekId(restaurantOpeningHoursParam.getDayInWeekId())
             .openTime(
-              LocalTime.parse(dayInWeekOpeningHoursParam.getStartTime())
+              LocalTime.parse(dayInWeekOpeningHoursParam.getOpeningTime())
             )
-            .closeTime(LocalTime.parse(dayInWeekOpeningHoursParam.getEndTime()))
+            .closeTime(
+              LocalTime.parse(
+                dayInWeekOpeningHoursParam.getClosingTime() + ":59.999"
+              )
+            )
             .isInvalid(false)
             .isDeleted(false)
             .insertTime(now)

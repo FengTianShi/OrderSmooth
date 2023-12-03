@@ -74,7 +74,7 @@
     <v-btn icon="mdi-theme-light-dark" @click="toggleTheme"></v-btn>
   </v-app-bar>
 
-  <v-navigation-drawer v-model="drawer" temporary width="300">
+  <v-navigation-drawer v-model="drawer" temporary width="320">
     <v-list nav>
       <div class="pa-2">
         <v-text-field
@@ -88,21 +88,28 @@
       </div>
 
       <div class="pa-2">
-        <v-btn color="amber" prepend-icon="mdi-store-plus-outline" block>
+        <v-btn
+          color="amber"
+          prepend-icon="mdi-store-plus-outline"
+          block
+          @click="$router.push('/CreateRestaurant')">
           店舗追加
         </v-btn>
       </div>
 
       <v-list-group>
         <template v-slot:activator="{ props }">
-          <v-list-item v-bind="props" prepend-icon="mdi-store-outline">
+          <v-list-item v-bind="props" prepend-icon="mdi-store">
             海味 新宿店
             <p style="font-size: 14px" class="text-green">営業中</p>
             <!-- <span style="font-size: 14px" class="text-warning">営業停止</span> -->
           </v-list-item>
         </template>
 
-        <v-list-item prepend-icon="mdi-store-edit-outline" value="test1">
+        <v-list-item
+          value="test1"
+          prepend-icon="mdi-store-settings"
+          @click="$router.push('/RestaurantDetail/1')">
           店舗情報
         </v-list-item>
 

@@ -32,7 +32,7 @@ public class RestaurantService {
   }
 
   @Transactional
-  public void createRestaurant(
+  public Long createRestaurant(
     Long ownerId,
     CreateRestaurantParam createRestaurantParam
   ) {
@@ -79,5 +79,7 @@ public class RestaurantService {
       restaurant.getRestaurantId(),
       createRestaurantParam.getRestaurantOpeningHours()
     );
+
+    return restaurant.getRestaurantId();
   }
 }

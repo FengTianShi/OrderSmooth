@@ -10,7 +10,7 @@ import OwnerSignup from "../components/OwnerSignup.vue";
 import OwnerResetPassword from "../components/OwnerResetPassword.vue";
 
 import OwnerDashboard from "../components/OwnerDashboard.vue";
-import OwnerRestaurant from "../components/OwnerRestaurant.vue";
+import OwnerRestaurantDetail from "../components/OwnerRestaurantDetail.vue";
 import OwnerCreateRestaurant from "../components/OwnerCreateRestaurant.vue";
 import OwnerUpdateRestaurant from "../components/OwnerUpdateRestaurant.vue";
 
@@ -22,11 +22,10 @@ const routes = [
   { path: "/Signin", component: OwnerSignin },
   { path: "/Signup", component: OwnerSignup },
   { path: "/ResetPassword", component: OwnerResetPassword },
-
   { path: "/Dashboard", component: OwnerDashboard },
-  { path: "/Restaurant", component: OwnerRestaurant },
   { path: "/CreateRestaurant", component: OwnerCreateRestaurant },
   { path: "/UpdateRestaurant", component: OwnerUpdateRestaurant },
+  { path: "/RestaurantDetail/:id", component: OwnerRestaurantDetail },
 ];
 
 // 3、创建一个路由的对象

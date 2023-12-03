@@ -22,6 +22,10 @@ public class DateTimeValidator
       return true;
     }
 
+    if (value.length() != sdf.toPattern().length()) {
+      return false;
+    }
+
     try {
       sdf.parse(value);
     } catch (Exception e) {
