@@ -82,4 +82,24 @@ public class RestaurantService {
 
     return restaurant.getRestaurantId();
   }
+
+  @Transactional
+  public void updateRestaurantLogo(
+    Long ownerId,
+    Long restaurantId,
+    String restaurantLogoAddress
+  ) {
+    OffsetDateTime now = OffsetDateTime.now(ZoneOffset.UTC);
+
+    Restaurant restaurant = restaurantMapper.selectById(restaurantId);
+
+    // restaurant
+    //   .Builder()
+    //   .restaurantLogoAddress(restaurantLogoAddress)
+    //   .updateTime(now)
+    //   .updatedBy(ownerId.toString())
+    //   .build();
+
+    restaurantMapper.updateById(restaurant);
+  }
 }

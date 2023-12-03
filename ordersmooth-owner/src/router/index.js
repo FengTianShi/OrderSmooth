@@ -12,7 +12,6 @@ import OwnerResetPassword from "../components/OwnerResetPassword.vue";
 import OwnerDashboard from "../components/OwnerDashboard.vue";
 import OwnerRestaurantDetail from "../components/OwnerRestaurantDetail.vue";
 import OwnerCreateRestaurant from "../components/OwnerCreateRestaurant.vue";
-import OwnerUpdateRestaurant from "../components/OwnerUpdateRestaurant.vue";
 
 /**
  * 2、配置路由映射关系
@@ -24,7 +23,6 @@ const routes = [
   { path: "/ResetPassword", component: OwnerResetPassword },
   { path: "/Dashboard", component: OwnerDashboard },
   { path: "/CreateRestaurant", component: OwnerCreateRestaurant },
-  { path: "/UpdateRestaurant", component: OwnerUpdateRestaurant },
   { path: "/RestaurantDetail/:id", component: OwnerRestaurantDetail },
 ];
 
