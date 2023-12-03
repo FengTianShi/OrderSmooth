@@ -4,16 +4,19 @@ import com.nobody.OrderSmoothAPI.common.RequestUtils;
 import com.nobody.OrderSmoothAPI.common.StringUtils;
 import com.nobody.OrderSmoothAPI.dto.CreateRestaurantParam;
 import com.nobody.OrderSmoothAPI.entity.Owner;
+import com.nobody.OrderSmoothAPI.entity.Restaurant;
 import com.nobody.OrderSmoothAPI.service.RestaurantService;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
+import javax.validation.constraints.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -71,21 +74,45 @@ public class RestaurantController {
     }
   }
 
-  @PutMapping("/restaurant/logo")
+  @PutMapping("/restaurant/logo/{restaurantId}")
   public ResponseEntity<String> updateRestaurantLogo(
-    MultipartFile restaurantLogo,
+    @PathVariable Long restaurantId,
+    @Valid @RequestBody @NotNull MultipartFile restaurantLogo,
     HttpServletRequest request
   ) {
     Owner owner = RequestUtils.getOwner(request);
 
-    String newFileName = StringUtils.generateUUID();
+    String originalFilename = restaurantLogo.getOriginalFilename();
+    if (originalFilename == null) {
+      return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+    }
+    String newFileName =
+      StringUtils.generateUUID() +
+      originalFilename.substring(originalFilename.lastIndexOf("."));
 
     try (FileOutputStream fos = new FileOutputStream(imagePath + newFileName)) {
       fos.write(restaurantLogo.getBytes());
 
-      String restaurantLogoAddress = imageURL + newFileName;
-    } catch (IOException e) {}
+      Restaurant restaurant = restaurantService.getRestaurant(restaurantId);
 
-    return null;
+      String restaurantLogoAddress = imageURL + newFileName;
+      restaurant.setRestaurantLogoAddress(restaurantLogoAddress);
+      restaurantService.updateRestaurant(restaurant);
+
+      logger.info(
+        "Successfully updated restaurant logo, Owner Id : {}, Restaurant Id : {}",
+        owner.getOwnerId(),
+        restaurantId
+      );
+      return ResponseEntity.status(HttpStatus.OK).body(restaurantLogoAddress);
+    } catch (IOException e) {
+      logger.error(
+        "Failed to update restaurant logo, Owner Id : {}, Restaurant Id : {}",
+        owner.getOwnerId(),
+        restaurantId,
+        e
+      );
+      return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+    }
   }
 }

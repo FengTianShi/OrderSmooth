@@ -1,5 +1,6 @@
 package com.nobody.OrderSmoothAPI.service;
 
+import com.github.yulichang.wrapper.MPJLambdaWrapper;
 import com.nobody.OrderSmoothAPI.dto.CreateRestaurantParam;
 import com.nobody.OrderSmoothAPI.entity.Restaurant;
 import com.nobody.OrderSmoothAPI.mapper.RestaurantMapper;
@@ -84,22 +85,17 @@ public class RestaurantService {
   }
 
   @Transactional
-  public void updateRestaurantLogo(
-    Long ownerId,
-    Long restaurantId,
-    String restaurantLogoAddress
-  ) {
-    OffsetDateTime now = OffsetDateTime.now(ZoneOffset.UTC);
-
-    Restaurant restaurant = restaurantMapper.selectById(restaurantId);
-
-    // restaurant
-    //   .Builder()
-    //   .restaurantLogoAddress(restaurantLogoAddress)
-    //   .updateTime(now)
-    //   .updatedBy(ownerId.toString())
-    //   .build();
-
+  public void updateRestaurant(Restaurant restaurant) {
     restaurantMapper.updateById(restaurant);
+  }
+
+  public Restaurant getRestaurant(Long restaurantId) {
+    return restaurantMapper.selectOne(
+      new MPJLambdaWrapper<Restaurant>()
+        .selectAll(Restaurant.class)
+        .eq(Restaurant::getRestaurantId, restaurantId)
+        .eq(Restaurant::getIsInvalid, false)
+        .eq(Restaurant::getIsDeleted, false)
+    );
   }
 }

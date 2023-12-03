@@ -11,15 +11,15 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.HandlerInterceptor;
 
 @Component
-public class RestaurantAuthInterceptor implements HandlerInterceptor {
+public class OwnerSessionInterceptor implements HandlerInterceptor {
 
   private final Logger logger = LoggerFactory.getLogger(
-    RestaurantAuthInterceptor.class
+    OwnerSessionInterceptor.class
   );
 
   private OwnerService ownerService;
 
-  public RestaurantAuthInterceptor(OwnerService ownerService) {
+  public OwnerSessionInterceptor(OwnerService ownerService) {
     this.ownerService = ownerService;
   }
 
@@ -38,7 +38,7 @@ public class RestaurantAuthInterceptor implements HandlerInterceptor {
       return false;
     }
 
-    logger.info("Owner {} is authorized", owner.getOwnerId());
+    logger.info("Owner {} session confirmed", owner.getOwnerId());
 
     return true;
   }
