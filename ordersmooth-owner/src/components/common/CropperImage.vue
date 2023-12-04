@@ -2,11 +2,18 @@
   <div>
     <img ref="imageRef" :src="imageSrc" alt="image" />
     <v-divider class="my-2"></v-divider>
-    <v-btn block :color="btnColor" text @click="cropImage">
+    <v-btn
+      text
+      block
+      :color="btnColor"
+      :loading="loading"
+      :disabled="loading"
+      @click="cropImage">
       {{ btnName }}
     </v-btn>
   </div>
 </template>
+
 <script setup>
 import { ref, onMounted, onBeforeUnmount } from "vue";
 import Cropper from "cropperjs";
@@ -63,10 +70,29 @@ onBeforeUnmount(() => {
 });
 </script>
 
+<script>
+export default {
+  expose: ["load", "done"],
+  data() {
+    return {
+      loading: false,
+    };
+  },
+  methods: {
+    load: function () {
+      this.loading = true;
+    },
+    done: function () {
+      this.loading = false;
+    },
+  },
+};
+</script>
+
 <style scoped>
 img {
   display: block;
   max-width: 100%;
-  max-height: 230px;
+  max-height: 240px;
 }
 </style>

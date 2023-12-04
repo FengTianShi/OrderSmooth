@@ -1,7 +1,9 @@
 <template>
   <div class="text-center">
-    <v-avatar :image="logoSrc" :size="logoSize" />
-    <v-btn class="ma-4" color="primary" text @click="selectImageSrc">
+    <v-avatar v-if="logoSrc" :image="logoSrc" :size="logoSize" />
+    <v-avatar v-if="!logoSrc" color="surface-variant" :size="logoSize" />
+
+    <v-btn class="ma-4" color="primary" text @click="selectImage">
       Upload Image
     </v-btn>
 
@@ -17,7 +19,7 @@
       ref="fileInput"
       accept="image/*"
       style="display: none"
-      @change="UploadImageSrc" />
+      @change="cropperImage" />
   </div>
 
   <v-dialog v-model="cropper" max-width="500">
@@ -31,19 +33,19 @@
             icon="mdi-close"
             variant="text"
             size="x-small"
-            @click="cropper = false" />
+            @click="(cropper = false), resetFileInput()" />
         </v-col>
       </v-row>
 
       <v-divider class="my-2"></v-divider>
 
       <cropper-img
+        ref="cropperImage"
         btnName="Upload"
         btnColor="deep-purple-accent-4"
         :imageSrc="imageSrc"
         :aspectRatio="aspectRatio"
-        @updateImageSrc="updateImageSrc"
-        class="cropper-img-container" />
+        @updateImageSrc="updateLogo" />
     </v-card>
   </v-dialog>
 </template>
@@ -54,8 +56,8 @@ import CropperImg from "../components/common/CropperImage.vue";
 export default {
   components: { CropperImg },
   props: {
-    logoSrc: {
-      type: String,
+    restaurantId: {
+      required: true,
     },
     logoSize: {
       type: Number,
@@ -63,18 +65,22 @@ export default {
     },
   },
   data: () => ({
-    showUploadError: false,
+    logoSrc: "",
+
     uploadError: "",
+    showUploadError: false,
+
     cropper: false,
-    aspectRatio: 1,
+
     imageSrc: "",
-    imageNew: "",
+    imageName: "",
+    aspectRatio: 1,
   }),
   methods: {
-    selectImageSrc() {
+    selectImage() {
       this.$refs.fileInput.click();
     },
-    UploadImageSrc(e) {
+    cropperImage(e) {
       const img = e.target.files[0];
       if (!img) {
         this.showUploadError = true;
@@ -83,23 +89,72 @@ export default {
       }
       if (img.size > 1024 * 1024 * 16) {
         this.showUploadError = true;
-        this.uploadError = "Image size must be less than 2MB";
+        this.uploadError = "Image size must be less than 16MB";
         return;
       }
+      this.showUploadError = false;
 
+      this.imgName = img.name;
       this.imageSrc = URL.createObjectURL(img);
 
-      this.showUploadError = false;
       this.cropper = true;
+      this.resetFileInput();
     },
-    updateImageSrc(updateImageSrc) {
-      this.imageNew = updateImageSrc;
+    async updateLogo(updateImageSrc) {
+      this.$refs.cropperImage.load();
+
+      var formData = new FormData();
+      let bf = await fetch(updateImageSrc).then((r) => r.blob());
+      formData.append("restaurantLogo", bf, this.imgName);
+
+      await this.$http
+        .put(`restaurant/logo/${this.restaurantId}`, formData, {
+          headers: {
+            "Content-Type": "multipart/form-data",
+            Authorization: `Bearer ${JSON.parse(
+              window.localStorage.getItem("owner-token")
+            )}`,
+          },
+        })
+        .then((response) => {
+          if (response.status == 200) {
+            this.logoSrc = response.data;
+          }
+        })
+        .catch((error) => {
+          if (error.response.status === 401) {
+            this.$router.push("/Signin");
+          }
+        });
+
+      this.$refs.cropperImage.done();
+      this.cropper = false;
+      this.resetFileInput();
     },
     resetFileInput() {
       this.$refs.fileInput.value = "";
     },
   },
   mounted() {},
-  created() {},
+  async created() {
+    await this.$http
+      .get(`/restaurant/logo/${this.restaurantId}`, {
+        headers: {
+          Authorization: `Bearer ${JSON.parse(
+            window.localStorage.getItem("owner-token")
+          )}`,
+        },
+      })
+      .then((response) => {
+        if (response.status === 200) {
+          this.logoSrc = response.data;
+        }
+      })
+      .catch((error) => {
+        if (error.response.status === 401) {
+          this.$router.push("/Signin");
+        }
+      });
+  },
 };
 </script>

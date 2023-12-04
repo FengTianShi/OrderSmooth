@@ -39,4 +39,8 @@ public class StringUtils {
   public static String generateUUID() {
     return UUID.randomUUID().toString().replace("-", "");
   }
+
+  public static Boolean isEmpty(String str) {
+    return org.apache.commons.lang3.StringUtils.isEmpty(str);
+  }
 }

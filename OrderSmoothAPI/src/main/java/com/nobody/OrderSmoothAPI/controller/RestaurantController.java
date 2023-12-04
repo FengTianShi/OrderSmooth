@@ -6,16 +6,17 @@ import com.nobody.OrderSmoothAPI.dto.CreateRestaurantParam;
 import com.nobody.OrderSmoothAPI.entity.Owner;
 import com.nobody.OrderSmoothAPI.entity.Restaurant;
 import com.nobody.OrderSmoothAPI.service.RestaurantService;
+import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
-import javax.validation.constraints.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -74,26 +75,54 @@ public class RestaurantController {
     }
   }
 
+  @GetMapping("/restaurant/logo/{restaurantId}")
+  public ResponseEntity<String> getRestaurantLogo(
+    @PathVariable Long restaurantId
+  ) {
+    Restaurant restaurant = restaurantService.getRestaurant(restaurantId);
+    return ResponseEntity
+      .status(HttpStatus.OK)
+      .body(restaurant.getRestaurantLogoAddress());
+  }
+
   @PutMapping("/restaurant/logo/{restaurantId}")
   public ResponseEntity<String> updateRestaurantLogo(
     @PathVariable Long restaurantId,
-    @Valid @RequestBody @NotNull MultipartFile restaurantLogo,
+    @RequestBody MultipartFile restaurantLogo,
     HttpServletRequest request
   ) {
     Owner owner = RequestUtils.getOwner(request);
+
+    if (restaurantLogo == null) {
+      return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+    }
 
     String originalFilename = restaurantLogo.getOriginalFilename();
     if (originalFilename == null) {
       return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
     }
-    String newFileName =
-      StringUtils.generateUUID() +
-      originalFilename.substring(originalFilename.lastIndexOf("."));
+
+    String originalFileType = originalFilename.substring(
+      originalFilename.lastIndexOf(".")
+    );
+    if (
+      StringUtils.isEmpty(originalFileType) ||
+      (
+        !originalFileType.equalsIgnoreCase(".jpg") &&
+        !originalFileType.equalsIgnoreCase(".jpeg") &&
+        !originalFileType.equalsIgnoreCase(".png")
+      )
+    ) {
+      return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+    }
+
+    String newFileName = StringUtils.generateUUID() + originalFileType;
 
     try (FileOutputStream fos = new FileOutputStream(imagePath + newFileName)) {
       fos.write(restaurantLogo.getBytes());
 
       Restaurant restaurant = restaurantService.getRestaurant(restaurantId);
+      String originalRestaurantLogoAddress = restaurant.getRestaurantLogoAddress();
 
       String restaurantLogoAddress = imageURL + newFileName;
       restaurant.setRestaurantLogoAddress(restaurantLogoAddress);
@@ -104,6 +133,27 @@ public class RestaurantController {
         owner.getOwnerId(),
         restaurantId
       );
+
+      // delete original logo
+      try {
+        if (!StringUtils.isEmpty(originalRestaurantLogoAddress)) {
+          String originalFileName = originalRestaurantLogoAddress
+            .substring(originalRestaurantLogoAddress.lastIndexOf("/"))
+            .substring(1);
+          File originalFile = new File(imagePath + originalFileName);
+          if (originalFile.exists()) {
+            originalFile.delete();
+          }
+        }
+      } catch (Exception e) {
+        logger.error(
+          "Failed to delete original restaurant logo, Owner Id : {}, Restaurant Id : {}",
+          owner.getOwnerId(),
+          restaurantId,
+          e
+        );
+      }
+
       return ResponseEntity.status(HttpStatus.OK).body(restaurantLogoAddress);
     } catch (IOException e) {
       logger.error(

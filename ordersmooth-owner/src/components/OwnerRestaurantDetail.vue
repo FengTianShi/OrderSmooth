@@ -103,8 +103,7 @@
                       :rules="[required]" /> -->
                   </v-col>
                   <v-col cols="12" md="4">
-                    <OwnerUploadRestaurantLogo
-                      logoSrc="https://cdn.vuetifyjs.com/images/john.jpg" />
+                    <OwnerUploadRestaurantLogo :restaurantId="restaurantId" />
                   </v-col>
                 </v-row>
 
@@ -139,6 +138,7 @@ export default {
     OwnerUploadRestaurantLogo,
   },
   data: () => ({
+    restaurantId: null,
     items: [
       { text: "基本", icon: "mdi-clock" },
       { text: "多语言", icon: "mdi-clock" },
@@ -151,5 +151,9 @@ export default {
     ],
     loading: false,
   }),
+  methods: {},
+  created() {
+    this.restaurantId = this.$route.params.id;
+  },
 };
 </script>

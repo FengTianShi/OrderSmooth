@@ -41,31 +41,28 @@ const router = createRouter({
 import axios from "axios";
 
 router.beforeEach(async (to) => {
-  var isAuthenticated = false;
-
-  var ownerToken = JSON.parse(window.localStorage.getItem("owner-token"));
-  if (ownerToken) {
-    await axios
-      .get(`/owner/is-signin`, {
-        headers: { Authorization: `Bearer ${ownerToken}` },
-      })
-      .then((response) => {
-        if (response.status === 200) {
-          isAuthenticated = true;
-        }
-      })
-      .catch((error) => {
-        console.log(error);
-      });
-  }
-
   if (
-    !isAuthenticated &&
     to.path !== "/Signin" &&
     to.path !== "/Signup" &&
     to.path !== "/ResetPassword"
   ) {
-    return "/Signin";
+    await axios
+      .get(`/owner/is-signin`, {
+        headers: {
+          Authorization: `Bearer ${JSON.parse(
+            window.localStorage.getItem("owner-token")
+          )}`,
+        },
+      })
+      .then((response) => {
+        if (response.status === 200) {
+          return true;
+        }
+      })
+      .catch((error) => {
+        console.log(error);
+        return "/Signin";
+      });
   }
 });
 

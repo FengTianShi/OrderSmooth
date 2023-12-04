@@ -185,12 +185,12 @@ export default {
       );
 
       await this.$http
-        .post("/owner/reset-password/confirm", {
+        .put("/owner/reset-password/confirm", {
           otp: this.otp,
           token: ownerSignToken,
         })
         .then((response) => {
-          if (response.status == 201) {
+          if (response.status == 204) {
             this.signin();
           }
         })
