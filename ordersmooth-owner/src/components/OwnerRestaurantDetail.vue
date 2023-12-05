@@ -22,7 +22,7 @@
                 </v-list>
               </v-col>
               <v-col cols="12" md="9">
-                <OwnerRestaurantBaseInfo :restaurantId="restaurantId" />
+                <OwnerRestaurantDetailBase :restaurantId="restaurantId" />
               </v-col>
             </v-row>
           </v-card>
@@ -34,12 +34,12 @@
 
 <script>
 import OwnerHeader from "./common/OwnerHeader.vue";
-import OwnerRestaurantBaseInfo from "./OwnerRestaurantBaseInfo.vue";
+import OwnerRestaurantDetailBase from "./OwnerRestaurantDetailBase.vue";
 
 export default {
   components: {
     OwnerHeader,
-    OwnerRestaurantBaseInfo,
+    OwnerRestaurantDetailBase,
   },
   data: () => ({
     restaurantId: null,

@@ -7,10 +7,13 @@ import com.nobody.OrderSmoothAPI.dto.RestaurantDTO;
 import com.nobody.OrderSmoothAPI.dto.UpdateRestaurantParam;
 import com.nobody.OrderSmoothAPI.entity.Owner;
 import com.nobody.OrderSmoothAPI.entity.Restaurant;
+import com.nobody.OrderSmoothAPI.entity.RestaurantImage;
+import com.nobody.OrderSmoothAPI.service.RestaurantImageService;
 import com.nobody.OrderSmoothAPI.service.RestaurantService;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.util.List;
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 import org.slf4j.Logger;
@@ -18,6 +21,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -35,16 +39,20 @@ public class RestaurantController {
 
   private final RestaurantService restaurantService;
 
+  private final RestaurantImageService restaurantImageService;
+
   private final String imagePath;
 
   private final String imageURL;
 
   public RestaurantController(
     RestaurantService restaurantService,
+    RestaurantImageService restaurantImageService,
     @Value("${ordersmooth.image.path}") String imagePath,
     @Value("${ordersmooth.image.url}") String imageURL
   ) {
     this.restaurantService = restaurantService;
+    this.restaurantImageService = restaurantImageService;
     this.imagePath = imagePath;
     this.imageURL = imageURL;
   }
@@ -199,6 +207,118 @@ public class RestaurantController {
         "Failed to update restaurant logo, Owner Id : {}, Restaurant Id : {}",
         owner.getOwnerId(),
         restaurantId,
+        e
+      );
+      return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+    }
+  }
+
+  @GetMapping("/restaurant/image/{restaurantId}")
+  public ResponseEntity<List<RestaurantImage>> getRestaurantImage(
+    @PathVariable Long restaurantId
+  ) {
+    List<RestaurantImage> restaurantImage = restaurantImageService.getAllRestaurantImage(
+      restaurantId
+    );
+    return ResponseEntity.status(HttpStatus.OK).body(restaurantImage);
+  }
+
+  @PostMapping("/restaurant/image/{restaurantId}")
+  public ResponseEntity<Void> createRestaurantImage(
+    @PathVariable Long restaurantId,
+    @RequestBody MultipartFile restaurantImage,
+    HttpServletRequest request
+  ) {
+    Owner owner = RequestUtils.getOwner(request);
+
+    if (restaurantImage == null) {
+      return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+    }
+
+    String originalFilename = restaurantImage.getOriginalFilename();
+    if (originalFilename == null) {
+      return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+    }
+
+    String originalFileType = originalFilename.substring(
+      originalFilename.lastIndexOf(".")
+    );
+    if (
+      StringUtils.isEmpty(originalFileType) ||
+      (
+        !originalFileType.equalsIgnoreCase(".jpg") &&
+        !originalFileType.equalsIgnoreCase(".jpeg") &&
+        !originalFileType.equalsIgnoreCase(".png")
+      )
+    ) {
+      return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+    }
+
+    String newFileName = StringUtils.generateUUID() + originalFileType;
+
+    try (FileOutputStream fos = new FileOutputStream(imagePath + newFileName)) {
+      fos.write(restaurantImage.getBytes());
+
+      String restaurantImageAddress = imageURL + newFileName;
+      restaurantImageService.createRestaurantImage(
+        restaurantId,
+        RestaurantImage.builder().imageAddress(restaurantImageAddress).build()
+      );
+
+      logger.info(
+        "Successfully created restaurant image, Owner Id : {}, Restaurant Id : {}",
+        owner.getOwnerId(),
+        restaurantId
+      );
+
+      return ResponseEntity.status(HttpStatus.CREATED).build();
+    } catch (IOException e) {
+      logger.error(
+        "Failed to create restaurant image, Owner Id : {}, Restaurant Id : {}",
+        owner.getOwnerId(),
+        restaurantId,
+        e
+      );
+      return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+    }
+  }
+
+  @DeleteMapping("/restaurant/image/{imageId}")
+  public ResponseEntity<Void> deleteRestaurantImage(
+    @PathVariable Long imageId,
+    HttpServletRequest request
+  ) {
+    Owner owner = RequestUtils.getOwner(request);
+
+    try {
+      RestaurantImage restaurantImage = restaurantImageService.getRestaurantImage(
+        imageId
+      );
+      if (restaurantImage == null) {
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+      }
+
+      String imageAddress = restaurantImage.getImageAddress();
+      String fileName = imageAddress
+        .substring(imageAddress.lastIndexOf("/"))
+        .substring(1);
+      File file = new File(imagePath + fileName);
+      if (file.exists()) {
+        file.delete();
+      }
+
+      restaurantImageService.deleteRestaurantImage(imageId);
+      logger.info(
+        "Successfully deleted restaurant image, Owner Id : {}, Image Id : {}",
+        owner.getOwnerId(),
+        imageId
+      );
+      return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
+    } catch (Exception e) {
+      logger.error(
+        "Failed to delete restaurant image, Owner Id : {}, Image Id : {}",
+        owner.getOwnerId(),
+        imageId,
         e
       );
       return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();

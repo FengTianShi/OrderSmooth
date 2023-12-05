@@ -46,6 +46,8 @@ router.beforeEach(async (to) => {
     to.path !== "/Signup" &&
     to.path !== "/ResetPassword"
   ) {
+    let isAuthenticated = false;
+
     await axios
       .get(`/owner/is-signin`, {
         headers: {
@@ -56,13 +58,17 @@ router.beforeEach(async (to) => {
       })
       .then((response) => {
         if (response.status === 200) {
-          return true;
+          isAuthenticated = true;
         }
       })
       .catch((error) => {
         console.log(error);
-        return "/Signin";
+        isAuthenticated = false;
       });
+
+    if (!isAuthenticated) {
+      return "/Signin";
+    }
   }
 });
 

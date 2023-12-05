@@ -23,14 +23,14 @@ public class WebConfig implements WebMvcConfigurer {
 
   @Override
   public void addInterceptors(InterceptorRegistry registry) {
-    // registry
-    //   .addInterceptor(ownerSessionInterceptor)
-    //   .addPathPatterns("/master/**")
-    //   .addPathPatterns("/restaurant/**");
+    registry
+      .addInterceptor(ownerSessionInterceptor)
+      .addPathPatterns("/master/**")
+      .addPathPatterns("/restaurant/**");
 
-    // registry
-    //   .addInterceptor(restaurantAuthInterceptor)
-    //   .addPathPatterns("/restaurant/**")
-    //   .excludePathPatterns("/restaurant");
+    registry
+      .addInterceptor(restaurantAuthInterceptor)
+      .addPathPatterns("/restaurant/**")
+      .excludePathPatterns("/restaurant");
   }
 }

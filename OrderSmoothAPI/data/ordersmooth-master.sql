@@ -1,5 +1,19 @@
 DROP TABLE IF EXISTS public.m_language CASCADE;
 
+DROP TABLE IF EXISTS public.m_currency CASCADE;
+
+DROP TABLE IF EXISTS public.m_day_in_week_i18n CASCADE;
+
+DROP TABLE IF EXISTS public.m_day_in_week CASCADE;
+
+DROP TABLE IF EXISTS public.m_pay_method_i18n CASCADE;
+
+DROP TABLE IF EXISTS public.m_pay_method CASCADE;
+
+DROP TABLE IF EXISTS public.m_restaurant_genre_i18n CASCADE;
+
+DROP TABLE IF EXISTS public.m_restaurant_genre CASCADE;
+
 CREATE TABLE IF NOT EXISTS public.m_language (
     lang_code character varying(5) NOT NULL,
     lang_name character varying(100) NOT NULL,
@@ -64,8 +78,6 @@ VALUES
         now(),
         'SYSTEM'
     );
-
-DROP TABLE IF EXISTS public.m_currency CASCADE;
 
 CREATE TABLE IF NOT EXISTS public.m_currency (
     currency_id integer NOT NULL,
@@ -156,8 +168,6 @@ VALUES
         'SYSTEM'
     );
 
-DROP TABLE IF EXISTS public.m_pay_method CASCADE;
-
 CREATE TABLE IF NOT EXISTS public.m_pay_method (
     pay_method_id integer NOT NULL,
     is_invalid boolean NOT NULL,
@@ -207,8 +217,6 @@ VALUES
         now(),
         'SYSTEM'
     );
-
-DROP TABLE IF EXISTS public.m_pay_method_i18n CASCADE;
 
 CREATE TABLE IF NOT EXISTS public.m_pay_method_i18n (
     seq serial NOT NULL,
@@ -371,8 +379,6 @@ VALUES
         'SYSTEM'
     );
 
-DROP TABLE IF EXISTS public.m_day_in_week CASCADE;
-
 CREATE TABLE IF NOT EXISTS public.m_day_in_week (
     day_in_week_id integer NOT NULL,
     is_invalid boolean NOT NULL,
@@ -458,8 +464,6 @@ VALUES
         now(),
         'SYSTEM'
     );
-
-DROP TABLE IF EXISTS public.m_day_in_week_i18n CASCADE;
 
 CREATE TABLE IF NOT EXISTS public.m_day_in_week_i18n (
     seq serial NOT NULL,
@@ -798,8 +802,6 @@ VALUES
         'SYSTEM'
     );
 
-DROP TABLE IF EXISTS public.m_restaurant_genre CASCADE;
-
 CREATE TABLE IF NOT EXISTS public.m_restaurant_genre (
     genre_id integer NOT NULL,
     is_invalid boolean NOT NULL,
@@ -849,8 +851,6 @@ VALUES
         now(),
         'SYSTEM'
     );
-
-DROP TABLE IF EXISTS public.m_restaurant_genre_i18n CASCADE;
 
 CREATE TABLE IF NOT EXISTS public.m_restaurant_genre_i18n (
     seq serial NOT NULL,

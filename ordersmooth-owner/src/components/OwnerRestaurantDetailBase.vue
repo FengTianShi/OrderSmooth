@@ -7,43 +7,7 @@
   <v-form validate-on="submit lazy" @submit.prevent="updateRestaurantBaseInfo">
     <v-row>
       <v-col cols="12" md="8">
-        <v-card class="mb-4 pa-2" variant="tonal">
-          <v-card-item>
-            <v-card-title> Restaurant Name </v-card-title>
-            <v-card-subtitle> English </v-card-subtitle>
-          </v-card-item>
-
-          <v-card-text>
-            <p class="text-grey">Address</p>
-            <p>
-              Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do
-              eiusmod tempor incididunt ut labore et dolore magna aliqua.
-            </p>
-            <br />
-            <p class="text-grey">Des</p>
-            <p>
-              Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do
-              eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut
-              enim ad minim veniam, quis nostrud exercitation ullamco laboris
-              nisi ut aliquip ex ea commodo consequat.
-            </p>
-          </v-card-text>
-
-          <v-card-actions>
-            <v-btn color="warning">Edit</v-btn>
-            <v-spacer></v-spacer>
-            <v-btn color="error">Delete</v-btn>
-          </v-card-actions>
-        </v-card>
-
-        <v-btn
-          class="mb-4"
-          block
-          color="primary"
-          prepend-icon="mdi-translate"
-          variant="tonal">
-          Add support language
-        </v-btn>
+        <OwnerRestaurantDetailLang :restaurantId="restaurantId" />
 
         <v-select
           :label="$t('createRestaurant.genre')"
@@ -79,9 +43,31 @@
           maxlength="10"
           v-model="restaurantPostalCode"
           :rules="[required, positiveIntNum]" />
+
+        <v-text-field
+          label="WIFI SSID"
+          class="mb-2"
+          density="compact"
+          variant="outlined"
+          prepend-inner-icon="mdi-wifi"
+          persistent-hint
+          maxlength="10"
+          v-model="restaurantPostalCode"
+          :rules="[required, positiveIntNum]" />
+
+        <v-text-field
+          label="WIFI Password"
+          class="mb-2"
+          density="compact"
+          variant="outlined"
+          prepend-inner-icon="mdi-wifi-lock"
+          persistent-hint
+          maxlength="10"
+          v-model="restaurantPostalCode"
+          :rules="[required, positiveIntNum]" />
       </v-col>
       <v-col cols="12" md="4">
-        <OwnerUploadRestaurantLogo :restaurantId="restaurantId" />
+        <OwnerRestaurantDetailLogo :restaurantId="restaurantId" />
       </v-col>
     </v-row>
 
@@ -101,7 +87,8 @@
 </template>
 
 <script>
-import OwnerUploadRestaurantLogo from "./OwnerUploadRestaurantLogo.vue";
+import OwnerRestaurantDetailLogo from "./OwnerRestaurantDetailLogo.vue";
+import OwnerRestaurantDetailLang from "./OwnerRestaurantDetailLang.vue";
 
 export default {
   props: {
@@ -110,7 +97,8 @@ export default {
     },
   },
   components: {
-    OwnerUploadRestaurantLogo,
+    OwnerRestaurantDetailLogo,
+    OwnerRestaurantDetailLang,
   },
   data: () => ({}),
   methods: {

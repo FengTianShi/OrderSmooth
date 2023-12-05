@@ -27,7 +27,7 @@
       @change="cropperImage" />
   </div>
 
-  <v-dialog v-model="cropper" max-width="500">
+  <v-dialog persistent v-model="cropper" max-width="500">
     <v-card class="pa-4">
       <v-row>
         <v-col cols="10">
@@ -56,7 +56,7 @@
 </template>
 
 <script>
-import CropperImg from "../components/common/CropperImage.vue";
+import CropperImg from "./common/CropperImage.vue";
 
 export default {
   components: { CropperImg },
