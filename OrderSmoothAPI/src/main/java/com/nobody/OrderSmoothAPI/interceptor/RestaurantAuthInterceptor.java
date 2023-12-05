@@ -12,15 +12,15 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.HandlerInterceptor;
 
 @Component
-public class UpdateRestaurantInterceptor implements HandlerInterceptor {
+public class RestaurantAuthInterceptor implements HandlerInterceptor {
 
   private final Logger logger = LoggerFactory.getLogger(
-    UpdateRestaurantInterceptor.class
+    RestaurantAuthInterceptor.class
   );
 
   private RestaurantService restaurantService;
 
-  public UpdateRestaurantInterceptor(RestaurantService restaurantService) {
+  public RestaurantAuthInterceptor(RestaurantService restaurantService) {
     this.restaurantService = restaurantService;
   }
 
@@ -36,11 +36,13 @@ public class UpdateRestaurantInterceptor implements HandlerInterceptor {
 
     Restaurant restaurant = restaurantService.getRestaurant(restaurantId);
     if (restaurant == null) {
+      response.sendError(HttpServletResponse.SC_NOT_FOUND);
       return false;
     }
 
     Owner owner = RequestUtils.getOwner(request);
     if (owner.getOwnerId() != restaurant.getOwnerId()) {
+      response.sendError(HttpServletResponse.SC_FORBIDDEN);
       return false;
     }
 

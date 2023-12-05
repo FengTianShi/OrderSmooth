@@ -31,15 +31,16 @@ public class OwnerSessionInterceptor implements HandlerInterceptor {
   ) throws Exception {
     Owner owner = RequestUtils.getOwner(request);
     if (owner == null) {
+      response.sendError(HttpServletResponse.SC_UNAUTHORIZED);
       return false;
     }
 
     if (ownerService.getOwnerById(owner.getOwnerId()) == null) {
+      response.sendError(HttpServletResponse.SC_UNAUTHORIZED);
       return false;
     }
 
     logger.info("Owner {} session confirmed", owner.getOwnerId());
-
     return true;
   }
 }

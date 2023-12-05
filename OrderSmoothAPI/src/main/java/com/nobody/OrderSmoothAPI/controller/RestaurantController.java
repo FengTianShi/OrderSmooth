@@ -3,6 +3,7 @@ package com.nobody.OrderSmoothAPI.controller;
 import com.nobody.OrderSmoothAPI.common.RequestUtils;
 import com.nobody.OrderSmoothAPI.common.StringUtils;
 import com.nobody.OrderSmoothAPI.dto.CreateRestaurantParam;
+import com.nobody.OrderSmoothAPI.dto.RestaurantDTO;
 import com.nobody.OrderSmoothAPI.entity.Owner;
 import com.nobody.OrderSmoothAPI.entity.Restaurant;
 import com.nobody.OrderSmoothAPI.service.RestaurantService;
@@ -45,6 +46,16 @@ public class RestaurantController {
     this.restaurantService = restaurantService;
     this.imagePath = imagePath;
     this.imageURL = imageURL;
+  }
+
+  @GetMapping("/restaurant/{restaurantId}")
+  public ResponseEntity<RestaurantDTO> getRestaurant(
+    @PathVariable Long restaurantId
+  ) {
+    RestaurantDTO restaurant = restaurantService.getRestaurantFullInfo(
+      restaurantId
+    );
+    return ResponseEntity.status(HttpStatus.OK).body(restaurant);
   }
 
   @PostMapping("/restaurant")

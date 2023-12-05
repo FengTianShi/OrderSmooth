@@ -3,7 +3,12 @@
     <v-avatar v-if="logoSrc" :image="logoSrc" :size="logoSize" />
     <v-avatar v-if="!logoSrc" color="surface-variant" :size="logoSize" />
 
-    <v-btn class="ma-4" color="primary" text @click="selectImage">
+    <v-btn
+      class="ma-4"
+      color="primary"
+      variant="tonal"
+      prepend-icon="mdi-image"
+      @click="selectImage">
       Upload Image
     </v-btn>
 
@@ -87,9 +92,9 @@ export default {
         this.uploadError = "Please select an image";
         return;
       }
-      if (img.size > 1024 * 1024 * 16) {
+      if (img.size > 1024 * 1024 * 8) {
         this.showUploadError = true;
-        this.uploadError = "Image size must be less than 16MB";
+        this.uploadError = "Image size must be less than 8MB";
         return;
       }
       this.showUploadError = false;
@@ -135,7 +140,6 @@ export default {
       this.$refs.fileInput.value = "";
     },
   },
-  mounted() {},
   async created() {
     await this.$http
       .get(`/restaurant/logo/${this.restaurantId}`, {
