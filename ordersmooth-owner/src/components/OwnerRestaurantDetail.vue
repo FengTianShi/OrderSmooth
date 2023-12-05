@@ -7,22 +7,43 @@
           <v-card class="mx-auto pa-8" max-width="1000" elevation="0">
             <v-row>
               <v-col cols="12" md="3">
-                <v-list class="pa-0">
-                  <v-list-item
-                    v-for="(item, i) in items"
-                    :key="i"
-                    :value="item"
-                    color="primary">
-                    <template v-slot:prepend>
-                      <v-icon :icon="item.icon"></v-icon>
-                    </template>
-
-                    <v-list-item-title v-text="item.text"></v-list-item-title>
-                  </v-list-item>
-                </v-list>
+                <v-tabs v-model="tab" direction="vertical" color="primary">
+                  <v-tab value="option-1">
+                    <v-icon start> mdi-account </v-icon>
+                    Base
+                  </v-tab>
+                  <v-tab value="option-2">
+                    <v-icon start> mdi-lock </v-icon>
+                    Payment
+                  </v-tab>
+                  <v-tab value="option-3">
+                    <v-icon start> mdi-lock </v-icon>
+                    Opening Hours
+                  </v-tab>
+                  <v-tab value="option-4">
+                    <v-icon start> mdi-lock </v-icon>
+                    Security
+                  </v-tab>
+                </v-tabs>
               </v-col>
               <v-col cols="12" md="9">
-                <OwnerRestaurantDetailBase :restaurantId="restaurantId" />
+                <v-window v-model="tab">
+                  <v-window-item value="option-1">
+                    <OwnerRestaurantDetailBase :restaurantId="restaurantId" />
+                  </v-window-item>
+                  <v-window-item value="option-2">
+                    <OwnerRestaurantDetailPayment
+                      :restaurantId="restaurantId" />
+                  </v-window-item>
+                  <v-window-item value="option-3">
+                    <OwnerRestaurantDetailOpeningHours
+                      :restaurantId="restaurantId" />
+                  </v-window-item>
+                  <v-window-item value="option-4">
+                    <OwnerRestaurantDetailSecurity
+                      :restaurantId="restaurantId" />
+                  </v-window-item>
+                </v-window>
               </v-col>
             </v-row>
           </v-card>
@@ -35,23 +56,21 @@
 <script>
 import OwnerHeader from "./common/OwnerHeader.vue";
 import OwnerRestaurantDetailBase from "./OwnerRestaurantDetailBase.vue";
+import OwnerRestaurantDetailPayment from "./OwnerRestaurantDetailPayment.vue";
+import OwnerRestaurantDetailOpeningHours from "./OwnerRestaurantDetailOpeningHours.vue";
+import OwnerRestaurantDetailSecurity from "./OwnerRestaurantDetailSecurity.vue";
 
 export default {
   components: {
     OwnerHeader,
     OwnerRestaurantDetailBase,
+    OwnerRestaurantDetailPayment,
+    OwnerRestaurantDetailOpeningHours,
+    OwnerRestaurantDetailSecurity,
   },
   data: () => ({
     restaurantId: null,
-    items: [
-      { text: "基本", icon: "mdi-clock" },
-      { text: "支付", icon: "mdi-flag" },
-      { text: "营业时间", icon: "mdi-flag" },
-      { text: "宣传图", icon: "mdi-account" },
-      { text: "打印机", icon: "mdi-flag" },
-      { text: "安全(服务距离等)", icon: "mdi-flag" },
-      { text: "控制(删除 无效化 停业开业)", icon: "mdi-flag" },
-    ],
+    tab: "option-1",
     loading: false,
   }),
   methods: {},
@@ -60,3 +79,13 @@ export default {
   },
 };
 </script>
+
+<!-- 
+{ text: "Base", icon: "mdi-clock" },
+{ text: "Payment", icon: "mdi-flag" },
+{ text: "Opening Hours", icon: "mdi-flag" },
+{ text: "Images", icon: "mdi-account" },
+{ text: "Printer", icon: "mdi-flag" },
+{ text: "Security", icon: "mdi-flag" },
+{ text: "Control", icon: "mdi-flag" },
+ -->

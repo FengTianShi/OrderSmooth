@@ -104,7 +104,7 @@ public class RestaurantController {
     Owner owner = RequestUtils.getOwner(request);
 
     try {
-      restaurantService.updateRestaurant(updateRestaurantParam);
+      restaurantService.updateRestaurant(restaurantId, updateRestaurantParam);
       logger.info(
         "Successfully updated restaurant, Owner Id : {}, Restaurant Id : {}",
         owner.getOwnerId(),

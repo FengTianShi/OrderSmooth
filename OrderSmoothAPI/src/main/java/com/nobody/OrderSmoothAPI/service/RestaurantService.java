@@ -166,12 +166,15 @@ public class RestaurantService {
   }
 
   @Transactional
-  public void updateRestaurant(UpdateRestaurantParam updateRestaurantParam) {
+  public void updateRestaurant(
+    Long restaurantId,
+    UpdateRestaurantParam updateRestaurantParam
+  ) {
     OffsetDateTime now = OffsetDateTime.now(ZoneOffset.UTC);
 
     Restaurant restaurant = Restaurant
       .builder()
-      .restaurantId(updateRestaurantParam.getRestaurantId())
+      .restaurantId(restaurantId)
       .genreId(updateRestaurantParam.getGenreId())
       .restaurantLogoAddress(null)
       .restaurantTel(updateRestaurantParam.getTel())
@@ -198,29 +201,20 @@ public class RestaurantService {
 
     restaurantMapper.updateById(restaurant);
 
-    restaurantI18nService.deleteRestaurantI18n(
-      updateRestaurantParam.getRestaurantId()
-    );
+    restaurantI18nService.deleteRestaurantI18n(restaurantId);
     for (RestaurantI18nParam restaurantI18n : updateRestaurantParam.getRestaurantI18ns()) {
-      restaurantI18nService.createRestaurantI18n(
-        updateRestaurantParam.getRestaurantId(),
-        restaurantI18n
-      );
+      restaurantI18nService.createRestaurantI18n(restaurantId, restaurantI18n);
     }
 
-    restaurantPayMethodService.deleteRestaurantPayMethod(
-      updateRestaurantParam.getRestaurantId()
-    );
+    restaurantPayMethodService.deleteRestaurantPayMethod(restaurantId);
     restaurantPayMethodService.createRestaurantPayMethod(
-      updateRestaurantParam.getRestaurantId(),
+      restaurantId,
       updateRestaurantParam.getPayMethodIds()
     );
 
-    restaurantOpeningHoursService.deleteRestaurantOpeningHours(
-      updateRestaurantParam.getRestaurantId()
-    );
+    restaurantOpeningHoursService.deleteRestaurantOpeningHours(restaurantId);
     restaurantOpeningHoursService.createRestaurantOpeningHours(
-      updateRestaurantParam.getRestaurantId(),
+      restaurantId,
       updateRestaurantParam.getRestaurantOpeningHours()
     );
   }

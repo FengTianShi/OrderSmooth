@@ -25,10 +25,6 @@ public class UpdateRestaurantParam implements Serializable {
 
   @NotNull
   @Positive
-  private Long restaurantId;
-
-  @NotNull
-  @Positive
   private Integer genreId;
 
   @Valid

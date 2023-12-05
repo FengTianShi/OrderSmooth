@@ -1,75 +1,72 @@
 <template>
-  <h2 class="text-h4 font-weight-black text-orange">
-    {{ $t("createRestaurant.title") }}
-  </h2>
+  <h2 class="text-h4 font-weight-black text-orange">Restaurant Payment</h2>
   <v-divider class="my-6"></v-divider>
 
-  <v-form validate-on="submit lazy" @submit.prevent="updateRestaurantBaseInfo">
-    <v-row>
-      <v-col cols="12" md="8">
-        <OwnerRestaurantDetailLang :restaurantId="restaurantId" />
+  <v-form validate-on="submit lazy" @submit.prevent="updateRestaurantPayment">
+    <v-select
+      :label="$t('createRestaurant.currency')"
+      class="mb-2"
+      density="compact"
+      variant="outlined"
+      prepend-inner-icon="mdi-cash-multiple"
+      persistent-hint
+      :items="currencyList"
+      :item-props="currencyItemProps"
+      item-value="currencyId"
+      v-model="selectedCurrency"
+      :rules="[required]" />
 
-        <v-select
-          :label="$t('createRestaurant.genre')"
-          class="mb-2"
-          density="compact"
-          variant="outlined"
-          prepend-inner-icon="mdi-apps"
-          persistent-hint
-          :items="genreList"
-          item-title="i18n[0].genreName"
-          item-value="genreId"
-          v-model="selectedGenre"
-          :rules="[required]" />
+    <v-select
+      :label="$t('createRestaurant.payMethod')"
+      class="mb-2"
+      density="compact"
+      variant="outlined"
+      prepend-inner-icon="mdi-credit-card"
+      persistent-hint
+      multiple
+      chips
+      :items="payMethodList"
+      item-title="i18n[0].payMethodName"
+      item-value="payMethodId"
+      v-model="selectedPayMethod"
+      :rules="[selected]" />
 
-        <v-text-field
-          :label="$t('createRestaurant.restaurantTel')"
-          class="mb-2"
-          density="compact"
-          variant="outlined"
-          prepend-inner-icon="mdi-phone"
-          persistent-hint
-          maxlength="11"
-          v-model="restaurantTel"
-          :rules="[required, positiveIntNum]" />
+    <v-text-field
+      :label="$t('createRestaurant.defaultServiceFee')"
+      placeholder="0 ~ 99"
+      class="mb-2"
+      density="compact"
+      variant="outlined"
+      append-inner-icon="mdi-percent-outline"
+      persistent-hint
+      maxlength="2"
+      v-model="defaultServiceFee"
+      :rules="[required, positiveIntNum]" />
 
-        <v-text-field
-          :label="$t('createRestaurant.restaurantPostalCode')"
-          class="mb-2"
-          density="compact"
-          variant="outlined"
-          prepend-inner-icon="mdi-mailbox-outline"
-          persistent-hint
-          maxlength="10"
-          v-model="restaurantPostalCode"
-          :rules="[required, positiveIntNum]" />
+    <v-text-field
+      :label="$t('createRestaurant.defaultTax')"
+      placeholder="0 ~ 99"
+      class="mb-2"
+      density="compact"
+      variant="outlined"
+      append-inner-icon="mdi-percent-outline"
+      persistent-hint
+      maxlength="2"
+      v-model="defaultTax"
+      :rules="[required, positiveIntNum]" />
 
-        <v-text-field
-          label="WIFI SSID"
-          class="mb-2"
-          density="compact"
-          variant="outlined"
-          prepend-inner-icon="mdi-wifi"
-          persistent-hint
-          maxlength="100"
-          v-model="wifiSsid"
-          :rules="[pair]" />
-
-        <v-text-field
-          label="WIFI Password"
-          class="mb-2"
-          density="compact"
-          variant="outlined"
-          prepend-inner-icon="mdi-wifi-lock"
-          persistent-hint
-          maxlength="100"
-          v-model="wifiPassword"
-          :rules="[pair]" />
-      </v-col>
-      <v-col cols="12" md="4">
-        <OwnerRestaurantDetailLogo :restaurantId="restaurantId" />
-      </v-col>
-    </v-row>
+    <v-checkbox
+      hide-details
+      density="compact"
+      :label="$t('createRestaurant.isDisplayServiceFee')"
+      v-model="isDisplayTax">
+    </v-checkbox>
+    <v-checkbox
+      hide-details
+      density="compact"
+      :label="$t('createRestaurant.isDisplayTax')"
+      v-model="isDisplayServiceFee">
+    </v-checkbox>
 
     <v-divider class="my-6"></v-divider>
 
@@ -116,32 +113,31 @@
 </template>
 
 <script>
-import OwnerRestaurantDetailLogo from "./OwnerRestaurantDetailLogo.vue";
-import OwnerRestaurantDetailLang from "./OwnerRestaurantDetailLang.vue";
-
 export default {
   props: {
     restaurantId: {
       required: true,
     },
   },
-  components: {
-    OwnerRestaurantDetailLogo,
-    OwnerRestaurantDetailLang,
-  },
   data: () => ({
     restaurantDetail: {},
-    genreList: [],
-    selectedGenre: null,
-    restaurantTel: "",
-    restaurantPostalCode: "",
-    wifiSsid: "",
-    wifiPassword: "",
+
+    currencyList: [],
+    selectedCurrency: null,
+
+    payMethodList: [],
+    selectedPayMethod: [],
+
+    defaultServiceFee: "",
+    defaultTax: "",
+    isDisplayServiceFee: false,
+    isDisplayTax: false,
+
     loading: false,
     updated: false,
   }),
   methods: {
-    async updateRestaurantBaseInfo(event) {
+    async updateRestaurantPayment(event) {
       const results = await event;
 
       if (results.valid) {
@@ -153,7 +149,7 @@ export default {
           .put(
             `/restaurant/${this.restaurantDetail.restaurantId}`,
             {
-              genreId: this.selectedGenre,
+              genreId: this.restaurantDetail.genreId,
               restaurantI18ns: this.restaurantDetail.i18n.map((item) => {
                 return {
                   langCode: item.langCode,
@@ -162,22 +158,20 @@ export default {
                   description: item.restaurantDescription,
                 };
               }),
-              tel: this.restaurantTel,
-              postalCode: this.restaurantPostalCode,
+              tel: this.restaurantDetail.restaurantTel,
+              postalCode: this.restaurantDetail.restaurantPostalCode,
               restaurantLongitude: this.restaurantDetail.restaurantLongitude,
               restaurantLatitude: this.restaurantDetail.restaurantLatitude,
               restaurantServiceDistance:
                 this.restaurantDetail.restaurantServiceDistance,
-              currencyId: this.restaurantDetail.currencyId,
-              payMethodIds: this.restaurantDetail.payMethods.map(
-                (item) => item.payMethodId
-              ),
-              defaultServiceFee: this.restaurantDetail.defaultServiceFee,
-              defaultTax: this.restaurantDetail.defaultTax,
-              isDisplayServiceFee: this.restaurantDetail.isDisplayServiceFee,
-              isDisplayTax: this.restaurantDetail.isDisplayTax,
-              wifiSsid: this.wifiSsid,
-              wifiPassword: this.wifiPassword,
+              currencyId: this.selectedCurrency,
+              payMethodIds: this.selectedPayMethod,
+              defaultServiceFee: this.defaultServiceFee,
+              defaultTax: this.defaultTax,
+              isDisplayServiceFee: this.isDisplayServiceFee,
+              isDisplayTax: this.isDisplayTax,
+              wifiSsid: this.restaurantDetail.wifiSsid,
+              wifiPassword: this.restaurantDetail.wifiPassword,
               restaurantOpeningHours: this.restaurantDetail.openingHours.map(
                 (item) => {
                   return {
@@ -214,15 +208,17 @@ export default {
         this.loading = false;
       }
     },
+    currencyItemProps(item) {
+      return {
+        title: item.currencySymbol + " " + item.currencyName,
+        subtitle: item.currencyCode,
+      };
+    },
     required(value) {
       return !!value || this.$t("createRestaurant.requiredError");
     },
-    pair() {
-      return (
-        (!!this.wifiPassword && !!this.wifiSsid) ||
-        (!this.wifiPassword && !this.wifiSsid) ||
-        this.$t("createRestaurant.wifiSsidPasswordPairError")
-      );
+    selected(value) {
+      return value.length > 0 || this.$t("createRestaurant.selectedError");
     },
     positiveIntNum(value) {
       const pattern = /^[0-9]*$/;
@@ -256,7 +252,7 @@ export default {
     await this.getRestaurantDetail();
 
     await this.$http
-      .get(`/master/restaurant-genre/${this.$i18n.locale}`, {
+      .get(`/master/currency/`, {
         headers: {
           Authorization: `Bearer ${JSON.parse(
             window.localStorage.getItem("owner-token")
@@ -265,13 +261,8 @@ export default {
       })
       .then((response) => {
         if (response.status === 200) {
-          this.genreList = response.data;
-
-          this.genreList.forEach((genre) => {
-            if (genre.genreId === this.restaurantDetail.genreId) {
-              this.selectedGenre = genre.genreId;
-            }
-          });
+          this.currencyList = response.data;
+          this.selectedCurrency = this.restaurantDetail.currencyId;
         }
       })
       .catch((error) => {
@@ -280,10 +271,32 @@ export default {
         }
       });
 
-    this.restaurantTel = this.restaurantDetail.restaurantTel;
-    this.restaurantPostalCode = this.restaurantDetail.restaurantPostalCode;
-    this.wifiSsid = this.restaurantDetail.wifiSsid;
-    this.wifiPassword = this.restaurantDetail.wifiPassword;
+    await this.$http
+      .get(`/master/pay-method/${this.$i18n.locale}`, {
+        headers: {
+          Authorization: `Bearer ${JSON.parse(
+            window.localStorage.getItem("owner-token")
+          )}`,
+        },
+      })
+      .then((response) => {
+        if (response.status === 200) {
+          this.payMethodList = response.data;
+          this.selectedPayMethod = this.restaurantDetail.payMethods.map(
+            (item) => item.payMethodId
+          );
+        }
+      })
+      .catch((error) => {
+        if (error.response.status === 401) {
+          this.$router.push("/Signin");
+        }
+      });
+
+    this.defaultServiceFee = this.restaurantDetail.defaultServiceFee;
+    this.defaultTax = this.restaurantDetail.defaultTax;
+    this.isDisplayServiceFee = this.restaurantDetail.isDisplayServiceFee;
+    this.isDisplayTax = this.restaurantDetail.isDisplayTax;
   },
 };
 </script>
