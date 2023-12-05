@@ -47,7 +47,8 @@ public class UpdateRestaurantParam implements Serializable {
 
   private Double restaurantLatitude;
 
-  @Positive
+  @Min(0)
+  @Max(99999)
   private Integer restaurantServiceDistance;
 
   @NotNull
