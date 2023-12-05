@@ -4,6 +4,7 @@ import com.nobody.OrderSmoothAPI.common.RequestUtils;
 import com.nobody.OrderSmoothAPI.common.StringUtils;
 import com.nobody.OrderSmoothAPI.dto.CreateRestaurantParam;
 import com.nobody.OrderSmoothAPI.dto.RestaurantDTO;
+import com.nobody.OrderSmoothAPI.dto.UpdateRestaurantParam;
 import com.nobody.OrderSmoothAPI.entity.Owner;
 import com.nobody.OrderSmoothAPI.entity.Restaurant;
 import com.nobody.OrderSmoothAPI.service.RestaurantService;
@@ -52,7 +53,7 @@ public class RestaurantController {
   public ResponseEntity<RestaurantDTO> getRestaurant(
     @PathVariable Long restaurantId
   ) {
-    RestaurantDTO restaurant = restaurantService.getRestaurantFullInfo(
+    RestaurantDTO restaurant = restaurantService.getFullRestaurant(
       restaurantId
     );
     return ResponseEntity.status(HttpStatus.OK).body(restaurant);
@@ -80,6 +81,33 @@ public class RestaurantController {
       logger.error(
         "Failed to create restaurant, Owner Id : {}",
         owner.getOwnerId(),
+        e
+      );
+      return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+    }
+  }
+
+  @PutMapping("/restaurant/{restaurantId}")
+  public ResponseEntity<Void> updateRestaurant(
+    @PathVariable Long restaurantId,
+    @Valid @RequestBody UpdateRestaurantParam updateRestaurantParam,
+    HttpServletRequest request
+  ) {
+    Owner owner = RequestUtils.getOwner(request);
+
+    try {
+      restaurantService.updateRestaurant(updateRestaurantParam);
+      logger.info(
+        "Successfully updated restaurant, Owner Id : {}, Restaurant Id : {}",
+        owner.getOwnerId(),
+        restaurantId
+      );
+      return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
+    } catch (Exception e) {
+      logger.error(
+        "Failed to update restaurant, Owner Id : {}, Restaurant Id : {}",
+        owner.getOwnerId(),
+        restaurantId,
         e
       );
       return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();

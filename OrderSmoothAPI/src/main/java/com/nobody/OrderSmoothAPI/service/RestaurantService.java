@@ -3,6 +3,8 @@ package com.nobody.OrderSmoothAPI.service;
 import com.github.yulichang.wrapper.MPJLambdaWrapper;
 import com.nobody.OrderSmoothAPI.dto.CreateRestaurantParam;
 import com.nobody.OrderSmoothAPI.dto.RestaurantDTO;
+import com.nobody.OrderSmoothAPI.dto.RestaurantI18nParam;
+import com.nobody.OrderSmoothAPI.dto.UpdateRestaurantParam;
 import com.nobody.OrderSmoothAPI.entity.Restaurant;
 import com.nobody.OrderSmoothAPI.entity.RestaurantI18n;
 import com.nobody.OrderSmoothAPI.entity.RestaurantImage;
@@ -104,7 +106,7 @@ public class RestaurantService {
     );
   }
 
-  public RestaurantDTO getRestaurantFullInfo(Long restaurantId) {
+  public RestaurantDTO getFullRestaurant(Long restaurantId) {
     return restaurantMapper.selectJoinOne(
       RestaurantDTO.class,
       new MPJLambdaWrapper<Restaurant>()
@@ -160,6 +162,66 @@ public class RestaurantService {
             .isNull(RestaurantImage::getIsInvalid)
         )
         .eq(Restaurant::getRestaurantId, restaurantId)
+    );
+  }
+
+  @Transactional
+  public void updateRestaurant(UpdateRestaurantParam updateRestaurantParam) {
+    OffsetDateTime now = OffsetDateTime.now(ZoneOffset.UTC);
+
+    Restaurant restaurant = Restaurant
+      .builder()
+      .restaurantId(updateRestaurantParam.getRestaurantId())
+      .genreId(updateRestaurantParam.getGenreId())
+      .restaurantLogoAddress(null)
+      .restaurantTel(updateRestaurantParam.getTel())
+      .restaurantPostalCode(updateRestaurantParam.getPostalCode())
+      .restaurantLongitude(updateRestaurantParam.getRestaurantLongitude())
+      .restaurantLatitude(updateRestaurantParam.getRestaurantLatitude())
+      .restaurantServiceDistance(
+        updateRestaurantParam.getRestaurantServiceDistance()
+      )
+      .currencyId(updateRestaurantParam.getCurrencyId())
+      .defaultServiceFee(updateRestaurantParam.getDefaultServiceFee())
+      .defaultTax(updateRestaurantParam.getDefaultTax())
+      .isDisplayServiceFee(updateRestaurantParam.getIsDisplayServiceFee())
+      .isDisplayTax(updateRestaurantParam.getIsDisplayTax())
+      .wifiSsid(updateRestaurantParam.getWifiSsid())
+      .wifiPassword(updateRestaurantParam.getWifiPassword())
+      .isInvalid(false)
+      .isDeleted(false)
+      .insertTime(now)
+      .insertedBy("SYSTEM")
+      .updateTime(now)
+      .updatedBy("SYSTEM")
+      .build();
+
+    restaurantMapper.updateById(restaurant);
+
+    restaurantI18nService.deleteRestaurantI18n(
+      updateRestaurantParam.getRestaurantId()
+    );
+    for (RestaurantI18nParam restaurantI18n : updateRestaurantParam.getRestaurantI18ns()) {
+      restaurantI18nService.createRestaurantI18n(
+        updateRestaurantParam.getRestaurantId(),
+        restaurantI18n
+      );
+    }
+
+    restaurantPayMethodService.deleteRestaurantPayMethod(
+      updateRestaurantParam.getRestaurantId()
+    );
+    restaurantPayMethodService.createRestaurantPayMethod(
+      updateRestaurantParam.getRestaurantId(),
+      updateRestaurantParam.getPayMethodIds()
+    );
+
+    restaurantOpeningHoursService.deleteRestaurantOpeningHours(
+      updateRestaurantParam.getRestaurantId()
+    );
+    restaurantOpeningHoursService.createRestaurantOpeningHours(
+      updateRestaurantParam.getRestaurantId(),
+      updateRestaurantParam.getRestaurantOpeningHours()
     );
   }
 }

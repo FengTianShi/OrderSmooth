@@ -1,5 +1,6 @@
 package com.nobody.OrderSmoothAPI.service;
 
+import com.github.yulichang.wrapper.MPJLambdaWrapper;
 import com.nobody.OrderSmoothAPI.dto.RestaurantI18nParam;
 import com.nobody.OrderSmoothAPI.entity.RestaurantI18n;
 import com.nobody.OrderSmoothAPI.mapper.RestaurantI18nMapper;
@@ -39,6 +40,25 @@ public class RestaurantI18nService {
         .updateTime(now)
         .updatedBy("SYSTEM")
         .build()
+    );
+  }
+
+  public Long getRestaurantI18nCount(Long restaurantId) {
+    return restaurantI18nMapper.selectCount(
+      new MPJLambdaWrapper<RestaurantI18n>()
+        .eq(RestaurantI18n::getRestaurantId, restaurantId)
+        .eq(RestaurantI18n::getIsInvalid, false)
+        .eq(RestaurantI18n::getIsDeleted, false)
+    );
+  }
+
+  @Transactional
+  public void deleteRestaurantI18n(Long restaurantId) {
+    restaurantI18nMapper.delete(
+      new MPJLambdaWrapper<RestaurantI18n>()
+        .eq(RestaurantI18n::getRestaurantId, restaurantId)
+        .eq(RestaurantI18n::getIsInvalid, false)
+        .eq(RestaurantI18n::getIsDeleted, false)
     );
   }
 }

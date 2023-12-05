@@ -1,5 +1,6 @@
 package com.nobody.OrderSmoothAPI.service;
 
+import com.github.yulichang.wrapper.MPJLambdaWrapper;
 import com.nobody.OrderSmoothAPI.entity.RestaurantPayMethod;
 import com.nobody.OrderSmoothAPI.mapper.RestaurantPayMethodMapper;
 import java.time.OffsetDateTime;
@@ -41,5 +42,24 @@ public class RestaurantPayMethodService {
           .build()
       );
     }
+  }
+
+  public Long getRestaurantPayMethodCount(Long restaurantId) {
+    return restaurantPayMethodMapper.selectCount(
+      new MPJLambdaWrapper<RestaurantPayMethod>()
+        .eq(RestaurantPayMethod::getRestaurantId, restaurantId)
+        .eq(RestaurantPayMethod::getIsInvalid, false)
+        .eq(RestaurantPayMethod::getIsDeleted, false)
+    );
+  }
+
+  @Transactional
+  public void deleteRestaurantPayMethod(Long restaurantId) {
+    restaurantPayMethodMapper.delete(
+      new MPJLambdaWrapper<RestaurantPayMethod>()
+        .eq(RestaurantPayMethod::getRestaurantId, restaurantId)
+        .eq(RestaurantPayMethod::getIsInvalid, false)
+        .eq(RestaurantPayMethod::getIsDeleted, false)
+    );
   }
 }

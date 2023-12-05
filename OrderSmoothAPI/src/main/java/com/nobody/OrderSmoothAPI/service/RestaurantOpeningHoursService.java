@@ -1,5 +1,6 @@
 package com.nobody.OrderSmoothAPI.service;
 
+import com.github.yulichang.wrapper.MPJLambdaWrapper;
 import com.nobody.OrderSmoothAPI.dto.DayInWeekOpeningHoursParam;
 import com.nobody.OrderSmoothAPI.dto.RestaurantOpeningHoursParam;
 import com.nobody.OrderSmoothAPI.entity.RestaurantOpeningHours;
@@ -54,5 +55,24 @@ public class RestaurantOpeningHoursService {
         );
       }
     }
+  }
+
+  public Long getRestaurantOpeningHoursCount(Long restaurantId) {
+    return restaurantOpeningHoursMapper.selectCount(
+      new MPJLambdaWrapper<RestaurantOpeningHours>()
+        .eq(RestaurantOpeningHours::getRestaurantId, restaurantId)
+        .eq(RestaurantOpeningHours::getIsInvalid, false)
+        .eq(RestaurantOpeningHours::getIsDeleted, false)
+    );
+  }
+
+  @Transactional
+  public void deleteRestaurantOpeningHours(Long restaurantId) {
+    restaurantOpeningHoursMapper.delete(
+      new MPJLambdaWrapper<RestaurantOpeningHours>()
+        .eq(RestaurantOpeningHours::getRestaurantId, restaurantId)
+        .eq(RestaurantOpeningHours::getIsInvalid, false)
+        .eq(RestaurantOpeningHours::getIsDeleted, false)
+    );
   }
 }
