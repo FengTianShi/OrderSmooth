@@ -60,6 +60,15 @@ import OwnerRestaurantDetailPayment from "./OwnerRestaurantDetailPayment.vue";
 import OwnerRestaurantDetailOpeningHours from "./OwnerRestaurantDetailOpeningHours.vue";
 import OwnerRestaurantDetailSecurity from "./OwnerRestaurantDetailSecurity.vue";
 
+// { text: "Base", icon: "mdi-clock" },
+// { text: "Payment", icon: "mdi-flag" },
+// { text: "Opening Hours", icon: "mdi-flag" },
+// { text: "SNS", icon: "mdi-account" },
+// { text: "Images", icon: "mdi-account" },
+// { text: "Printer", icon: "mdi-flag" },
+// { text: "Security", icon: "mdi-flag" },
+// { text: "Control", icon: "mdi-flag" },
+
 export default {
   components: {
     OwnerHeader,
@@ -79,13 +88,3 @@ export default {
   },
 };
 </script>
-
-<!-- 
-{ text: "Base", icon: "mdi-clock" },
-{ text: "Payment", icon: "mdi-flag" },
-{ text: "Opening Hours", icon: "mdi-flag" },
-{ text: "Images", icon: "mdi-account" },
-{ text: "Printer", icon: "mdi-flag" },
-{ text: "Security", icon: "mdi-flag" },
-{ text: "Control", icon: "mdi-flag" },
- -->
