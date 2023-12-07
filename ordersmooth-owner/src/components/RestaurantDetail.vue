@@ -1,6 +1,6 @@
 <template>
   <v-layout>
-    <OwnerHeader />
+    <AppHeader />
     <v-main>
       <v-container fluid class="pa-4">
         <v-card class="mx-auto" elevation="0">
@@ -9,39 +9,48 @@
               <v-col cols="12" md="3">
                 <v-tabs v-model="tab" direction="vertical" color="primary">
                   <v-tab value="option-1">
-                    <v-icon start> mdi-account </v-icon>
+                    <v-icon start>mdi-store </v-icon>
                     Base
                   </v-tab>
                   <v-tab value="option-2">
-                    <v-icon start> mdi-lock </v-icon>
+                    <v-icon start> mdi-credit-card </v-icon>
                     Payment
                   </v-tab>
                   <v-tab value="option-3">
-                    <v-icon start> mdi-lock </v-icon>
-                    Opening Hours
+                    <v-icon start> mdi-map-marker </v-icon>
+                    Location
                   </v-tab>
                   <v-tab value="option-4">
-                    <v-icon start> mdi-lock </v-icon>
-                    Security
+                    <v-icon start> mdi-clock-time-nine </v-icon>
+                    Opening Hours
+                  </v-tab>
+                  <v-tab value="option-5">
+                    <v-icon start> mdi-image</v-icon>
+                    Images
+                  </v-tab>
+                  <v-tab value="option-6">
+                    <v-icon start> mdi-printer </v-icon>
+                    Printer
                   </v-tab>
                 </v-tabs>
               </v-col>
               <v-col cols="12" md="9">
                 <v-window v-model="tab">
                   <v-window-item value="option-1">
-                    <OwnerRestaurantDetailBase :restaurantId="restaurantId" />
+                    <RestaurantDetailBase :restaurantId="restaurantId" />
                   </v-window-item>
                   <v-window-item value="option-2">
-                    <OwnerRestaurantDetailPayment
-                      :restaurantId="restaurantId" />
+                    <RestaurantDetailPayment :restaurantId="restaurantId" />
                   </v-window-item>
                   <v-window-item value="option-3">
-                    <OwnerRestaurantDetailOpeningHours
-                      :restaurantId="restaurantId" />
+                    <RestaurantDetailLocation :restaurantId="restaurantId" />
                   </v-window-item>
                   <v-window-item value="option-4">
-                    <OwnerRestaurantDetailSecurity
+                    <RestaurantDetailOpeningHours
                       :restaurantId="restaurantId" />
+                  </v-window-item>
+                  <v-window-item value="option-5">
+                    <RestaurantDetailImage :restaurantId="restaurantId" />
                   </v-window-item>
                 </v-window>
               </v-col>
@@ -54,11 +63,12 @@
 </template>
 
 <script>
-import OwnerHeader from "./common/OwnerHeader.vue";
-import OwnerRestaurantDetailBase from "./OwnerRestaurantDetailBase.vue";
-import OwnerRestaurantDetailPayment from "./OwnerRestaurantDetailPayment.vue";
-import OwnerRestaurantDetailOpeningHours from "./OwnerRestaurantDetailOpeningHours.vue";
-import OwnerRestaurantDetailSecurity from "./OwnerRestaurantDetailSecurity.vue";
+import AppHeader from "./common/AppHeader.vue";
+import RestaurantDetailBase from "./RestaurantDetailBase.vue";
+import RestaurantDetailLocation from "./RestaurantDetailLocation.vue";
+import RestaurantDetailPayment from "./RestaurantDetailPayment.vue";
+import RestaurantDetailOpeningHours from "./RestaurantDetailOpeningHours.vue";
+import RestaurantDetailImage from "./RestaurantDetailImage.vue";
 
 // { text: "Base", icon: "mdi-clock" },
 // { text: "Payment", icon: "mdi-flag" },
@@ -71,11 +81,12 @@ import OwnerRestaurantDetailSecurity from "./OwnerRestaurantDetailSecurity.vue";
 
 export default {
   components: {
-    OwnerHeader,
-    OwnerRestaurantDetailBase,
-    OwnerRestaurantDetailPayment,
-    OwnerRestaurantDetailOpeningHours,
-    OwnerRestaurantDetailSecurity,
+    AppHeader,
+    RestaurantDetailBase,
+    RestaurantDetailPayment,
+    RestaurantDetailLocation,
+    RestaurantDetailOpeningHours,
+    RestaurantDetailImage,
   },
   data: () => ({
     restaurantId: null,

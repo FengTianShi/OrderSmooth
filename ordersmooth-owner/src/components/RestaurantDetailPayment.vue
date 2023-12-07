@@ -1,5 +1,5 @@
 <template>
-  <h2 class="text-h4 font-weight-black text-orange">Restaurant Payment</h2>
+  <h2 class="text-h4 font-weight-black text-primary">Restaurant Payment</h2>
   <v-divider class="my-6"></v-divider>
 
   <v-form validate-on="submit lazy" @submit.prevent="updateRestaurantPayment">
@@ -82,7 +82,7 @@
     </div>
   </v-form>
 
-  <v-dialog v-model="updated" max-width="400">
+  <v-dialog v-model="updated" max-width="500">
     <v-card class="pa-4">
       <v-row>
         <v-col cols="10">
@@ -113,7 +113,10 @@
 </template>
 
 <script>
+import { restaurantUtils } from "./common/utils/RestaurantUtils.js";
+
 export default {
+  mixins: [restaurantUtils],
   props: {
     restaurantId: {
       required: true,
@@ -144,56 +147,20 @@ export default {
         this.loading = true;
 
         await this.getRestaurantDetail();
+        this.restaurantDetail.currencyId = this.selectedCurrency;
+        this.restaurantDetail.payMethods = this.selectedPayMethod.map(
+          (item) => {
+            return {
+              payMethodId: item,
+            };
+          }
+        );
+        this.restaurantDetail.defaultServiceFee = this.defaultServiceFee;
+        this.restaurantDetail.defaultTax = this.defaultTax;
+        this.restaurantDetail.isDisplayServiceFee = this.isDisplayServiceFee;
+        this.restaurantDetail.isDisplayTax = this.isDisplayTax;
 
-        await this.$http
-          .put(
-            `/restaurant/${this.restaurantDetail.restaurantId}`,
-            {
-              genreId: this.restaurantDetail.genreId,
-              restaurantI18ns: this.restaurantDetail.i18n.map((item) => {
-                return {
-                  langCode: item.langCode,
-                  restaurantName: item.restaurantName,
-                  address: item.restaurantAddress,
-                  description: item.restaurantDescription,
-                };
-              }),
-              tel: this.restaurantDetail.restaurantTel,
-              postalCode: this.restaurantDetail.restaurantPostalCode,
-              restaurantLongitude: this.restaurantDetail.restaurantLongitude,
-              restaurantLatitude: this.restaurantDetail.restaurantLatitude,
-              restaurantServiceDistance:
-                this.restaurantDetail.restaurantServiceDistance,
-              currencyId: this.selectedCurrency,
-              payMethodIds: this.selectedPayMethod,
-              defaultServiceFee: this.defaultServiceFee,
-              defaultTax: this.defaultTax,
-              isDisplayServiceFee: this.isDisplayServiceFee,
-              isDisplayTax: this.isDisplayTax,
-              wifiSsid: this.restaurantDetail.wifiSsid,
-              wifiPassword: this.restaurantDetail.wifiPassword,
-              restaurantOpeningHours: this.restaurantDetail.openingHours.map(
-                (item) => {
-                  return {
-                    dayInWeekId: item.dayInWeekId,
-                    dayInWeekOpeningHours: [
-                      {
-                        openingTime: item.openTime.slice(0, 5),
-                        closingTime: item.closeTime.slice(0, 5),
-                      },
-                    ],
-                  };
-                }
-              ),
-            },
-            {
-              headers: {
-                Authorization: `Bearer ${JSON.parse(
-                  window.localStorage.getItem("owner-token")
-                )}`,
-              },
-            }
-          )
+        await this.updateRestaurant(this.restaurantDetail)
           .then((response) => {
             if (response.status == 204) {
               this.updated = true;
@@ -251,7 +218,7 @@ export default {
   async created() {
     await this.getRestaurantDetail();
 
-    await this.$http
+    this.$http
       .get(`/master/currency/`, {
         headers: {
           Authorization: `Bearer ${JSON.parse(
@@ -271,7 +238,7 @@ export default {
         }
       });
 
-    await this.$http
+    this.$http
       .get(`/master/pay-method/${this.$i18n.locale}`, {
         headers: {
           Authorization: `Bearer ${JSON.parse(

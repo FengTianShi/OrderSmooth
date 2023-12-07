@@ -1,11 +1,11 @@
 <template>
   <v-layout>
-    <OwnerHeader />
+    <AppHeader />
     <v-main>
       <v-container fluid class="pa-4">
         <v-card class="mx-auto" elevation="0">
           <v-card class="mx-auto pa-8" max-width="1200" elevation="0">
-            <h2 class="text-h4 font-weight-black text-orange">
+            <h2 class="text-h4 font-weight-black text-primary">
               {{ $t("createRestaurant.title") }}
             </h2>
             <p class="text-body-2 mb-4">
@@ -62,7 +62,7 @@
                     variant="outlined"
                     prepend-inner-icon="mdi-phone"
                     persistent-hint
-                    maxlength="11"
+                    maxlength="15"
                     v-model="restaurantTel"
                     :rules="[required, positiveIntNum]" />
 
@@ -73,7 +73,7 @@
                     variant="outlined"
                     prepend-inner-icon="mdi-mailbox-outline"
                     persistent-hint
-                    maxlength="10"
+                    maxlength="15"
                     v-model="restaurantPostalCode"
                     :rules="[required, positiveIntNum]" />
 
@@ -288,11 +288,11 @@
 </template>
 
 <script>
-import OwnerHeader from "./common/OwnerHeader.vue";
+import AppHeader from "./common/AppHeader.vue";
 
 export default {
   components: {
-    OwnerHeader,
+    AppHeader,
   },
   data: () => ({
     langList: [],
@@ -319,6 +319,9 @@ export default {
     isDisplayTax: true,
     isDisplayServiceFee: true,
 
+    restaurantLatitude: 0,
+    restaurantLongitude: 0,
+
     restaurantOpeningHours: [],
     addOpeningHoursError: null,
     showAddOpeningHoursError: false,
@@ -331,6 +334,24 @@ export default {
 
       if (results.valid) {
         this.loading = true;
+
+        const apiKey = "AIzaSyDiSslqB0Xb6yWHgzIo-W4A_xzyiH1EUJw";
+        const add = this.restaurantPostalCode + " " + this.restaurantAddress;
+        await this.$http
+          .get(
+            `https://maps.googleapis.com/maps/api/geocode/json?address=${add}&key=${apiKey}`
+          )
+          .then((response) => {
+            if (response.status === 200) {
+              this.restaurantLatitude =
+                response.data.results[0].geometry.location.lat;
+              this.restaurantLongitude =
+                response.data.results[0].geometry.location.lng;
+            }
+          })
+          .catch((error) => {
+            console.error(error);
+          });
 
         await this.$http
           .post(
@@ -345,6 +366,8 @@ export default {
               },
               restaurantTel: this.restaurantTel,
               restaurantPostalCode: this.restaurantPostalCode,
+              restaurantLatitude: this.restaurantLatitude,
+              restaurantLongitude: this.restaurantLongitude,
               currencyId: this.selectedCurrency,
               payMethodIds: this.selectedPayMethod,
               defaultServiceFee: this.defaultServiceFee,
@@ -584,8 +607,8 @@ export default {
       };
     },
   },
-  async created() {
-    await this.$http
+  created() {
+    this.$http
       .get(`/master/language/`, {
         headers: {
           Authorization: `Bearer ${JSON.parse(
@@ -609,7 +632,7 @@ export default {
         }
       });
 
-    await this.$http
+    this.$http
       .get(`/master/currency/`, {
         headers: {
           Authorization: `Bearer ${JSON.parse(
@@ -628,7 +651,7 @@ export default {
         }
       });
 
-    await this.$http
+    this.$http
       .get(`/master/pay-method/${this.$i18n.locale}`, {
         headers: {
           Authorization: `Bearer ${JSON.parse(
@@ -647,7 +670,7 @@ export default {
         }
       });
 
-    await this.$http
+    this.$http
       .get(`/master/day-in-week/${this.$i18n.locale}`, {
         headers: {
           Authorization: `Bearer ${JSON.parse(
@@ -666,7 +689,7 @@ export default {
         }
       });
 
-    await this.$http
+    this.$http
       .get(`/master/restaurant-genre/${this.$i18n.locale}`, {
         headers: {
           Authorization: `Bearer ${JSON.parse(

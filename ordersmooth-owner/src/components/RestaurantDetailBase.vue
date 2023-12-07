@@ -1,13 +1,15 @@
 <template>
-  <h2 class="text-h4 font-weight-black text-orange">
+  <h2 class="text-h4 font-weight-black text-primary">
     {{ $t("createRestaurant.title") }}
   </h2>
   <v-divider class="my-6"></v-divider>
 
-  <v-form validate-on="submit lazy" @submit.prevent="updateRestaurantBaseInfo">
+  <v-form validate-on="submit lazy" @submit.prevent="updateRestaurantBase">
     <v-row>
       <v-col cols="12" md="8">
-        <OwnerRestaurantDetailLang :restaurantId="restaurantId" />
+        <RestaurantDetailLang :restaurantId="restaurantId" />
+
+        <v-divider class="my-6"></v-divider>
 
         <v-select
           :label="$t('createRestaurant.genre')"
@@ -29,7 +31,7 @@
           variant="outlined"
           prepend-inner-icon="mdi-phone"
           persistent-hint
-          maxlength="11"
+          maxlength="15"
           v-model="restaurantTel"
           :rules="[required, positiveIntNum]" />
 
@@ -40,7 +42,7 @@
           variant="outlined"
           prepend-inner-icon="mdi-mailbox-outline"
           persistent-hint
-          maxlength="10"
+          maxlength="15"
           v-model="restaurantPostalCode"
           :rules="[required, positiveIntNum]" />
 
@@ -67,7 +69,7 @@
           :rules="[pair]" />
       </v-col>
       <v-col cols="12" md="4">
-        <OwnerRestaurantDetailLogo :restaurantId="restaurantId" />
+        <RestaurantDetailLogo :restaurantId="restaurantId" />
       </v-col>
     </v-row>
 
@@ -85,7 +87,7 @@
     </div>
   </v-form>
 
-  <v-dialog v-model="updated" max-width="400">
+  <v-dialog v-model="updated" max-width="500">
     <v-card class="pa-4">
       <v-row>
         <v-col cols="10">
@@ -116,18 +118,20 @@
 </template>
 
 <script>
-import OwnerRestaurantDetailLogo from "./OwnerRestaurantDetailLogo.vue";
-import OwnerRestaurantDetailLang from "./OwnerRestaurantDetailLang.vue";
+import RestaurantDetailLogo from "./RestaurantDetailLogo.vue";
+import RestaurantDetailLang from "./RestaurantDetailLang.vue";
+import { restaurantUtils } from "./common/utils/RestaurantUtils.js";
 
 export default {
+  mixins: [restaurantUtils],
   props: {
     restaurantId: {
       required: true,
     },
   },
   components: {
-    OwnerRestaurantDetailLogo,
-    OwnerRestaurantDetailLang,
+    RestaurantDetailLogo,
+    RestaurantDetailLang,
   },
   data: () => ({
     restaurantDetail: {},
@@ -141,65 +145,20 @@ export default {
     updated: false,
   }),
   methods: {
-    async updateRestaurantBaseInfo(event) {
+    async updateRestaurantBase(event) {
       const results = await event;
 
       if (results.valid) {
         this.loading = true;
 
         await this.getRestaurantDetail();
+        this.restaurantDetail.genreId = this.selectedGenre;
+        this.restaurantDetail.restaurantTel = this.restaurantTel;
+        this.restaurantDetail.restaurantPostalCode = this.restaurantPostalCode;
+        this.restaurantDetail.wifiSsid = this.wifiSsid;
+        this.restaurantDetail.wifiPassword = this.wifiPassword;
 
-        await this.$http
-          .put(
-            `/restaurant/${this.restaurantDetail.restaurantId}`,
-            {
-              genreId: this.selectedGenre,
-              restaurantI18ns: this.restaurantDetail.i18n.map((item) => {
-                return {
-                  langCode: item.langCode,
-                  restaurantName: item.restaurantName,
-                  address: item.restaurantAddress,
-                  description: item.restaurantDescription,
-                };
-              }),
-              tel: this.restaurantTel,
-              postalCode: this.restaurantPostalCode,
-              restaurantLongitude: this.restaurantDetail.restaurantLongitude,
-              restaurantLatitude: this.restaurantDetail.restaurantLatitude,
-              restaurantServiceDistance:
-                this.restaurantDetail.restaurantServiceDistance,
-              currencyId: this.restaurantDetail.currencyId,
-              payMethodIds: this.restaurantDetail.payMethods.map(
-                (item) => item.payMethodId
-              ),
-              defaultServiceFee: this.restaurantDetail.defaultServiceFee,
-              defaultTax: this.restaurantDetail.defaultTax,
-              isDisplayServiceFee: this.restaurantDetail.isDisplayServiceFee,
-              isDisplayTax: this.restaurantDetail.isDisplayTax,
-              wifiSsid: this.wifiSsid,
-              wifiPassword: this.wifiPassword,
-              restaurantOpeningHours: this.restaurantDetail.openingHours.map(
-                (item) => {
-                  return {
-                    dayInWeekId: item.dayInWeekId,
-                    dayInWeekOpeningHours: [
-                      {
-                        openingTime: item.openTime.slice(0, 5),
-                        closingTime: item.closeTime.slice(0, 5),
-                      },
-                    ],
-                  };
-                }
-              ),
-            },
-            {
-              headers: {
-                Authorization: `Bearer ${JSON.parse(
-                  window.localStorage.getItem("owner-token")
-                )}`,
-              },
-            }
-          )
+        await this.updateRestaurant(this.restaurantDetail)
           .then((response) => {
             if (response.status == 204) {
               this.updated = true;
@@ -217,18 +176,18 @@ export default {
     required(value) {
       return !!value || this.$t("createRestaurant.requiredError");
     },
-    pair() {
-      return (
-        (!!this.wifiPassword && !!this.wifiSsid) ||
-        (!this.wifiPassword && !this.wifiSsid) ||
-        this.$t("createRestaurant.wifiSsidPasswordPairError")
-      );
-    },
     positiveIntNum(value) {
       const pattern = /^[0-9]*$/;
       return (
         pattern.test(value) ||
         this.$t("createRestaurant.positiveIntNumberError")
+      );
+    },
+    pair() {
+      return (
+        (!!this.wifiPassword && !!this.wifiSsid) ||
+        (!this.wifiPassword && !this.wifiSsid) ||
+        this.$t("createRestaurant.wifiSsidPasswordPairError")
       );
     },
     async getRestaurantDetail() {
@@ -255,7 +214,7 @@ export default {
   async created() {
     await this.getRestaurantDetail();
 
-    await this.$http
+    this.$http
       .get(`/master/restaurant-genre/${this.$i18n.locale}`, {
         headers: {
           Authorization: `Bearer ${JSON.parse(

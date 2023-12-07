@@ -32,7 +32,7 @@ public class RestaurantAuthInterceptor implements HandlerInterceptor {
   ) throws Exception {
     String path = request.getRequestURI();
     String[] pathArray = path.split("/");
-    Long restaurantId = Long.parseLong(pathArray[pathArray.length - 1]);
+    Long restaurantId = Long.parseLong(pathArray[2]);
 
     Restaurant restaurant = restaurantService.getRestaurant(restaurantId);
     if (restaurant == null) {

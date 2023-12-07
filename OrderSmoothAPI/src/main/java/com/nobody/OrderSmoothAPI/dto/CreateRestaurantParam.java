@@ -28,12 +28,12 @@ public class CreateRestaurantParam implements Serializable {
   private Integer genreId;
 
   @NotBlank
-  @Size(max = 11)
+  @Size(max = 15)
   @Pattern(regexp = "\\d+")
   private String restaurantTel;
 
   @NotBlank
-  @Size(max = 10)
+  @Size(max = 15)
   @Pattern(regexp = "\\d+")
   private String restaurantPostalCode;
 

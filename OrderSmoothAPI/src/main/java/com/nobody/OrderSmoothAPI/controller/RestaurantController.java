@@ -45,26 +45,22 @@ public class RestaurantController {
 
   private final String imageURL;
 
+  private final Integer OWNER_RESTAURANT_IMAGE_MAX_NUMBER;
+
   public RestaurantController(
     RestaurantService restaurantService,
     RestaurantImageService restaurantImageService,
     @Value("${ordersmooth.image.path}") String imagePath,
-    @Value("${ordersmooth.image.url}") String imageURL
+    @Value("${ordersmooth.image.url}") String imageURL,
+    @Value(
+      "${owner.restaurant.image.max-number}"
+    ) Integer OWNER_RESTAURANT_IMAGE_MAX_NUMBER
   ) {
     this.restaurantService = restaurantService;
     this.restaurantImageService = restaurantImageService;
     this.imagePath = imagePath;
     this.imageURL = imageURL;
-  }
-
-  @GetMapping("/restaurant/{restaurantId}")
-  public ResponseEntity<RestaurantDTO> getRestaurant(
-    @PathVariable Long restaurantId
-  ) {
-    RestaurantDTO restaurant = restaurantService.getRestaurantFull(
-      restaurantId
-    );
-    return ResponseEntity.status(HttpStatus.OK).body(restaurant);
+    this.OWNER_RESTAURANT_IMAGE_MAX_NUMBER = OWNER_RESTAURANT_IMAGE_MAX_NUMBER;
   }
 
   @PostMapping("/restaurant")
@@ -95,6 +91,16 @@ public class RestaurantController {
     }
   }
 
+  @GetMapping("/restaurant/{restaurantId}")
+  public ResponseEntity<RestaurantDTO> getRestaurant(
+    @PathVariable Long restaurantId
+  ) {
+    RestaurantDTO restaurant = restaurantService.getRestaurantFull(
+      restaurantId
+    );
+    return ResponseEntity.status(HttpStatus.OK).body(restaurant);
+  }
+
   @PutMapping("/restaurant/{restaurantId}")
   public ResponseEntity<Void> updateRestaurant(
     @PathVariable Long restaurantId,
@@ -122,7 +128,7 @@ public class RestaurantController {
     }
   }
 
-  @GetMapping("/restaurant/logo/{restaurantId}")
+  @GetMapping("/restaurant/{restaurantId}/logo")
   public ResponseEntity<String> getRestaurantLogo(
     @PathVariable Long restaurantId
   ) {
@@ -132,7 +138,7 @@ public class RestaurantController {
       .body(restaurant.getRestaurantLogoAddress());
   }
 
-  @PutMapping("/restaurant/logo/{restaurantId}")
+  @PutMapping("/restaurant/{restaurantId}/logo")
   public ResponseEntity<String> updateRestaurantLogo(
     @PathVariable Long restaurantId,
     @RequestBody MultipartFile restaurantLogo,
@@ -176,7 +182,7 @@ public class RestaurantController {
     }
   }
 
-  @GetMapping("/restaurant/image/{restaurantId}")
+  @GetMapping("/restaurant/{restaurantId}/image")
   public ResponseEntity<List<RestaurantImage>> getRestaurantImage(
     @PathVariable Long restaurantId
   ) {
@@ -186,13 +192,20 @@ public class RestaurantController {
     return ResponseEntity.status(HttpStatus.OK).body(restaurantImage);
   }
 
-  @PostMapping("/restaurant/image/{restaurantId}")
-  public ResponseEntity<Void> createRestaurantImage(
+  @PostMapping("/restaurant/{restaurantId}/image")
+  public ResponseEntity<String> createRestaurantImage(
     @PathVariable Long restaurantId,
     @RequestBody MultipartFile restaurantImage,
     HttpServletRequest request
   ) {
     Owner owner = RequestUtils.getOwner(request);
+
+    Integer restaurantImageCount = restaurantImageService
+      .getRestaurantImageCount(restaurantId)
+      .intValue();
+    if (restaurantImageCount >= OWNER_RESTAURANT_IMAGE_MAX_NUMBER) {
+      return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+    }
 
     String newFileName = getNewFileName(restaurantImage);
     if (newFileName == null) {
@@ -224,7 +237,7 @@ public class RestaurantController {
     }
   }
 
-  @DeleteMapping("/restaurant/image/{imageId}")
+  @DeleteMapping("/restaurant/{restaurantId}/image/{imageId}")
   public ResponseEntity<Void> deleteRestaurantImage(
     @PathVariable Long imageId,
     HttpServletRequest request
@@ -302,5 +315,12 @@ public class RestaurantController {
     }
 
     return StringUtils.generateUUID() + originalFileType;
+  }
+
+  @GetMapping("/restaurant/{restaurantId}/image/max-number")
+  public ResponseEntity<Integer> getRestaurantImageMaxNumber() {
+    return ResponseEntity
+      .status(HttpStatus.OK)
+      .body(OWNER_RESTAURANT_IMAGE_MAX_NUMBER);
   }
 }

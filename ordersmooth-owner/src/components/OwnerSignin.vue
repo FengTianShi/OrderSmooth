@@ -89,7 +89,7 @@ export default {
               "owner-token",
               JSON.stringify(response.data)
             );
-            this.$router.push("/Dashboard");
+            this.$router.push("/OwnerDashboard");
           }
         })
         .catch((error) => {

@@ -1,6 +1,6 @@
 <template>
   <v-card
-    v-for="(langInfo, key) in restaurantDetail.i18n"
+    v-for="(langInfo, key) in restaurantDetail.i18ns"
     :key="key"
     class="mb-4 pa-2"
     variant="tonal">
@@ -69,7 +69,7 @@
               item-title="langName"
               item-value="langCode"
               v-model="selectedLang"
-              :rules="[required, langCodeDuplicate]" />
+              :rules="[required, langDuplicate]" />
           </div>
 
           <v-text-field
@@ -114,13 +114,19 @@
           <v-btn color="error" @click="(edit = false), resetForm()">
             Cancel
           </v-btn>
-          <v-btn color="primary" type="submit">Save</v-btn>
+          <v-btn
+            color="primary"
+            type="submit"
+            :loading="loading"
+            :disabled="loading">
+            Save
+          </v-btn>
         </v-card-actions>
       </v-card>
     </v-form>
   </v-dialog>
 
-  <v-dialog persistent v-model="deleteConfirm" max-width="400">
+  <v-dialog persistent v-model="deleteConfirm" max-width="500">
     <v-card class="pa-4">
       <v-row>
         <v-col cols="10">
@@ -147,12 +153,18 @@
         <v-btn color="error" @click="(deleteConfirm = false), resetForm()">
           Cancel
         </v-btn>
-        <v-btn color="error" @click="deleteLang()">Delete</v-btn>
+        <v-btn
+          color="error"
+          :loading="loading"
+          :disabled="loading"
+          @click="deleteLang()">
+          Delete
+        </v-btn>
       </v-card-actions>
     </v-card>
   </v-dialog>
 
-  <v-dialog v-model="deleteError" max-width="400">
+  <v-dialog v-model="deleteError" max-width="500">
     <v-card class="pa-4">
       <v-row>
         <v-col cols="10">
@@ -183,7 +195,10 @@
 </template>
 
 <script>
+import { restaurantUtils } from "./common/utils/RestaurantUtils.js";
+
 export default {
+  mixins: [restaurantUtils],
   props: {
     restaurantId: {
       required: true,
@@ -218,12 +233,12 @@ export default {
       this.selectedLangKey = -1;
     },
     editLang(key) {
-      this.restaurantName = this.restaurantDetail.i18n[key].restaurantName;
-      this.restaurantAddress =
-        this.restaurantDetail.i18n[key].restaurantAddress;
-      this.restaurantDescription =
-        this.restaurantDetail.i18n[key].restaurantDescription;
       this.selectedLangKey = key;
+      this.restaurantName = this.restaurantDetail.i18ns[key].restaurantName;
+      this.restaurantAddress =
+        this.restaurantDetail.i18ns[key].restaurantAddress;
+      this.restaurantDescription =
+        this.restaurantDetail.i18ns[key].restaurantDescription;
     },
     async saveLang(event) {
       const results = await event;
@@ -231,23 +246,23 @@ export default {
         this.loading = true;
 
         if (this.selectedLangKey === -1) {
-          this.restaurantDetail.i18n.push({
+          this.restaurantDetail.i18ns.push({
             langCode: this.selectedLang,
             restaurantName: this.restaurantName,
             restaurantAddress: this.restaurantAddress,
             restaurantDescription: this.restaurantDescription,
           });
         } else {
-          this.restaurantDetail.i18n[this.selectedLangKey].restaurantName =
+          this.restaurantDetail.i18ns[this.selectedLangKey].restaurantName =
             this.restaurantName;
-          this.restaurantDetail.i18n[this.selectedLangKey].restaurantAddress =
+          this.restaurantDetail.i18ns[this.selectedLangKey].restaurantAddress =
             this.restaurantAddress;
-          this.restaurantDetail.i18n[
+          this.restaurantDetail.i18ns[
             this.selectedLangKey
           ].restaurantDescription = this.restaurantDescription;
         }
 
-        await this.updateRestaurantDetail();
+        await this.updateRestaurantLang();
 
         this.loading = false;
         this.edit = false;
@@ -255,18 +270,19 @@ export default {
       }
     },
     deleteLangConfirm(key) {
-      console.log(this.restaurantDetail.i18n.length);
-      if (this.restaurantDetail.i18n.length === 1) {
+      if (this.restaurantDetail.i18ns.length === 1) {
         this.deleteError = true;
         return;
       }
-      this.deleteConfirm = true;
       this.selectedLangKey = key;
+      this.deleteConfirm = true;
     },
     async deleteLang() {
       this.loading = true;
-      this.restaurantDetail.i18n.splice(this.selectedLangKey, 1);
-      await this.updateRestaurantDetail();
+
+      this.restaurantDetail.i18ns.splice(this.selectedLangKey, 1);
+      await this.updateRestaurantLang();
+
       this.loading = false;
       this.deleteConfirm = false;
       this.resetForm();
@@ -274,13 +290,17 @@ export default {
     required(value) {
       return !!value || this.$t("createRestaurant.requiredError");
     },
-    langCodeDuplicate(value) {
+    langDuplicate(value) {
       return (
-        !this.restaurantDetail.i18n.some(
+        !this.restaurantDetail.i18ns.some(
           (item) =>
             item.langCode === value && item.langCode !== this.selectedLangKey
         ) || "Duplicate lang code"
       );
+    },
+    getLangeName(langCode) {
+      const lang = this.langList.find((item) => item.langCode === langCode);
+      return lang ? lang.langName : "";
     },
     async getRestaurantDetail() {
       await this.$http
@@ -302,8 +322,8 @@ export default {
           }
         });
     },
-    async getLangMaster() {
-      await this.$http
+    getLangMaster() {
+      this.$http
         .get(`/master/language/`, {
           headers: {
             Authorization: `Bearer ${JSON.parse(
@@ -327,77 +347,17 @@ export default {
           }
         });
     },
-    getLangeName(langCode) {
-      const lang = this.langList.find((item) => item.langCode === langCode);
-      return lang ? lang.langName : "";
-    },
-    async updateRestaurantDetail() {
-      await this.$http
-        .put(
-          `/restaurant/${this.restaurantDetail.restaurantId}`,
-          {
-            genreId: this.restaurantDetail.genreId,
-            restaurantI18ns: this.restaurantDetail.i18n.map((item) => {
-              return {
-                langCode: item.langCode,
-                restaurantName: item.restaurantName,
-                address: item.restaurantAddress,
-                description: item.restaurantDescription,
-              };
-            }),
-            tel: this.restaurantDetail.restaurantTel,
-            postalCode: this.restaurantDetail.restaurantPostalCode,
-            restaurantLongitude: this.restaurantDetail.restaurantLongitude,
-            restaurantLatitude: this.restaurantDetail.restaurantLatitude,
-            restaurantServiceDistance:
-              this.restaurantDetail.restaurantServiceDistance,
-            currencyId: this.restaurantDetail.currencyId,
-            payMethodIds: this.restaurantDetail.payMethods.map(
-              (item) => item.payMethodId
-            ),
-            defaultServiceFee: this.restaurantDetail.defaultServiceFee,
-            defaultTax: this.restaurantDetail.defaultTax,
-            isDisplayServiceFee: this.restaurantDetail.isDisplayServiceFee,
-            isDisplayTax: this.restaurantDetail.isDisplayTax,
-            wifiSsid: this.restaurantDetail.wifiSsid,
-            wifiPassword: this.restaurantDetail.wifiPassword,
-            restaurantOpeningHours: this.restaurantDetail.openingHours.map(
-              (item) => {
-                return {
-                  dayInWeekId: item.dayInWeekId,
-                  dayInWeekOpeningHours: [
-                    {
-                      openingTime: item.openTime.slice(0, 5),
-                      closingTime: item.closeTime.slice(0, 5),
-                    },
-                  ],
-                };
-              }
-            ),
-          },
-          {
-            headers: {
-              Authorization: `Bearer ${JSON.parse(
-                window.localStorage.getItem("owner-token")
-              )}`,
-            },
-          }
-        )
-        .then((response) => {
-          if (response.status == 204) {
-            console.log("update success");
-          }
-        })
-        .catch((error) => {
-          if (error.response.status === 401) {
-            this.$router.push("/Signin");
-          }
-        });
+    async updateRestaurantLang() {
+      await this.updateRestaurant(this.restaurantDetail).catch((error) => {
+        if (error.response.status === 401) {
+          this.$router.push("/Signin");
+        }
+      });
     },
   },
-  created() {
+  async created() {
     this.getLangMaster();
-    this.getRestaurantDetail();
+    await this.getRestaurantDetail();
   },
 };
 </script>

@@ -10,7 +10,7 @@ axios.defaults.baseURL = "http://192.168.0.17:80";
 import router from "./router";
 
 // vuex
-import store from "./store";
+// import store from "./store";
 
 // vue-i18n
 import i18n from "./i18n";
@@ -33,4 +33,4 @@ import "@mdi/font/css/materialdesignicons.css";
 
 const app = createApp(App);
 app.config.globalProperties.$http = axios;
-app.use(router).use(store).use(i18n).use(vuetify).mount("#app");
+app.use(router).use(i18n).use(vuetify).mount("#app");

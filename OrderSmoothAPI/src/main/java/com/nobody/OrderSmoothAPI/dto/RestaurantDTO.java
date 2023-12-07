@@ -26,11 +26,13 @@ public class RestaurantDTO implements Serializable {
 
   private String restaurantPostalCode;
 
-  private Double restaurantLongitude;
-
   private Double restaurantLatitude;
 
+  private Double restaurantLongitude;
+
   private Integer restaurantServiceDistance;
+
+  private Boolean isLimitServiceDistance;
 
   private Integer currencyId;
 
@@ -38,9 +40,9 @@ public class RestaurantDTO implements Serializable {
 
   private Integer defaultTax;
 
-  private Boolean isDisplayTax;
-
   private Boolean isDisplayServiceFee;
+
+  private Boolean isDisplayTax;
 
   private String wifiSsid;
 

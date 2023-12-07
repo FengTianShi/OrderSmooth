@@ -7,11 +7,11 @@ import {
 // 1、引入组件
 import OwnerSignin from "../components/OwnerSignin.vue";
 import OwnerSignup from "../components/OwnerSignup.vue";
-import OwnerResetPassword from "../components/OwnerResetPassword.vue";
+import ResetPassword from "../components/ResetPassword.vue";
 
 import OwnerDashboard from "../components/OwnerDashboard.vue";
-import OwnerRestaurantDetail from "../components/OwnerRestaurantDetail.vue";
-import OwnerCreateRestaurant from "../components/OwnerCreateRestaurant.vue";
+import RestaurantDetail from "../components/RestaurantDetail.vue";
+import CreateRestaurant from "../components/CreateRestaurant.vue";
 
 /**
  * 2、配置路由映射关系
@@ -20,10 +20,10 @@ const routes = [
   { path: "/", redirect: "/Signin" },
   { path: "/Signin", component: OwnerSignin },
   { path: "/Signup", component: OwnerSignup },
-  { path: "/ResetPassword", component: OwnerResetPassword },
-  { path: "/Dashboard", component: OwnerDashboard },
-  { path: "/CreateRestaurant", component: OwnerCreateRestaurant },
-  { path: "/RestaurantDetail/:id", component: OwnerRestaurantDetail },
+  { path: "/ResetPassword", component: ResetPassword },
+  { path: "/OwnerDashboard", component: OwnerDashboard },
+  { path: "/CreateRestaurant", component: CreateRestaurant },
+  { path: "/RestaurantDetail/:id", component: RestaurantDetail },
 ];
 
 // 3、创建一个路由的对象

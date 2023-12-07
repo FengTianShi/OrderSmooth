@@ -113,7 +113,7 @@ export default {
       formData.append("restaurantLogo", bf, this.imgName);
 
       await this.$http
-        .put(`restaurant/logo/${this.restaurantId}`, formData, {
+        .put(`restaurant/${this.restaurantId}/logo`, formData, {
           headers: {
             "Content-Type": "multipart/form-data",
             Authorization: `Bearer ${JSON.parse(
@@ -142,7 +142,7 @@ export default {
   },
   async created() {
     await this.$http
-      .get(`/restaurant/logo/${this.restaurantId}`, {
+      .get(`/restaurant/${this.restaurantId}/logo`, {
         headers: {
           Authorization: `Bearer ${JSON.parse(
             window.localStorage.getItem("owner-token")
