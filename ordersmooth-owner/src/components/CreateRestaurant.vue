@@ -5,7 +5,7 @@
       <v-container fluid class="pa-4">
         <v-card class="mx-auto" elevation="0">
           <v-card class="mx-auto pa-8" max-width="1200" elevation="0">
-            <h2 class="text-h4 font-weight-black text-primary">
+            <h2 class="text-h5 font-weight-black text-primary">
               {{ $t("createRestaurant.title") }}
             </h2>
             <p class="text-body-2 mb-4">

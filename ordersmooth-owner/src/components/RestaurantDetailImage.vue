@@ -1,5 +1,5 @@
 <template>
-  <h2 class="text-h4 font-weight-black text-primary">
+  <h2 class="text-h5 font-weight-black text-primary">
     {{ $t("createRestaurant.title") }}
   </h2>
   <v-divider class="my-6"></v-divider>
