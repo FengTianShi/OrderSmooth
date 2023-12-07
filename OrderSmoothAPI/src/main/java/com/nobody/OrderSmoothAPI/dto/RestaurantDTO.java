@@ -64,5 +64,5 @@ public class RestaurantDTO implements Serializable {
 
   private List<RestaurantImageDTO> images;
 
-  private List<RestaurantI18nDTO> i18n;
+  private List<RestaurantI18nDTO> i18ns;
 }

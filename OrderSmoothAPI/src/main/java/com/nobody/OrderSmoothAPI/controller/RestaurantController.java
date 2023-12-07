@@ -61,7 +61,7 @@ public class RestaurantController {
   public ResponseEntity<RestaurantDTO> getRestaurant(
     @PathVariable Long restaurantId
   ) {
-    RestaurantDTO restaurant = restaurantService.getFullRestaurant(
+    RestaurantDTO restaurant = restaurantService.getRestaurantFull(
       restaurantId
     );
     return ResponseEntity.status(HttpStatus.OK).body(restaurant);
@@ -140,30 +140,10 @@ public class RestaurantController {
   ) {
     Owner owner = RequestUtils.getOwner(request);
 
-    if (restaurantLogo == null) {
+    String newFileName = getNewFileName(restaurantLogo);
+    if (newFileName == null) {
       return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
     }
-
-    String originalFilename = restaurantLogo.getOriginalFilename();
-    if (originalFilename == null) {
-      return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
-    }
-
-    String originalFileType = originalFilename.substring(
-      originalFilename.lastIndexOf(".")
-    );
-    if (
-      StringUtils.isEmpty(originalFileType) ||
-      (
-        !originalFileType.equalsIgnoreCase(".jpg") &&
-        !originalFileType.equalsIgnoreCase(".jpeg") &&
-        !originalFileType.equalsIgnoreCase(".png")
-      )
-    ) {
-      return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
-    }
-
-    String newFileName = StringUtils.generateUUID() + originalFileType;
 
     try (FileOutputStream fos = new FileOutputStream(imagePath + newFileName)) {
       fos.write(restaurantLogo.getBytes());
@@ -175,32 +155,15 @@ public class RestaurantController {
       restaurant.setRestaurantLogoAddress(restaurantLogoAddress);
       restaurantService.updateRestaurant(restaurant);
 
+      if (!StringUtils.isEmpty(originalRestaurantLogoAddress)) {
+        deleteFile(originalRestaurantLogoAddress);
+      }
+
       logger.info(
         "Successfully updated restaurant logo, Owner Id : {}, Restaurant Id : {}",
         owner.getOwnerId(),
         restaurantId
       );
-
-      // delete original logo
-      try {
-        if (!StringUtils.isEmpty(originalRestaurantLogoAddress)) {
-          String originalFileName = originalRestaurantLogoAddress
-            .substring(originalRestaurantLogoAddress.lastIndexOf("/"))
-            .substring(1);
-          File originalFile = new File(imagePath + originalFileName);
-          if (originalFile.exists()) {
-            originalFile.delete();
-          }
-        }
-      } catch (Exception e) {
-        logger.error(
-          "Failed to delete original restaurant logo, Owner Id : {}, Restaurant Id : {}",
-          owner.getOwnerId(),
-          restaurantId,
-          e
-        );
-      }
-
       return ResponseEntity.status(HttpStatus.OK).body(restaurantLogoAddress);
     } catch (IOException e) {
       logger.error(
@@ -231,38 +194,17 @@ public class RestaurantController {
   ) {
     Owner owner = RequestUtils.getOwner(request);
 
-    if (restaurantImage == null) {
+    String newFileName = getNewFileName(restaurantImage);
+    if (newFileName == null) {
       return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
     }
-
-    String originalFilename = restaurantImage.getOriginalFilename();
-    if (originalFilename == null) {
-      return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
-    }
-
-    String originalFileType = originalFilename.substring(
-      originalFilename.lastIndexOf(".")
-    );
-    if (
-      StringUtils.isEmpty(originalFileType) ||
-      (
-        !originalFileType.equalsIgnoreCase(".jpg") &&
-        !originalFileType.equalsIgnoreCase(".jpeg") &&
-        !originalFileType.equalsIgnoreCase(".png")
-      )
-    ) {
-      return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
-    }
-
-    String newFileName = StringUtils.generateUUID() + originalFileType;
 
     try (FileOutputStream fos = new FileOutputStream(imagePath + newFileName)) {
       fos.write(restaurantImage.getBytes());
 
-      String restaurantImageAddress = imageURL + newFileName;
       restaurantImageService.createRestaurantImage(
         restaurantId,
-        RestaurantImage.builder().imageAddress(restaurantImageAddress).build()
+        RestaurantImage.builder().imageAddress(imageURL + newFileName).build()
       );
 
       logger.info(
@@ -270,7 +212,6 @@ public class RestaurantController {
         owner.getOwnerId(),
         restaurantId
       );
-
       return ResponseEntity.status(HttpStatus.CREATED).build();
     } catch (IOException e) {
       logger.error(
@@ -298,16 +239,12 @@ public class RestaurantController {
         return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
       }
 
-      String imageAddress = restaurantImage.getImageAddress();
-      String fileName = imageAddress
-        .substring(imageAddress.lastIndexOf("/"))
-        .substring(1);
-      File file = new File(imagePath + fileName);
-      if (file.exists()) {
-        file.delete();
+      if (!deleteFile(restaurantImage.getImageAddress())) {
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
       }
 
       restaurantImageService.deleteRestaurantImage(imageId);
+
       logger.info(
         "Successfully deleted restaurant image, Owner Id : {}, Image Id : {}",
         owner.getOwnerId(),
@@ -323,5 +260,47 @@ public class RestaurantController {
       );
       return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
     }
+  }
+
+  private Boolean deleteFile(String fileAddress) {
+    try {
+      String fileName = fileAddress
+        .substring(fileAddress.lastIndexOf("/"))
+        .substring(1);
+      File file = new File(imagePath + fileName);
+      if (file.exists()) {
+        file.delete();
+      }
+      return true;
+    } catch (Exception e) {
+      return false;
+    }
+  }
+
+  private String getNewFileName(MultipartFile file) {
+    if (file == null) {
+      return null;
+    }
+
+    String originalFileName = file.getOriginalFilename();
+    if (originalFileName == null) {
+      return null;
+    }
+
+    String originalFileType = originalFileName.substring(
+      originalFileName.lastIndexOf(".")
+    );
+    if (
+      StringUtils.isEmpty(originalFileType) ||
+      (
+        !originalFileType.equalsIgnoreCase(".jpg") &&
+        !originalFileType.equalsIgnoreCase(".jpeg") &&
+        !originalFileType.equalsIgnoreCase(".png")
+      )
+    ) {
+      return null;
+    }
+
+    return StringUtils.generateUUID() + originalFileType;
   }
 }

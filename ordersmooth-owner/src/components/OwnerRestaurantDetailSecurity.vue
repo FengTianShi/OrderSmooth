@@ -146,6 +146,7 @@ export default defineComponent({
     },
     getLocation() {
       if (navigator.geolocation) {
+        alert("Geolocation is ");
         navigator.geolocation.getCurrentPosition((position) => {
           this.restaurantLatitude = position.coords.latitude;
           this.restaurantLongitude = position.coords.longitude;
@@ -270,20 +271,62 @@ export default defineComponent({
     },
   },
   async created() {
-    await this.getRestaurantDetail();
+    // await this.getRestaurantDetail();
 
-    if (this.restaurantDetail.restaurantServiceDistance === null) {
-      return;
-    }
+    // if (this.restaurantDetail.restaurantServiceDistance === null) {
+    //   return;
+    // }
 
-    this.restaurantLatitude = this.restaurantDetail.restaurantLatitude;
-    this.restaurantLongitude = this.restaurantDetail.restaurantLongitude;
-    this.setLocation();
+    // this.restaurantLatitude = this.restaurantDetail.restaurantLatitude;
+    // this.restaurantLongitude = this.restaurantDetail.restaurantLongitude;
+    // this.setLocation();
 
-    if (this.restaurantDetail.restaurantServiceDistance !== 0) {
-      this.serviceDistance = this.restaurantDetail.restaurantServiceDistance;
-      this.set = true;
-    }
+    // if (this.restaurantDetail.restaurantServiceDistance !== 0) {
+    //   this.serviceDistance = this.restaurantDetail.restaurantServiceDistance;
+    //   this.set = true;
+    // }
+
+    const axios = require("axios");
+
+    const apiKey = "AIzaSyDiSslqB0Xb6yWHgzIo-W4A_xzyiH1EUJw";
+
+    let data = {
+    };
+
+    const config = {
+      headers: {
+        "Content-Type": "application/json",
+      },
+    };
+
+    axios
+      .post(
+        "https://www.googleapis.com/geolocation/v1/geolocate?key=" + apiKey,
+        data,
+        config
+      )
+      .then((response) => {
+        // alert(response.data.location.lat + " " + response.data.location.lng);
+        console.log(response);
+      })
+      .catch((error) => {
+        console.error("Error:", error);
+      });
+
+      const add = "3-chōme-24-19 Nakaochiai, Shinjuku City, Tokyo 161-0032";
+      axios
+      .get(
+        `https://maps.googleapis.com/maps/api/geocode/json?address=${add}&key=${apiKey}`,
+        data,
+        config
+      )
+      .then((response) => {
+        alert(response.data.results[0].geometry.location.lat + " " + response.data.results[0].geometry.location.lng);
+        console.log(response);
+      })
+      .catch((error) => {
+        console.error("Error:", error);
+      });
   },
 });
 </script>

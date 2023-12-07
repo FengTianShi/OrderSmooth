@@ -26,6 +26,8 @@ public class PrinterI18n implements Serializable {
 
   private String printerName;
 
+  private String printerLocation;
+
   private String printerDescription;
 
   private Boolean isInvalid;

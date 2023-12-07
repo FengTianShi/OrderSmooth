@@ -186,7 +186,7 @@
                     :rules="[added]" />
 
                   <v-text-field
-                    :label="$t('createRestaurant.openingTime')"
+                    :label="$t('createRestaurant.openTime')"
                     placeholder="9:00"
                     class="mb-2"
                     density="compact"
@@ -194,11 +194,11 @@
                     prepend-inner-icon="mdi-clock-time-eight-outline"
                     persistent-hint
                     maxlength="5"
-                    v-model="openingTime"
+                    v-model="openTime"
                     :rules="[added]" />
 
                   <v-text-field
-                    :label="$t('createRestaurant.closingTime')"
+                    :label="$t('createRestaurant.closeTime')"
                     placeholder="20:00"
                     class="mb-2"
                     density="compact"
@@ -206,7 +206,7 @@
                     prepend-inner-icon="mdi-clock-outline"
                     persistent-hint
                     maxlength="5"
-                    v-model="closingTime"
+                    v-model="closeTime"
                     :rules="[added]" />
 
                   <v-btn
@@ -253,8 +253,8 @@
                             @click="
                               removeTimeInterval(dayInWeekId, timeIntervalId)
                             ">
-                            {{ timeInterval.openingTime }} ~
-                            {{ timeInterval.closingTime }}
+                            {{ timeInterval.openTime }} ~
+                            {{ timeInterval.closeTime }}
                             <v-icon color="error" right style="font-size: 15px">
                               mdi-trash-can-outline
                             </v-icon>
@@ -302,8 +302,8 @@ export default {
     payMethodList: [],
 
     selectedDayInWeek: [],
-    openingTime: "09:00",
-    closingTime: "21:00",
+    openTime: "09:00",
+    closeTime: "21:00",
 
     selectedGenre: null,
     selectedLang: null,
@@ -340,11 +340,11 @@ export default {
               restaurantI18n: {
                 langCode: this.selectedLang,
                 restaurantName: this.restaurantName,
-                address: this.restaurantAddress,
-                description: this.restaurantDescription,
+                restaurantAddress: this.restaurantAddress,
+                restaurantDescription: this.restaurantDescription,
               },
-              tel: this.restaurantTel,
-              postalCode: this.restaurantPostalCode,
+              restaurantTel: this.restaurantTel,
+              restaurantPostalCode: this.restaurantPostalCode,
               currencyId: this.selectedCurrency,
               payMethodIds: this.selectedPayMethod,
               defaultServiceFee: this.defaultServiceFee,
@@ -404,8 +404,8 @@ export default {
         return;
       }
 
-      // check if openingTime and closingTime is empty
-      if (this.openingTime === "" || this.closingTime === "") {
+      // check if openTime and closeTime is empty
+      if (this.openTime === "" || this.closeTime === "") {
         this.addOpeningHoursError = this.$t(
           "createRestaurant.timeRquiredError"
         );
@@ -413,30 +413,27 @@ export default {
         return;
       }
 
-      // check if openingTime and closingTime is strict HH:mm format p.s. H:mm is not valid
+      // check if openTime and closeTime is strict HH:mm format p.s. H:mm is not valid
       const timeRegex = /^(0[0-9]|1[0-9]|2[0-3]):[0-5][0-9]$/;
-      if (
-        !this.openingTime.match(timeRegex) ||
-        !this.closingTime.match(timeRegex)
-      ) {
+      if (!this.openTime.match(timeRegex) || !this.closeTime.match(timeRegex)) {
         this.addOpeningHoursError = this.$t("createRestaurant.timeFormatError");
         this.showAddOpeningHoursError = true;
         return;
       }
 
-      // check if openingTime is before closingTime
-      const openingTime = this.openingTime.split(":");
-      const closingTime = this.closingTime.split(":");
+      // check if openTime is before closeTime
+      const openTime = this.openTime.split(":");
+      const closeTime = this.closeTime.split(":");
       if (
-        openingTime[0] > closingTime[0] ||
-        (openingTime[0] === closingTime[0] && openingTime[1] >= closingTime[1])
+        openTime[0] > closeTime[0] ||
+        (openTime[0] === closeTime[0] && openTime[1] >= closeTime[1])
       ) {
         this.addOpeningHoursError = this.$t("createRestaurant.timeRangeError");
         this.showAddOpeningHoursError = true;
         return;
       }
 
-      // check if openingTime and closingTime is not overlap in same day
+      // check if openTime and closeTime is not overlap in same day
       if (this.isOverlap()) {
         this.addOpeningHoursError = this.$t(
           "createRestaurant.timeOverlapError"
@@ -464,8 +461,8 @@ export default {
                     (item) => item.dayInWeekId === dayInWeekId
                   )
                 ].dayInWeekOpeningHours.length + 1,
-              openingTime: this.openingTime,
-              closingTime: this.closingTime,
+              openTime: this.openTime,
+              closeTime: this.closeTime,
             });
           } else {
             this.restaurantOpeningHours.push({
@@ -473,8 +470,8 @@ export default {
               dayInWeekOpeningHours: [
                 {
                   timeIntervalId: 1,
-                  openingTime: this.openingTime,
-                  closingTime: this.closingTime,
+                  openTime: this.openTime,
+                  closeTime: this.closeTime,
                 },
               ],
             });
@@ -489,19 +486,19 @@ export default {
         return a.dayInWeekId - b.dayInWeekId;
       });
 
-      // sort by timeInterval openingTime
+      // sort by timeInterval openTime
       this.restaurantOpeningHours.forEach((item) => {
         item.dayInWeekOpeningHours.sort((a, b) => {
-          const openingTimeA = a.openingTime.split(":");
-          const openingTimeB = b.openingTime.split(":");
-          if (openingTimeA[0] > openingTimeB[0]) {
+          const openTimeA = a.openTime.split(":");
+          const openTimeB = b.openTime.split(":");
+          if (openTimeA[0] > openTimeB[0]) {
             return 1;
-          } else if (openingTimeA[0] < openingTimeB[0]) {
+          } else if (openTimeA[0] < openTimeB[0]) {
             return -1;
           } else {
-            if (openingTimeA[1] > openingTimeB[1]) {
+            if (openTimeA[1] > openTimeB[1]) {
               return 1;
-            } else if (openingTimeA[1] < openingTimeB[1]) {
+            } else if (openTimeA[1] < openTimeB[1]) {
               return -1;
             } else {
               return 0;
@@ -516,31 +513,31 @@ export default {
         this.restaurantOpeningHours.forEach((item) => {
           if (this.selectedDayInWeek.includes(item.dayInWeekId)) {
             item.dayInWeekOpeningHours.forEach((timeInterval) => {
-              const timeIntervalOpeningTime = new Date();
-              timeIntervalOpeningTime.setHours(
-                Number(timeInterval.openingTime.split(":")[0]),
-                Number(timeInterval.openingTime.split(":")[1])
+              const timeIntervalopenTime = new Date();
+              timeIntervalopenTime.setHours(
+                Number(timeInterval.openTime.split(":")[0]),
+                Number(timeInterval.openTime.split(":")[1])
               );
-              const timeIntervalClosingTime = new Date();
-              timeIntervalClosingTime.setHours(
-                Number(timeInterval.closingTime.split(":")[0]),
-                Number(timeInterval.closingTime.split(":")[1])
+              const timeIntervalcloseTime = new Date();
+              timeIntervalcloseTime.setHours(
+                Number(timeInterval.closeTime.split(":")[0]),
+                Number(timeInterval.closeTime.split(":")[1])
               );
-              const newOpeningTime = new Date();
-              newOpeningTime.setHours(
-                Number(this.openingTime.split(":")[0]),
-                Number(this.openingTime.split(":")[1])
+              const newopenTime = new Date();
+              newopenTime.setHours(
+                Number(this.openTime.split(":")[0]),
+                Number(this.openTime.split(":")[1])
               );
-              const newClosingTime = new Date();
-              newClosingTime.setHours(
-                Number(this.closingTime.split(":")[0]),
-                Number(this.closingTime.split(":")[1])
+              const newcloseTime = new Date();
+              newcloseTime.setHours(
+                Number(this.closeTime.split(":")[0]),
+                Number(this.closeTime.split(":")[1])
               );
               if (
-                (newOpeningTime >= timeIntervalOpeningTime &&
-                  newOpeningTime <= timeIntervalClosingTime) ||
-                (newClosingTime >= timeIntervalOpeningTime &&
-                  newClosingTime <= timeIntervalClosingTime)
+                (newopenTime >= timeIntervalopenTime &&
+                  newopenTime <= timeIntervalcloseTime) ||
+                (newcloseTime >= timeIntervalopenTime &&
+                  newcloseTime <= timeIntervalcloseTime)
               ) {
                 isOverlap = true;
               }

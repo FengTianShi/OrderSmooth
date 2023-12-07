@@ -3,8 +3,8 @@ import App from "./App.vue";
 
 // axios
 import axios from "axios";
-// axios.defaults.baseURL = "http://192.168.0.17:80";
-axios.defaults.baseURL = "http://localhost:8081";
+axios.defaults.baseURL = "http://192.168.0.17:80";
+// axios.defaults.baseURL = "http://localhost:8081";
 
 // vue-router
 import router from "./router";

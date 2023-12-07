@@ -27,38 +27,32 @@ public class UpdateRestaurantParam implements Serializable {
   @Positive
   private Integer genreId;
 
-  @Valid
-  @NotNull
-  @Size(min = 1)
-  @KeyNotDuplicate(key = "langCode")
-  List<RestaurantI18nParam> restaurantI18ns;
-
   @NotBlank
   @Size(max = 11)
   @Pattern(regexp = "\\d+")
-  private String tel;
+  private String restaurantTel;
 
   @NotBlank
   @Size(max = 10)
   @Pattern(regexp = "\\d+")
-  private String postalCode;
+  private String restaurantPostalCode;
 
-  private Double restaurantLongitude;
-
+  @NotNull
   private Double restaurantLatitude;
 
-  @Min(0)
+  @NotNull
+  private Double restaurantLongitude;
+
+  @Min(1)
   @Max(99999)
   private Integer restaurantServiceDistance;
 
   @NotNull
-  @Positive
-  private Integer currencyId;
+  private Boolean isLimitServiceDistance;
 
   @NotNull
-  @Size(min = 1)
-  @NotDuplicate
-  List<Integer> payMethodIds;
+  @Positive
+  private Integer currencyId;
 
   @NotNull
   @Min(0)
@@ -79,6 +73,17 @@ public class UpdateRestaurantParam implements Serializable {
   private String wifiSsid;
 
   private String wifiPassword;
+
+  @NotNull
+  @Size(min = 1)
+  @NotDuplicate
+  List<Integer> payMethodIds;
+
+  @Valid
+  @NotNull
+  @Size(min = 1)
+  @KeyNotDuplicate(key = "langCode")
+  List<RestaurantI18nParam> restaurantI18ns;
 
   @Valid
   @NotNull

@@ -50,19 +50,15 @@ public class RestaurantService {
       .builder()
       .ownerId(ownerId)
       .genreId(createRestaurantParam.getGenreId())
-      .restaurantLogoAddress(null)
-      .restaurantTel(createRestaurantParam.getTel())
-      .restaurantPostalCode(createRestaurantParam.getPostalCode())
-      .restaurantLongitude(null)
-      .restaurantLatitude(null)
-      .restaurantServiceDistance(null)
+      .restaurantTel(createRestaurantParam.getRestaurantTel())
+      .restaurantPostalCode(createRestaurantParam.getRestaurantPostalCode())
+      .restaurantLatitude(createRestaurantParam.getRestaurantLatitude())
+      .restaurantLongitude(createRestaurantParam.getRestaurantLongitude())
       .currencyId(createRestaurantParam.getCurrencyId())
       .defaultServiceFee(createRestaurantParam.getDefaultServiceFee())
       .defaultTax(createRestaurantParam.getDefaultTax())
       .isDisplayServiceFee(createRestaurantParam.getIsDisplayServiceFee())
       .isDisplayTax(createRestaurantParam.getIsDisplayTax())
-      .wifiSsid(null)
-      .wifiPassword(null)
       .isInvalid(false)
       .isDeleted(false)
       .insertTime(now)
@@ -91,11 +87,6 @@ public class RestaurantService {
     return restaurant.getRestaurantId();
   }
 
-  @Transactional
-  public void updateRestaurant(Restaurant restaurant) {
-    restaurantMapper.updateById(restaurant);
-  }
-
   public Restaurant getRestaurant(Long restaurantId) {
     return restaurantMapper.selectOne(
       new MPJLambdaWrapper<Restaurant>()
@@ -106,20 +97,20 @@ public class RestaurantService {
     );
   }
 
-  public RestaurantDTO getFullRestaurant(Long restaurantId) {
+  public RestaurantDTO getRestaurantFull(Long restaurantId) {
     return restaurantMapper.selectJoinOne(
       RestaurantDTO.class,
       new MPJLambdaWrapper<Restaurant>()
         .selectAll(Restaurant.class)
-        .selectCollection(RestaurantI18n.class, RestaurantDTO::getI18n)
+        .selectCollection(RestaurantI18n.class, RestaurantDTO::getI18ns)
         .selectCollection(RestaurantImage.class, RestaurantDTO::getImages)
-        .selectCollection(
-          RestaurantOpeningHours.class,
-          RestaurantDTO::getOpeningHours
-        )
         .selectCollection(
           RestaurantPayMethod.class,
           RestaurantDTO::getPayMethods
+        )
+        .selectCollection(
+          RestaurantOpeningHours.class,
+          RestaurantDTO::getOpeningHours
         )
         .leftJoin(
           RestaurantI18n.class,
@@ -127,8 +118,8 @@ public class RestaurantService {
           Restaurant::getRestaurantId
         )
         .leftJoin(
-          RestaurantOpeningHours.class,
-          RestaurantOpeningHours::getRestaurantId,
+          RestaurantImage.class,
+          RestaurantImage::getRestaurantId,
           Restaurant::getRestaurantId
         )
         .leftJoin(
@@ -137,18 +128,18 @@ public class RestaurantService {
           Restaurant::getRestaurantId
         )
         .leftJoin(
-          RestaurantImage.class,
-          RestaurantImage::getRestaurantId,
+          RestaurantOpeningHours.class,
+          RestaurantOpeningHours::getRestaurantId,
           Restaurant::getRestaurantId
         )
         .eq(Restaurant::getIsInvalid, false)
         .eq(Restaurant::getIsDeleted, false)
         .eq(RestaurantI18n::getIsInvalid, false)
         .eq(RestaurantI18n::getIsDeleted, false)
-        .eq(RestaurantOpeningHours::getIsInvalid, false)
-        .eq(RestaurantOpeningHours::getIsDeleted, false)
         .eq(RestaurantPayMethod::getIsInvalid, false)
         .eq(RestaurantPayMethod::getIsDeleted, false)
+        .eq(RestaurantOpeningHours::getIsInvalid, false)
+        .eq(RestaurantOpeningHours::getIsDeleted, false)
         .and(i ->
           i
             .eq(RestaurantImage::getIsDeleted, false)
@@ -176,14 +167,14 @@ public class RestaurantService {
       .builder()
       .restaurantId(restaurantId)
       .genreId(updateRestaurantParam.getGenreId())
-      .restaurantLogoAddress(null)
-      .restaurantTel(updateRestaurantParam.getTel())
-      .restaurantPostalCode(updateRestaurantParam.getPostalCode())
-      .restaurantLongitude(updateRestaurantParam.getRestaurantLongitude())
+      .restaurantTel(updateRestaurantParam.getRestaurantTel())
+      .restaurantPostalCode(updateRestaurantParam.getRestaurantPostalCode())
       .restaurantLatitude(updateRestaurantParam.getRestaurantLatitude())
+      .restaurantLongitude(updateRestaurantParam.getRestaurantLongitude())
       .restaurantServiceDistance(
         updateRestaurantParam.getRestaurantServiceDistance()
       )
+      .isLimitServiceDistance(updateRestaurantParam.getIsLimitServiceDistance())
       .currencyId(updateRestaurantParam.getCurrencyId())
       .defaultServiceFee(updateRestaurantParam.getDefaultServiceFee())
       .defaultTax(updateRestaurantParam.getDefaultTax())
@@ -217,5 +208,10 @@ public class RestaurantService {
       restaurantId,
       updateRestaurantParam.getRestaurantOpeningHours()
     );
+  }
+
+  @Transactional
+  public void updateRestaurant(Restaurant restaurant) {
+    restaurantMapper.updateById(restaurant);
   }
 }

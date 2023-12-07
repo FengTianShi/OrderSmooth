@@ -27,28 +27,25 @@ public class CreateRestaurantParam implements Serializable {
   @Positive
   private Integer genreId;
 
-  @Valid
-  @NotNull
-  RestaurantI18nParam restaurantI18n;
-
   @NotBlank
   @Size(max = 11)
   @Pattern(regexp = "\\d+")
-  private String tel;
+  private String restaurantTel;
 
   @NotBlank
   @Size(max = 10)
   @Pattern(regexp = "\\d+")
-  private String postalCode;
+  private String restaurantPostalCode;
+
+  @NotNull
+  private Double restaurantLatitude;
+
+  @NotNull
+  private Double restaurantLongitude;
 
   @NotNull
   @Positive
   private Integer currencyId;
-
-  @NotNull
-  @Size(min = 1)
-  @NotDuplicate
-  List<Integer> payMethodIds;
 
   @NotNull
   @Min(0)
@@ -65,6 +62,15 @@ public class CreateRestaurantParam implements Serializable {
 
   @NotNull
   private Boolean isDisplayTax;
+
+  @NotNull
+  @Size(min = 1)
+  @NotDuplicate
+  List<Integer> payMethodIds;
+
+  @Valid
+  @NotNull
+  RestaurantI18nParam restaurantI18n;
 
   @Valid
   @NotNull

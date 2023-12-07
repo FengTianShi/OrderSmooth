@@ -24,9 +24,9 @@ public class RestaurantI18nParam implements Serializable {
 
   @NotBlank
   @Size(max = 500)
-  private String address;
+  private String restaurantAddress;
 
   @NotBlank
   @Size(max = 2000)
-  private String description;
+  private String restaurantDescription;
 }

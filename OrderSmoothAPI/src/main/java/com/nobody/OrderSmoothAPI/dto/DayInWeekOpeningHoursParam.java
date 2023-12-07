@@ -14,17 +14,17 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 @DateTimeInterval(
-  startTime = { "openingTime" },
-  endTime = { "closingTime" },
+  startTime = { "openTime" },
+  endTime = { "closeTime" },
   format = "HH:mm"
 )
 public class DayInWeekOpeningHoursParam implements Serializable {
 
   @NotBlank
   @DateTime(format = "HH:mm")
-  private String openingTime;
+  private String openTime;
 
   @NotBlank
   @DateTime(format = "HH:mm")
-  private String closingTime;
+  private String closeTime;
 }

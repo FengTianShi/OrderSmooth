@@ -81,8 +81,8 @@ VALUES
 
 CREATE TABLE IF NOT EXISTS public.m_currency (
     currency_id integer NOT NULL,
-    currency_symbol character varying(3),
-    currency_code character varying(3) NOT NULL,
+    currency_symbol character varying(5),
+    currency_code character varying(5) NOT NULL,
     currency_name character varying(100) NOT NULL,
     is_invalid boolean NOT NULL,
     is_deleted boolean NOT NULL,
