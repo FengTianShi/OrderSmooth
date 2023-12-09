@@ -88,23 +88,20 @@
   </v-form>
 
   <v-dialog v-model="updated" max-width="500">
-    <v-card class="pa-4">
-      <v-row>
-        <v-col cols="10">
-          <p>Info</p>
-        </v-col>
-        <v-col cols="2" class="text-right">
-          <v-btn
-            icon="mdi-close"
-            variant="text"
-            size="x-small"
-            @click="updated = false" />
-        </v-col>
-      </v-row>
+    <v-card class="pa-0">
+      <div class="pa-2">
+        <span>Info</span>
+        <v-btn
+          size="x-small"
+          variant="text"
+          icon="mdi-close"
+          class="float-right"
+          @click="updated = false" />
+      </div>
 
-      <v-divider class="my-2"></v-divider>
+      <v-divider class="mb-4"></v-divider>
 
-      <p class="py-4 text-center">
+      <p class="py-2 text-center">
         <v-icon color="success" size="28">mdi-check-circle</v-icon>
         Update success
       </p>

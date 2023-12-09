@@ -40,23 +40,20 @@
 
   <v-dialog persistent v-model="edit" max-width="500">
     <v-form validate-on="submit lazy" @submit.prevent="saveLang">
-      <v-card class="pa-4">
-        <v-row>
-          <v-col cols="10">
-            <p>Edit</p>
-          </v-col>
-          <v-col cols="2" class="text-right">
-            <v-btn
-              icon="mdi-close"
-              variant="text"
-              size="x-small"
-              @click="(edit = false), resetForm()" />
-          </v-col>
-        </v-row>
+      <v-card class="pa-0">
+        <div class="pa-2">
+          <span>Edit</span>
+          <v-btn
+            size="x-small"
+            variant="text"
+            icon="mdi-close"
+            class="float-right"
+            @click="(edit = false), resetForm()" />
+        </div>
 
-        <v-divider class="my-2"></v-divider>
+        <v-divider class="mb-4"></v-divider>
 
-        <v-card class="pa-4 pb-0" flat>
+        <v-card class="px-4 pt-4" flat>
           <div v-if="selectedLangKey === -1">
             <v-select
               :label="$t('createRestaurant.lang')"
@@ -127,23 +124,20 @@
   </v-dialog>
 
   <v-dialog persistent v-model="deleteConfirm" max-width="500">
-    <v-card class="pa-4">
-      <v-row>
-        <v-col cols="10">
-          <p>Confirm</p>
-        </v-col>
-        <v-col cols="2" class="text-right">
-          <v-btn
-            icon="mdi-close"
-            variant="text"
-            size="x-small"
-            @click="(deleteConfirm = false), resetForm()" />
-        </v-col>
-      </v-row>
+    <v-card class="pa-0">
+      <div class="pa-2">
+        <span>Confirm</span>
+        <v-btn
+          size="x-small"
+          variant="text"
+          icon="mdi-close"
+          class="float-right"
+          @click="(deleteConfirm = false), resetForm()" />
+      </div>
 
-      <v-divider class="my-2"></v-divider>
+      <v-divider class="mb-4"></v-divider>
 
-      <p class="py-4 text-center">
+      <p class="py-2 text-center">
         <v-icon color="warning" size="28">mdi-alert-circle</v-icon>
         Confirm your delete
       </p>
@@ -165,23 +159,20 @@
   </v-dialog>
 
   <v-dialog v-model="deleteError" max-width="500">
-    <v-card class="pa-4">
-      <v-row>
-        <v-col cols="10">
-          <p>Error</p>
-        </v-col>
-        <v-col cols="2" class="text-right">
-          <v-btn
-            icon="mdi-close"
-            variant="text"
-            size="x-small"
-            @click="deleteError = false" />
-        </v-col>
-      </v-row>
+    <v-card class="pa-0">
+      <div class="pa-2">
+        <span>Error</span>
+        <v-btn
+          size="x-small"
+          variant="text"
+          icon="mdi-close"
+          class="float-right"
+          @click="deleteError = false" />
+      </div>
 
-      <v-divider class="my-2"></v-divider>
+      <v-divider class="mb-4"></v-divider>
 
-      <p class="py-4 text-center">
+      <p class="py-2 text-center">
         <v-icon color="error" size="28">mdi-alert-circle</v-icon>
         you can't delete language when it's only one
       </p>
