@@ -31,10 +31,10 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
 @RestController
-public class RestaurantController {
+public class RestaurantMgtController {
 
   private final Logger logger = LoggerFactory.getLogger(
-    RestaurantController.class
+    RestaurantMgtController.class
   );
 
   private final RestaurantService restaurantService;
@@ -47,7 +47,7 @@ public class RestaurantController {
 
   private final Integer OWNER_RESTAURANT_IMAGE_MAX_NUMBER;
 
-  public RestaurantController(
+  public RestaurantMgtController(
     RestaurantService restaurantService,
     RestaurantImageService restaurantImageService,
     @Value("${ordersmooth.image.path}") String imagePath,
@@ -61,6 +61,16 @@ public class RestaurantController {
     this.imagePath = imagePath;
     this.imageURL = imageURL;
     this.OWNER_RESTAURANT_IMAGE_MAX_NUMBER = OWNER_RESTAURANT_IMAGE_MAX_NUMBER;
+  }
+
+  @GetMapping("/restaurant/{restaurantId}")
+  public ResponseEntity<RestaurantDTO> getRestaurant(
+    @PathVariable Long restaurantId
+  ) {
+    RestaurantDTO restaurant = restaurantService.getRestaurantFull(
+      restaurantId
+    );
+    return ResponseEntity.status(HttpStatus.OK).body(restaurant);
   }
 
   @PostMapping("/restaurant")
@@ -89,16 +99,6 @@ public class RestaurantController {
       );
       return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
     }
-  }
-
-  @GetMapping("/restaurant/{restaurantId}")
-  public ResponseEntity<RestaurantDTO> getRestaurant(
-    @PathVariable Long restaurantId
-  ) {
-    RestaurantDTO restaurant = restaurantService.getRestaurantFull(
-      restaurantId
-    );
-    return ResponseEntity.status(HttpStatus.OK).body(restaurant);
   }
 
   @PutMapping("/restaurant/{restaurantId}")
@@ -275,6 +275,13 @@ public class RestaurantController {
     }
   }
 
+  @GetMapping("/restaurant/{restaurantId}/image/max-number")
+  public ResponseEntity<Integer> getRestaurantImageMaxNumber() {
+    return ResponseEntity
+      .status(HttpStatus.OK)
+      .body(OWNER_RESTAURANT_IMAGE_MAX_NUMBER);
+  }
+
   private Boolean deleteFile(String fileAddress) {
     try {
       String fileName = fileAddress
@@ -315,12 +322,5 @@ public class RestaurantController {
     }
 
     return StringUtils.generateUUID() + originalFileType;
-  }
-
-  @GetMapping("/restaurant/{restaurantId}/image/max-number")
-  public ResponseEntity<Integer> getRestaurantImageMaxNumber() {
-    return ResponseEntity
-      .status(HttpStatus.OK)
-      .body(OWNER_RESTAURANT_IMAGE_MAX_NUMBER);
   }
 }
